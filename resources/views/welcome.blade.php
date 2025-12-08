@@ -272,29 +272,29 @@
                     </svg>
                 </button>
 
-                <div class="flex flex-col md:flex-row h-full max-h-[80vh] overflow-y-auto">
+                <div class="flex flex-col h-full max-h-[80vh] overflow-y-auto custom-scrollbar p-6 space-y-8">
                     <!-- Image Section -->
-                    <div class="w-full md:w-1/2 p-1">
+                    <div class="w-full shrink-0">
                         <img id="modal-image" src="" alt="Project Image"
-                            class="w-full h-64 md:h-full object-cover rounded-2xl border border-white/5">
+                            class="w-full h-64 md:h-96 object-cover rounded-2xl border border-white/5 shadow-2xl">
                     </div>
 
                     <!-- Details Section -->
-                    <div class="w-full md:w-1/2 p-6 md:p-8 flex flex-col text-left space-y-6">
-                        <div>
+                    <div class="w-full flex flex-col text-left space-y-6">
+                        <div class="text-center">
                             <h2 id="modal-title"
-                                class="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter leading-none mb-4">
+                                class="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter leading-none mb-4">
                             </h2>
-                            <div id="modal-tags" class="flex flex-wrap gap-2 mb-6"></div>
+                            <div id="modal-tags" class="flex flex-wrap gap-2 mb-6 justify-center"></div>
                         </div>
 
-                        <div class="flex-grow">
+                        <div>
                             <p id="modal-description" class="text-gray-300 text-lg leading-relaxed font-light"></p>
                         </div>
 
-                        <div class="pt-4">
+                        <div class="pt-4 pb-4">
                             <a id="modal-link" href="#" target="_blank"
-                                class="inline-flex items-center gap-2 bg-genz-lime text-black px-6 py-3 rounded-full font-bold hover:bg-genz-pink hover:text-white transition-colors w-full md:w-auto justify-center">
+                                class="inline-flex items-center gap-2 bg-genz-lime text-black px-8 py-4 rounded-full font-bold text-lg hover:bg-genz-pink hover:text-white transition-colors w-full justify-center shadow-[0_0_20px_rgba(204,255,0,0.3)]">
                                 <span>VISIT WEBSITE</span>
                                 <span>→</span>
                             </a>
