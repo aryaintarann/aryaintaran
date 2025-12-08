@@ -289,8 +289,9 @@
                             <div id="modal-tags" class="flex flex-wrap gap-2 mb-6 justify-center"></div>
                         </div>
 
-                        <div>
-                            <p id="modal-description" class="text-gray-300 text-lg leading-relaxed font-light"></p>
+                        <div
+                            class="prose prose-invert prose-lg max-w-none prose-p:text-gray-300 prose-headings:text-white prose-strong:text-white prose-a:text-genz-lime prose-ul:text-gray-300 prose-li:text-gray-300">
+                            <div id="modal-description" class="font-light leading-relaxed"></div>
                         </div>
 
                         <div class="pt-4 pb-4">
