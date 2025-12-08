@@ -224,7 +224,8 @@
                 {!! $settings['contact_text'] ?? 'HELLO@<br>ARYAINTARAN.DEV' !!}
             </a>
 
-            <div class="flex justify-center gap-8 text-lg font-bold uppercase tracking-widest">
+            <div
+                class="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-8 text-lg font-bold uppercase tracking-widest">
                 <a href="{{ $settings['instagram_url'] ?? '#' }}"
                     class="hover:text-genz-pink hover:-translate-y-1 transition-transform">Instagram</a>
                 <a href="{{ $settings['linkedin_url'] ?? '#' }}"
