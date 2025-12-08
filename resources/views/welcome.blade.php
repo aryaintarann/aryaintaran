@@ -320,7 +320,7 @@
                 .then(data => {
                     // Populate Data
                     document.getElementById('modal-title').textContent = data.title;
-                    document.getElementById('modal-description').textContent = data.description;
+                    document.getElementById('modal-description').innerHTML = data.description; // Use innerHTML for Rich Text
                     document.getElementById('modal-image').src = data.image ? `/storage/${data.image}` : `https://placehold.co/800x600/111/FFF?text=${encodeURIComponent(data.title)}`;
                     document.getElementById('modal-link').href = data.url || '#';
 

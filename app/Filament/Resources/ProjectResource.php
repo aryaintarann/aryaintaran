@@ -32,7 +32,7 @@ class ProjectResource extends Resource
                 Forms\Components\FileUpload::make('image')
                     ->image()
                     ->directory('projects'),
-                Forms\Components\Textarea::make('description')
+                Forms\Components\RichEditor::make('description')
                     ->required()
                     ->columnSpanFull(),
                 Forms\Components\TagsInput::make('tags'),
