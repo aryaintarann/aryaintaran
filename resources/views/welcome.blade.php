@@ -138,41 +138,74 @@
             <h2 class="text-5xl md:text-7xl font-black mb-16 text-center reveal"><span
                     class="text-genz-lime">PROJECT</span></h2>
 
-            <div class="space-y-24">
-                @forelse($projects as $index => $project)
-                    <!-- Project {{ $index + 1 }} -->
-                    <a href="{{ $project->url ?? '#' }}"
-                        class="block group grid grid-cols-1 md:grid-cols-2 gap-8 items-center reveal">
-                        <div class="order-2 {{ $index % 2 == 0 ? 'md:order-1' : '' }}">
-                            <h3 class="text-3xl font-bold mb-4 group-hover:text-genz-pink transition-colors">
-                                {{ $project->title }}
-                            </h3>
-                            <p class="text-gray-400 mb-6 text-lg">{{ $project->description }}</p>
-                            <div class="flex gap-4 mb-8">
-                                @if($project->tags)
-                                    @foreach($project->tags as $tag)
-                                        <span
-                                            class="text-xs font-mono border border-genz-gray px-2 py-1 rounded bg-black uppercase">{{ $tag }}</span>
-                                    @endforeach
-                                @endif
-                            </div>
+            <!-- Swiper Slider Container (Frameless) -->
+            <div class="swiper project-slider w-full max-w-5xl mx-auto overflow-hidden">
+                <div class="swiper-wrapper">
+                    @forelse($projects as $index => $project)
+                        <!-- Slide {{ $index + 1 }} -->
+                        <div class="swiper-slide w-full min-h-[500px] relative flex items-center justify-center pt-8 pb-16">
+
                             <div
-                                class="inline-flex items-center gap-2 text-genz-lime font-bold hover:underline underline-offset-4">
-                                VIEW PROJECT <span class="text-xl">→</span>
+                                class="flex flex-col items-center justify-center w-full max-w-4xl mx-auto px-6 md:px-12 z-10 h-full text-center">
+
+                                <!-- Image Content (Top) -->
+                                <div class="w-full relative group perspective-1000 mb-6" data-swiper-parallax="50%">
+                                    <div
+                                        class="relative aspect-[16/9] md:aspect-[21/9] w-full rounded-2xl overflow-hidden border border-white/10 bg-black/50 shadow-2xl group-hover:scale-[1.02] transition-transform duration-700">
+                                        <img src="{{ $project->image ? asset('storage/' . $project->image) : 'https://placehold.co/1200x600/111/FFF?text=' . urlencode($project->title) }}"
+                                            alt="{{ $project->title }}"
+                                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                                    </div>
+                                    <!-- Glow Effect -->
+                                    <div
+                                        class="absolute -inset-4 bg-gradient-to-t from-genz-lime/20 to-transparent opacity-0 group-hover:opacity-100 blur-2xl transition-opacity duration-500 -z-10">
+                                    </div>
+                                </div>
+
+                                <!-- Text Content (Bottom) -->
+                                <div class="flex flex-col items-center space-y-3 w-full max-w-2xl mx-auto"
+                                    data-swiper-parallax="-200">
+                                    <h3
+                                        class="text-4xl md:text-5xl font-black text-white uppercase tracking-tighter drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] text-center leading-tight">
+                                        {{ $project->title }}
+                                    </h3>
+
+                                    <div class="flex flex-wrap justify-center gap-2">
+                                        @if($project->tags)
+                                            @foreach($project->tags as $tag)
+                                                <span
+                                                    class="text-xs font-bold border border-genz-lime/50 text-genz-lime px-4 py-1.5 rounded-full uppercase tracking-wider">
+                                                    {{ $tag }}
+                                                </span>
+                                            @endforeach
+                                        @endif
+                                    </div>
+
+                                    <div class="pt-2">
+                                        <a href="{{ $project->url ?? '#' }}" target="_blank"
+                                            class="inline-flex items-center gap-2 bg-genz-lime text-black px-8 py-3 rounded-full font-bold text-lg hover:bg-genz-pink hover:text-white transition-all transform hover:scale-105 shadow-[0_0_15px_rgba(204,255,0,0.3)] group">
+                                            <span>VIEW PROJECT</span>
+                                            <span class="group-hover:translate-x-1 transition-transform">→</span>
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div
-                            class="order-1 {{ $index % 2 == 0 ? 'md:order-2' : '' }} overflow-hidden rounded-2xl border border-genz-gray group-hover:border-genz-lime transition-all duration-500">
-                            <img src="{{ $project->image ? asset('storage/' . $project->image) : 'https://placehold.co/800x600/111/FFF?text=' . urlencode($project->title) }}"
-                                alt="{{ $project->title }}"
-                                class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700">
+                    @empty
+                        <div class="swiper-slide flex items-center justify-center">
+                            <p class="text-white text-xl">No projects found.</p>
                         </div>
-                    </a>
-                @empty
-                    <div class="text-center text-gray-400 py-12">
-                        <p class="text-xl">No projects found. Add some from the admin panel!</p>
-                    </div>
-                @endforelse
+                    @endforelse
+                </div>
+
+                <!-- Swiper Controls -->
+                <div class="swiper-pagination !bottom-0"></div>
+                <div
+                    class="swiper-button-prev !text-genz-lime hover:scale-125 transition-transform hidden md:flex after:!text-3xl font-black drop-shadow-[0_0_10px_rgba(204,255,0,0.5)]">
+                </div>
+                <div
+                    class="swiper-button-next !text-genz-lime hover:scale-125 transition-transform hidden md:flex after:!text-3xl font-black drop-shadow-[0_0_10px_rgba(204,255,0,0.5)]">
+                </div>
             </div>
         </div>
     </section>
