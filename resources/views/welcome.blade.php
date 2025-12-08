@@ -149,7 +149,8 @@
                                 class="flex flex-col items-center justify-center w-full max-w-4xl mx-auto px-6 md:px-12 z-10 h-full text-center">
 
                                 <!-- Image Content (Top) -->
-                                <div class="w-full relative group perspective-1000 mb-6" data-swiper-parallax="50%">
+                                <div class="w-full relative group perspective-1000 mb-6 cursor-pointer"
+                                    onclick="openDetail({{ $project->id }})" data-swiper-parallax="50%">
                                     <div
                                         class="relative aspect-[16/9] md:aspect-[21/9] w-full rounded-2xl overflow-hidden border border-white/10 bg-black/50 shadow-2xl group-hover:scale-[1.02] transition-transform duration-700">
                                         <img src="{{ $project->image ? asset('storage/' . $project->image) : 'https://placehold.co/1200x600/111/FFF?text=' . urlencode($project->title) }}"
@@ -247,6 +248,118 @@
         </div>
     </footer>
 
+    <!-- Project Detail Modal -->
+    <div id="project-modal"
+        class="fixed inset-0 z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center"
+        role="dialog" aria-modal="true">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/90 backdrop-blur-md" onclick="closeModal()"></div>
+
+        <!-- Modal Content -->
+        <div
+            class="relative w-full max-w-4xl max-h-[90vh] mx-auto p-4 flex flex-col items-center justify-center pointer-events-none">
+
+            <div class="bg-black/80 border border-white/10 rounded-3xl overflow-hidden w-full shadow-2xl transform scale-95 transition-transform duration-300 pointer-events-auto"
+                id="modal-panel">
+
+                <!-- Close Button -->
+                <button onclick="closeModal()"
+                    class="absolute top-4 right-4 z-20 text-white/50 hover:text-genz-lime transition-colors p-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+
+                <div class="flex flex-col md:flex-row h-full max-h-[80vh] overflow-y-auto">
+                    <!-- Image Section -->
+                    <div class="w-full md:w-1/2 p-1">
+                        <img id="modal-image" src="" alt="Project Image"
+                            class="w-full h-64 md:h-full object-cover rounded-2xl border border-white/5">
+                    </div>
+
+                    <!-- Details Section -->
+                    <div class="w-full md:w-1/2 p-6 md:p-8 flex flex-col text-left space-y-6">
+                        <div>
+                            <h2 id="modal-title"
+                                class="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter leading-none mb-4">
+                            </h2>
+                            <div id="modal-tags" class="flex flex-wrap gap-2 mb-6"></div>
+                        </div>
+
+                        <div class="flex-grow">
+                            <p id="modal-description" class="text-gray-300 text-lg leading-relaxed font-light"></p>
+                        </div>
+
+                        <div class="pt-4">
+                            <a id="modal-link" href="#" target="_blank"
+                                class="inline-flex items-center gap-2 bg-genz-lime text-black px-6 py-3 rounded-full font-bold hover:bg-genz-pink hover:text-white transition-colors w-full md:w-auto justify-center">
+                                <span>VISIT WEBSITE</span>
+                                <span>→</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AJAX Modal Script -->
+    <script>
+        function openDetail(id) {
+            const modal = document.getElementById('project-modal');
+            const panel = document.getElementById('modal-panel');
+            const backdrop = modal.querySelector('.absolute');
+
+            // Show loading state or clear previous data if needed
+            // Fetch Data
+            fetch(`/projects/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Populate Data
+                    document.getElementById('modal-title').textContent = data.title;
+                    document.getElementById('modal-description').textContent = data.description;
+                    document.getElementById('modal-image').src = data.image ? `/storage/${data.image}` : `https://placehold.co/800x600/111/FFF?text=${encodeURIComponent(data.title)}`;
+                    document.getElementById('modal-link').href = data.url || '#';
+
+                    // Tags
+                    const tagsContainer = document.getElementById('modal-tags');
+                    tagsContainer.innerHTML = '';
+                    if (data.tags) {
+                        data.tags.forEach(tag => {
+                            const span = document.createElement('span');
+                            span.className = 'text-xs font-bold border border-genz-lime/30 text-genz-lime px-3 py-1 rounded-full uppercase';
+                            span.textContent = tag;
+                            tagsContainer.appendChild(span);
+                        });
+                    }
+
+                    // Show Modal
+                    modal.classList.remove('hidden');
+                    // Small delay to allow display:block to apply before opacity transition
+                    setTimeout(() => {
+                        modal.classList.remove('opacity-0');
+                        panel.classList.remove('scale-95');
+                        panel.classList.add('scale-100');
+                    }, 10);
+                })
+                .catch(error => console.error('Error fetching project:', error));
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('project-modal');
+            const panel = document.getElementById('modal-panel');
+
+            modal.classList.add('opacity-0');
+            panel.classList.remove('scale-100');
+            panel.classList.add('scale-95');
+
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+    </script>
 </body>
 
 </html>

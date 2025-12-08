@@ -12,3 +12,7 @@ Route::get('/', function () {
 
     return view('welcome', compact('projects', 'settings', 'techStacks'));
 });
+
+Route::get('/projects/{project}', function (Project $project) {
+    return response()->json($project);
+})->name('projects.show');
