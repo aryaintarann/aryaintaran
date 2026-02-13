@@ -6,11 +6,21 @@ export const profileQuery = groq`
     fullName,
     headline,
     profileImage,
+    heroImage,
     shortBio,
     email,
     location,
     fullBio,
-    resume,
+    resume {
+      asset-> {
+        url
+      }
+    },
+    portfolio {
+      asset-> {
+        url
+      }
+    },
     socialLinks,
     skills
   }

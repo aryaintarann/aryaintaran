@@ -32,6 +32,22 @@ export const profile = defineType({
             ],
         }),
         defineField({
+            name: 'heroImage',
+            title: 'Hero Image',
+            type: 'image',
+            description: "Dedicated image for the Hero section. Falls back to Profile Image if not set.",
+            options: {
+                hotspot: true,
+            },
+            fields: [
+                {
+                    name: 'alt',
+                    title: 'Alt',
+                    type: 'string',
+                },
+            ],
+        }),
+        defineField({
             name: 'shortBio',
             title: 'Short Bio',
             type: 'text',
@@ -58,36 +74,12 @@ export const profile = defineType({
             type: 'file',
         }),
         defineField({
-            name: 'socialLinks',
-            title: 'Social Links',
-            type: 'object',
-            fields: [
-                {
-                    name: 'github',
-                    title: 'Github URL',
-                    type: 'url',
-                    initialValue: 'https://github.com/',
-                },
-                {
-                    name: 'linkedin',
-                    title: 'Linkedin URL',
-                    type: 'url',
-                    initialValue: 'https://linkedin.com/in/',
-                },
-                {
-                    name: 'twitter',
-                    title: 'Twitter URL',
-                    type: 'url',
-                    initialValue: 'https://twitter.com/',
-                },
-                {
-                    name: 'twitch',
-                    title: 'Twitch URL',
-                    type: 'url',
-                    initialValue: 'https://twitch.com/',
-                },
-            ],
+            name: 'portfolio',
+            title: 'Portfolio PDF',
+            type: 'file',
+            description: 'Upload your portfolio PDF manually here.',
         }),
+
         defineField({
             name: 'skills',
             title: 'Skills',

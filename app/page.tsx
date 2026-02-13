@@ -1,14 +1,15 @@
 import { client } from "@/sanity/lib/client";
 import { profileQuery, educationQuery, jobQuery, projectQuery, contactQuery } from "@/sanity/lib/queries";
 import Hero from "./components/Hero";
+import About from "./components/About";
 import Education from "./components/Education";
 import Skills from "./components/Skills";
 import Experience from "./components/Experience";
 import Projects from "./components/Projects";
 import Contact from "./components/Contact";
 
-// Revalidate data every 60 seconds
-export const revalidate = 60;
+// Revalidate data always (dynamic)
+export const revalidate = 0;
 
 export default async function Home() {
   const profile = await client.fetch(profileQuery);
@@ -19,7 +20,8 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col">
-      <Hero profile={profile} education={education} jobs={jobs} projects={projects} />
+      <Hero profile={profile} contact={contact} />
+      <About profile={profile} education={education} jobs={jobs} projects={projects} />
       <Education education={education} />
       <Skills skills={profile?.skills || []} />
       <Experience jobs={jobs} />
