@@ -113,7 +113,6 @@ export default function Hero({ profile, contact }: HeroProps) {
                     {/* Right Image */}
                     <div className="flex-1 relative h-[50vh] md:h-screen w-full flex items-end justify-center md:justify-end hero-image z-0">
                         <div className="relative w-full h-full max-h-[800px] max-w-lg">
-                            {/* Decorative Splash/Shape behind image could go here */}
 
                             {profile?.heroImage || profile?.profileImage ? (
                                 <div className="absolute bottom-0 w-full h-[90%] md:h-[85%]">
@@ -124,7 +123,6 @@ export default function Hero({ profile, contact }: HeroProps) {
                                         className="object-contain object-bottom drop-shadow-2xl"
                                         priority
                                     />
-                                    {/* Gradient to blend bottom of image if needed, or overlay */}
                                     <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-background to-transparent"></div>
                                 </div>
                             ) : (

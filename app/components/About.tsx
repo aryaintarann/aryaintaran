@@ -22,8 +22,8 @@ export default function About({ profile, education, jobs, projects }: AboutProps
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex flex-col md:flex-row items-center gap-12">
                     {/* Profile Image */}
-                    <div className="flex-1 flex justify-center md:justify-end">
-                        <div className="relative w-64 h-64 md:w-96 md:h-96 rounded-2xl overflow-hidden border-4 border-white/10 ring-4 ring-primary/20 shadow-2xl rotate-3 hover:rotate-0 transition-transform duration-500">
+                    <div className="flex-1 flex justify-center">
+                        <div className="relative w-72 h-96 md:w-[400px] md:h-[550px] lg:w-[450px] lg:h-[600px] rounded-2xl overflow-hidden border-4 border-white/10 ring-4 ring-primary/20 shadow-2xl rotate-3 hover:rotate-0 transition-transform duration-500">
                             {profile?.profileImage ? (
                                 <Image
                                     src={urlForImage(profile.profileImage).url()}
@@ -55,7 +55,35 @@ export default function About({ profile, education, jobs, projects }: AboutProps
 
                         <div className="prose prose-invert max-w-none text-secondary mb-8">
                             {profile?.fullBio ? (
-                                <PortableText value={profile.fullBio} />
+                                <PortableText
+                                    value={profile.fullBio}
+                                    components={{
+                                        block: {
+                                            normal: ({ children }) => <p className="mb-4 leading-relaxed">{children}</p>,
+                                            justify: ({ children }) => <p className="mb-4 leading-relaxed text-justify">{children}</p>,
+                                            center: ({ children }) => <p className="mb-4 leading-relaxed text-center">{children}</p>,
+                                            right: ({ children }) => <p className="mb-4 leading-relaxed text-right">{children}</p>,
+                                            h3: ({ children }) => <h3 className="text-xl font-bold text-text mt-8 mb-4">{children}</h3>,
+                                            h4: ({ children }) => <h4 className="text-lg font-bold text-text mt-6 mb-3">{children}</h4>,
+                                            blockquote: ({ children }) => <blockquote className="border-l-4 border-primary pl-4 italic my-6 text-text/80">{children}</blockquote>,
+                                        },
+                                        list: {
+                                            bullet: ({ children }) => <ul className="list-disc pl-5 mb-4 space-y-2">{children}</ul>,
+                                            number: ({ children }) => <ol className="list-decimal pl-5 mb-4 space-y-2">{children}</ol>,
+                                        },
+                                        marks: {
+                                            link: ({ children, value }) => {
+                                                const rel = !value.href.startsWith('/') ? 'noreferrer noopener' : undefined;
+                                                return (
+                                                    <a href={value.href} rel={rel} className="text-primary hover:text-primary/80 transition-colors underline decoration-primary/30 underline-offset-4">
+                                                        {children}
+                                                    </a>
+                                                );
+                                            },
+                                            strong: ({ children }) => <strong className="font-bold text-text">{children}</strong>,
+                                        }
+                                    }}
+                                />
                             ) : (
                                 <p>{profile?.shortBio}</p>
                             )}

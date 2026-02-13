@@ -18,7 +18,6 @@ const components = {
 };
 
 export default function Education({ education }: EducationProps) {
-    // if (!education || education.length === 0) return null;
 
     return (
         <section id="education" className="py-20 bg-surface/50">

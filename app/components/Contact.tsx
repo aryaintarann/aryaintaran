@@ -19,7 +19,6 @@ export default function Contact({ email, contactData }: ContactProps) {
     const displayEmail = contactData?.email || email || 'hello@example.com';
     const title = contactData?.title || 'Get In Touch';
     const description = contactData?.description || "I'm currently looking for new opportunities. Whether you have a question or just want to say hi, I'll try my best to get back to you!";
-    const buttonText = contactData?.buttonText || 'Say Hello';
 
 
     const socialLinks = [
@@ -56,7 +55,6 @@ export default function Contact({ email, contactData }: ContactProps) {
                     href={`mailto:${displayEmail}`}
                     className="inline-block px-8 py-4 bg-primary text-background font-bold rounded-lg hover:bg-opacity-90 transition-all transform hover:scale-105"
                 >
-                    {buttonText}
                 </a>
             </div>
         </section>

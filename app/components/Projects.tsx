@@ -9,7 +9,6 @@ interface ProjectsProps {
 }
 
 export default function Projects({ projects }: ProjectsProps) {
-    // if (!projects || projects.length === 0) return null;
 
     return (
         <section id="projects" className="py-20 bg-background">

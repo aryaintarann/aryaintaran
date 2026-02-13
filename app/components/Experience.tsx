@@ -8,7 +8,6 @@ interface ExperienceProps {
 }
 
 export default function Experience({ jobs }: ExperienceProps) {
-    // if (!jobs || jobs.length === 0) return null;
 
     return (
         <section id="experience" className="py-20 bg-surface/50">

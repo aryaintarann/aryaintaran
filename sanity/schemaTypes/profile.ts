@@ -66,7 +66,18 @@ export const profile = defineType({
             name: 'fullBio',
             title: 'Full Bio',
             type: 'array',
-            of: [{ type: 'block' }],
+            of: [{
+                type: 'block',
+                styles: [
+                    { title: 'Normal', value: 'normal' },
+                    { title: 'H3', value: 'h3' },
+                    { title: 'H4', value: 'h4' },
+                    { title: 'Quote', value: 'blockquote' },
+                    { title: 'Justify', value: 'justify' },
+                    { title: 'Center', value: 'center' },
+                    { title: 'Right', value: 'right' },
+                ]
+            }],
         }),
         defineField({
             name: 'resume',
