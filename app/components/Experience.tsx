@@ -18,7 +18,7 @@ export default function Experience({ jobs }: ExperienceProps) {
                 ) : (
                     <div className="space-y-12">
                         {jobs.map((job) => (
-                            <div key={job._id} className="group bg-background p-8 rounded-xl border border-white/5 hover:border-primary/20 transition-all">
+                            <div key={job._id} className="group bg-background p-6 md:p-8 rounded-xl border border-white/5 hover:border-primary/20 transition-all">
                                 <div className="flex flex-col md:flex-row gap-6">
                                     <div className="flex-shrink-0">
                                         {job.logo ? (

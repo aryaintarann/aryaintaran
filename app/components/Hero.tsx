@@ -78,12 +78,13 @@ export default function Hero({ profile, contact }: HeroProps) {
 
                     {/* Left Content */}
                     <div className="flex-1 z-10 text-center md:text-left pt-12 md:pt-0">
-                        <div className="flex items-center justify-center md:justify-start gap-4 mb-6 hero-text-element">
+                        <div className="flex items-center justify-center md:justify-start gap-4 mb-6 hero-text-element w-full">
                             <span className="w-8 h-[2px] bg-secondary inline-block"></span>
                             <span className="text-secondary font-medium tracking-widest text-sm uppercase">Hello</span>
+                            <span className="w-8 h-[2px] bg-secondary inline-block md:hidden"></span>
                         </div>
 
-                        <h1 className="hero-text-element text-3xl sm:text-4xl lg:text-6xl font-black text-text mb-4 tracking-tight leading-tight whitespace-nowrap">
+                        <h1 className="hero-text-element text-3xl sm:text-4xl lg:text-6xl font-black text-text mb-4 tracking-tight leading-tight whitespace-normal sm:whitespace-nowrap">
                             <span className="text-text">I'm </span>
                             <span className="text-primary">{profile?.fullName}</span>
                         </h1>

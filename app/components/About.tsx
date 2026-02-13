@@ -23,7 +23,7 @@ export default function About({ profile, education, jobs, projects }: AboutProps
                 <div className="flex flex-col md:flex-row items-center gap-12">
                     {/* Profile Image */}
                     <div className="flex-1 flex justify-center">
-                        <div className="relative w-72 h-96 md:w-[400px] md:h-[550px] lg:w-[450px] lg:h-[600px] rounded-2xl overflow-hidden border-4 border-white/10 ring-4 ring-primary/20 shadow-2xl rotate-3 hover:rotate-0 transition-transform duration-500">
+                        <div className="relative w-72 h-96 md:w-[400px] md:h-[550px] lg:w-[450px] lg:h-[600px] rounded-2xl overflow-hidden border-4 border-white/10 ring-4 ring-primary/20 shadow-2xl transition-transform duration-500 hover:scale-105">
                             {profile?.profileImage ? (
                                 <Image
                                     src={urlForImage(profile.profileImage).url()}
