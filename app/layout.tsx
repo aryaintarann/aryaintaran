@@ -7,10 +7,47 @@ import Footer from "./components/Footer";
 const inter = Inter({ subsets: ["latin"], variable: '--font-inter' });
 
 export const metadata: Metadata = {
-  title: "Arya Intaran - Portfolio",
-  description: "Professional Portfolio of Arya Intaran",
-  icons: {
-    icon: '/icon.png',
+  metadataBase: new URL('https://aryaintaran.com'), // Replace with actual domain
+  title: {
+    default: "Arya Intaran - Portfolio",
+    template: "%s | Arya Intaran"
+  },
+  description: "Professional Portfolio of Arya Intaran - Website Developer & IT Support based in Bali.",
+  keywords: ["Arya Intaran", "Web Developer", "IT Support", "Bali", "Portfolio", "Frontend Developer", "Next.js", "React"],
+  authors: [{ name: "Arya Intaran" }],
+  creator: "Arya Intaran",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://aryaintaran.dev",
+    title: "Arya Intaran - Portfolio",
+    description: "Professional Portfolio of Arya Intaran - Website Developer & IT Support based in Bali.",
+    siteName: "Arya Intaran",
+    images: [
+      {
+        url: "/og-image.jpg", // Needs to be added to public folder ideally
+        width: 1200,
+        height: 630,
+        alt: "Arya Intaran Portfolio",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Arya Intaran - Portfolio",
+    description: "Professional Portfolio of Arya Intaran - Website Developer & IT Support based in Bali.",
+    images: ["/og-image.jpg"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 };
 
