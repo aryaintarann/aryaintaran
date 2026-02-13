@@ -7,7 +7,7 @@ import Footer from "./components/Footer";
 const inter = Inter({ subsets: ["latin"], variable: '--font-inter' });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://aryaintaran.com'), // Replace with actual domain
+  metadataBase: new URL('https://aryaintaran.dev'),
   title: {
     default: "Arya Intaran - Portfolio",
     template: "%s | Arya Intaran"
@@ -25,10 +25,10 @@ export const metadata: Metadata = {
     siteName: "Arya Intaran",
     images: [
       {
-        url: "/og-image.jpg", // Needs to be added to public folder ideally
+        url: "/logo.png",
         width: 1200,
         height: 630,
-        alt: "Arya Intaran Portfolio",
+        alt: "Arya Intaran Logo",
       },
     ],
   },
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Arya Intaran - Portfolio",
     description: "Professional Portfolio of Arya Intaran - Website Developer & IT Support based in Bali.",
-    images: ["/og-image.jpg"],
+    images: ["/logo.png"],
   },
   robots: {
     index: true,
