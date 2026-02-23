@@ -11,6 +11,44 @@ import {
 
 const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
 
+interface EducationItem {
+    schoolName?: string;
+    degree?: string;
+    fieldOfStudy?: string;
+    startDate?: string;
+    endDate?: string;
+}
+
+interface JobItem {
+    jobTitle?: string;
+    name?: string;
+    startDate?: string;
+    endDate?: string;
+    description?: string;
+}
+
+interface ProjectItem {
+    title?: string;
+    shortDescription?: string;
+    tags?: string[];
+}
+
+interface ContactInfo {
+    email?: string;
+    whatsapp?: string;
+    linkedin?: string;
+    github?: string;
+    instagram?: string;
+}
+
+interface ProfileInfo {
+    fullName?: string;
+    headline?: string;
+    shortBio?: string;
+    location?: string;
+    skills?: string[];
+}
+
 async function buildSystemPrompt(): Promise<string> {
     const [profile, education, jobs, projects, contact] = await Promise.all([
         client.fetch(profileQuery),
@@ -18,30 +56,40 @@ async function buildSystemPrompt(): Promise<string> {
         client.fetch(jobQuery),
         client.fetch(projectQuery),
         client.fetch(contactQuery),
-    ]);
+    ]) as [ProfileInfo, EducationItem[], JobItem[], ProjectItem[], ContactInfo];
 
     const skillsList = profile?.skills?.join(", ") || "Belum ada data";
+
+    const formatYear = (value?: string) => {
+        if (!value) return "Sekarang";
+        return new Date(value).getFullYear();
+    };
+
+    const formatMonthYear = (value?: string) => {
+        if (!value) return "Sekarang";
+        return new Date(value).toLocaleDateString("id-ID", { month: "short", year: "numeric" });
+    };
 
     const educationList =
         education
             ?.map(
-                (edu: any) =>
-                    `- ${edu.schoolName}: ${edu.degree} in ${edu.fieldOfStudy} (${new Date(edu.startDate).getFullYear()} - ${edu.endDate ? new Date(edu.endDate).getFullYear() : "Sekarang"})`
+                (edu: EducationItem) =>
+                    `- ${edu.schoolName}: ${edu.degree} in ${edu.fieldOfStudy} (${formatYear(edu.startDate)} - ${formatYear(edu.endDate)})`
             )
             .join("\n") || "Belum ada data";
 
     const jobsList =
         jobs
             ?.map(
-                (job: any) =>
-                    `- ${job.jobTitle} di ${job.name} (${new Date(job.startDate).toLocaleDateString("id-ID", { month: "short", year: "numeric" })} - ${job.endDate ? new Date(job.endDate).toLocaleDateString("id-ID", { month: "short", year: "numeric" }) : "Sekarang"}): ${job.description || ""}`
+                (job: JobItem) =>
+                    `- ${job.jobTitle} di ${job.name} (${formatMonthYear(job.startDate)} - ${formatMonthYear(job.endDate)}): ${job.description || ""}`
             )
             .join("\n") || "Belum ada data";
 
     const projectsList =
         projects
             ?.map(
-                (project: any) =>
+                (project: ProjectItem) =>
                     `- ${project.title}: ${project.shortDescription || ""} [Tags: ${project.tags?.join(", ") || "-"}]`
             )
             .join("\n") || "Belum ada data";
@@ -122,10 +170,11 @@ export async function POST(req: NextRequest) {
                     systemInstruction: systemPrompt,
                 },
             });
-        } catch (apiError: any) {
-            console.error("Gemini API Error:", apiError?.status, apiError?.message);
+        } catch (apiError: unknown) {
+            const apiErrorInfo = apiError as { status?: number; message?: string };
+            console.error("Gemini API Error:", apiErrorInfo.status, apiErrorInfo.message);
 
-            if (apiError?.status === 429) {
+            if (apiErrorInfo.status === 429) {
                 return Response.json(
                     { error: "rate_limit", message: "Quota API habis. Silakan coba lagi dalam beberapa menit 😊" },
                     { status: 429 }
@@ -133,18 +182,19 @@ export async function POST(req: NextRequest) {
             }
 
             return Response.json(
-                { error: apiError.message || "AI service error" },
-                { status: apiError?.status || 500 }
+                { error: apiErrorInfo.message || "AI service error" },
+                { status: apiErrorInfo.status || 500 }
             );
         }
 
         const text = result.text || "";
 
         return Response.json({ text });
-    } catch (error: any) {
-        console.error("Chat API Error:", error);
+    } catch (error: unknown) {
+        const errorInfo = error as { message?: string };
+        console.error("Chat API Error:", errorInfo);
         return Response.json(
-            { error: error.message || "Internal server error" },
+            { error: errorInfo.message || "Internal server error" },
             { status: 500 }
         );
     }

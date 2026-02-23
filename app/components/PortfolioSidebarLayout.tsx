@@ -1,15 +1,22 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { PortableText } from "next-sanity";
-import { urlForImage } from "@/sanity/lib/image";
 import gsap from "gsap";
+import { urlForImage } from "@/sanity/lib/image";
+import HomeTab from "./tabs/HomeTab";
+import AboutTab from "./tabs/AboutTab";
+import CareerTab from "./tabs/CareerTab";
+import AchievementTab from "./tabs/AchievementTab";
+import ProjectsTab from "./tabs/ProjectsTab";
+import GithubTab from "./tabs/GithubTab";
+import ContactTab from "@/app/components/tabs/ContactTab";
+import type { ContactData, EducationData, JobData, ProfileData, ProjectData, TranslationText } from "./tabs/types";
 
 type MenuKey =
     | "home"
     | "about"
+    | "career"
     | "achievement"
     | "project"
     | "personal-project"
@@ -17,11 +24,11 @@ type MenuKey =
     | "contact";
 
 interface PortfolioSidebarLayoutProps {
-    profile: any;
-    education: any[];
-    jobs: any[];
-    projects: any[];
-    contact: any;
+    profile: ProfileData;
+    education: EducationData[];
+    jobs: JobData[];
+    projects: ProjectData[];
+    contact: ContactData;
 }
 
 const languageText = {
@@ -29,6 +36,7 @@ const languageText = {
         menu: {
             home: "Home",
             about: "About",
+            career: "Karir",
             achievement: "Achievement & Certification",
             project: "Project",
             personalProject: "Personal Project",
@@ -38,16 +46,25 @@ const languageText = {
         settings: "Pengaturan",
         language: "Bahasa",
         theme: "Tema",
-        light: "Light",
-        dark: "Dark",
         homeTitle: "Selamat Datang",
-        homeDescription: "Ini adalah ringkasan profil saya.",
-        summaryTitle: "Summary",
         hardSkillsTitle: "Hard Skills",
         softSkillsTitle: "Soft Skills",
         hardSkillsEmpty: "Belum ada hard skill.",
         softSkillsEmpty: "Belum ada soft skill.",
         aboutTitle: "Tentang Saya",
+        educationTitle: "Edukasi",
+        careerTitle: "Karir",
+        careerEmpty: "Belum ada data karir.",
+        educationDetailLabel: "Show detail",
+        hideDetailLabel: "Hide detail",
+        careerWorkedOnTitle: "Apa yang Saya Kerjakan",
+        careerNoWorkedOn: "Belum ada detail pekerjaan.",
+        organizationExperienceTitle: "Pengalaman Organisasi",
+        whatILearnedTitle: "Apa yang Saya Pelajari",
+        achievementsTitle: "Prestasi",
+        noOrganizationExperience: "Belum ada pengalaman organisasi.",
+        noLearnedItems: "Belum ada catatan pembelajaran.",
+        noAchievements: "Belum ada prestasi.",
         achievementTitle: "Achievement & Certification",
         achievementEmpty: "Belum ada data achievement atau sertifikasi.",
         projectTitle: "Project",
@@ -55,6 +72,12 @@ const languageText = {
         personalProjectTitle: "Personal Project",
         personalProjectEmpty: "Belum ada personal project.",
         githubTitle: "GitHub",
+        githubContributionsTitle: "GitHub Contributions",
+        githubRepositoriesTitle: "Repository Saya",
+        githubLoading: "Memuat data GitHub...",
+        githubFailed: "Gagal memuat data GitHub.",
+        githubNoProfile: "URL profil GitHub belum diisi.",
+        githubNoRepositories: "Belum ada repository publik yang bisa ditampilkan.",
         githubEmpty: "Belum ada tautan repository GitHub pada data project.",
         contactTitle: "Contact",
         openProject: "Lihat Project",
@@ -65,6 +88,7 @@ const languageText = {
         menu: {
             home: "Home",
             about: "About",
+            career: "Career",
             achievement: "Achievement & Certification",
             project: "Project",
             personalProject: "Personal Project",
@@ -74,16 +98,25 @@ const languageText = {
         settings: "Settings",
         language: "Language",
         theme: "Theme",
-        light: "Light",
-        dark: "Dark",
         homeTitle: "Welcome",
-        homeDescription: "This is a quick overview of my profile.",
-        summaryTitle: "Summary",
         hardSkillsTitle: "Hard Skills",
         softSkillsTitle: "Soft Skills",
         hardSkillsEmpty: "No hard skills yet.",
         softSkillsEmpty: "No soft skills yet.",
         aboutTitle: "About Me",
+        educationTitle: "Education",
+        careerTitle: "Career",
+        careerEmpty: "No career data yet.",
+        educationDetailLabel: "Show detail",
+        hideDetailLabel: "Hide detail",
+        careerWorkedOnTitle: "What I Worked On",
+        careerNoWorkedOn: "No work details yet.",
+        organizationExperienceTitle: "Organization Experience",
+        whatILearnedTitle: "What I Learned",
+        achievementsTitle: "Achievements",
+        noOrganizationExperience: "No organization experience yet.",
+        noLearnedItems: "No learning notes yet.",
+        noAchievements: "No achievements yet.",
         achievementTitle: "Achievement & Certification",
         achievementEmpty: "No achievement or certification data yet.",
         projectTitle: "Project",
@@ -91,6 +124,12 @@ const languageText = {
         personalProjectTitle: "Personal Project",
         personalProjectEmpty: "No personal projects yet.",
         githubTitle: "GitHub",
+        githubContributionsTitle: "GitHub Contributions",
+        githubRepositoriesTitle: "My Repositories",
+        githubLoading: "Loading GitHub data...",
+        githubFailed: "Failed to load GitHub data.",
+        githubNoProfile: "GitHub profile URL is not configured yet.",
+        githubNoRepositories: "No public repositories available to display.",
         githubEmpty: "No project repository links have been added yet.",
         contactTitle: "Contact",
         openProject: "View Project",
@@ -107,24 +146,29 @@ export default function PortfolioSidebarLayout({
     contact,
 }: PortfolioSidebarLayoutProps) {
     const [activeMenu, setActiveMenu] = useState<MenuKey>("home");
-    const [language, setLanguage] = useState<"id" | "en">("id");
-    const [theme, setTheme] = useState<"light" | "dark">("dark");
+    const [language, setLanguage] = useState<"id" | "en">(() => {
+        if (typeof window === "undefined") return "id";
+        const savedLanguage = window.localStorage.getItem("portfolio-language");
+        return savedLanguage === "en" ? "en" : "id";
+    });
+    const [theme, setTheme] = useState<"light" | "dark">(() => {
+        if (typeof window === "undefined") return "dark";
+        const savedTheme = window.localStorage.getItem("portfolio-theme");
+        return savedTheme === "light" ? "light" : "dark";
+    });
     const [openSettings, setOpenSettings] = useState(false);
     const settingsPanelRef = useRef<HTMLDivElement>(null);
+    const menuNavRef = useRef<HTMLElement>(null);
+    const menuButtonRefs = useRef<Partial<Record<MenuKey, HTMLButtonElement | null>>>({});
+    const [menuIndicatorStyle, setMenuIndicatorStyle] = useState<{ top: number; height: number; opacity: number }>(
+        {
+            top: 0,
+            height: 0,
+            opacity: 0,
+        }
+    );
 
     const t = languageText[language];
-
-    useEffect(() => {
-        const savedTheme = window.localStorage.getItem("portfolio-theme");
-        const savedLanguage = window.localStorage.getItem("portfolio-language");
-
-        if (savedTheme === "light" || savedTheme === "dark") {
-            setTheme(savedTheme);
-        }
-        if (savedLanguage === "id" || savedLanguage === "en") {
-            setLanguage(savedLanguage);
-        }
-    }, []);
 
     useEffect(() => {
         document.documentElement.setAttribute("data-theme", theme);
@@ -164,6 +208,28 @@ export default function PortfolioSidebarLayout({
         });
     }, [openSettings]);
 
+    useEffect(() => {
+        const syncMenuIndicator = () => {
+            const nav = menuNavRef.current;
+            const activeButton = menuButtonRefs.current[activeMenu];
+
+            if (!nav || !activeButton) {
+                setMenuIndicatorStyle((prev) => ({ ...prev, opacity: 0 }));
+                return;
+            }
+
+            setMenuIndicatorStyle({
+                top: activeButton.offsetTop + 4,
+                height: Math.max(activeButton.offsetHeight - 8, 0),
+                opacity: 1,
+            });
+        };
+
+        syncMenuIndicator();
+        window.addEventListener("resize", syncMenuIndicator);
+        return () => window.removeEventListener("resize", syncMenuIndicator);
+    }, [activeMenu]);
+
     const personalProjects = useMemo(
         () =>
             (projects || []).filter((project) =>
@@ -185,123 +251,18 @@ export default function PortfolioSidebarLayout({
         () =>
             (projects || []).filter((project) =>
                 (project?.tags || []).some((tag: string) =>
-                    /(achievement|sertification|certification|certificate|award|sertifikat)/i.test(tag)
+                    /(certificate|certification|sertifikat|piagam)/i.test(tag)
                 )
             ),
         [projects]
     );
 
-    const githubRepositories = useMemo(
-        () =>
-            (projects || []).filter(
-                (project) => typeof project?.githubLink === "string" && project.githubLink.length > 0
-            ),
-        [projects]
-    );
-
-    const allSkills = useMemo(
-        () => (profile?.skills || []).filter((skill: string) => typeof skill === "string" && skill.trim().length > 0),
-        [profile?.skills]
-    );
-
-    const hardSkillRegex = /(html|css|javascript|typescript|react|next|node|express|python|java|php|laravel|mysql|postgres|mongodb|docker|git|tailwind|figma|ui|ux|api|sql|firebase|supabase|aws|linux|c\+\+|c#|go|kotlin|swift)/i;
-    const softSkillRegex = /(communication|teamwork|leadership|problem solving|time management|adaptability|critical thinking|collaboration|creativity|public speaking|manajemen waktu|komunikasi|kerja sama|kepemimpinan|adaptasi|problem solving)/i;
-
-    const hardSkills = useMemo(
-        () => allSkills.filter((skill: string) => hardSkillRegex.test(skill)),
-        [allSkills]
-    );
-
-    const softSkills = useMemo(() => {
-        const explicitSoft = allSkills.filter((skill: string) => softSkillRegex.test(skill));
-        if (explicitSoft.length > 0) return explicitSoft;
-        return allSkills.filter((skill: string) => !hardSkillRegex.test(skill));
-    }, [allSkills]);
-
-    const getSkillLogoText = (skill: string) => {
-        const clean = skill.replace(/[^a-zA-Z0-9+.#]/g, " ").trim();
-        if (!clean) return "SK";
-        const parts = clean.split(/\s+/);
-        if (parts.length === 1) {
-            return parts[0].slice(0, 2).toUpperCase();
-        }
-        return `${parts[0][0] || ""}${parts[1][0] || ""}`.toUpperCase();
-    };
-
-    const getHardSkillIcon = (skill: string) => {
-        const normalized = skill
-            .toLowerCase()
-            .trim()
-            .replace(/[()]/g, "")
-            .replace(/\./g, "")
-            .replace(/\s+/g, " ");
-
-        const iconByToken: Array<{ tokens: string[]; icon: string }> = [
-            { tokens: ["html", "html5"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" },
-            { tokens: ["css", "css3"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" },
-            { tokens: ["bootstrap"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bootstrap/bootstrap-original.svg" },
-            { tokens: ["tailwind", "tailwind css"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg" },
-            { tokens: ["sass", "scss"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/sass/sass-original.svg" },
-            { tokens: ["javascript", "js", "ecmascript"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" },
-            { tokens: ["typescript", "ts"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" },
-            { tokens: ["react", "reactjs"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" },
-            { tokens: ["redux"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redux/redux-original.svg" },
-            { tokens: ["next", "nextjs", "next js"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg" },
-            { tokens: ["vue", "vuejs"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vuejs/vuejs-original.svg" },
-            { tokens: ["nuxt", "nuxtjs"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nuxtjs/nuxtjs-original.svg" },
-            { tokens: ["angular"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/angularjs/angularjs-original.svg" },
-            { tokens: ["node", "nodejs", "node js"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" },
-            { tokens: ["express", "expressjs"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg" },
-            { tokens: ["nestjs", "nest"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nestjs/nestjs-original.svg" },
-            { tokens: ["php"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg" },
-            { tokens: ["laravel"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-original.svg" },
-            { tokens: ["python"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" },
-            { tokens: ["django"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/django/django-plain.svg" },
-            { tokens: ["flask"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/flask/flask-original.svg" },
-            { tokens: ["java"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" },
-            { tokens: ["spring"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original.svg" },
-            { tokens: ["kotlin"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kotlin/kotlin-original.svg" },
-            { tokens: ["swift"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/swift/swift-original.svg" },
-            { tokens: ["go", "golang"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-original.svg" },
-            { tokens: ["rust"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/rust/rust-original.svg" },
-            { tokens: ["c#", "csharp"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/csharp/csharp-original.svg" },
-            { tokens: ["c++", "cpp"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg" },
-            { tokens: ["mysql"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" },
-            { tokens: ["postgresql", "postgres"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg" },
-            { tokens: ["sqlite"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/sqlite/sqlite-original.svg" },
-            { tokens: ["mongodb"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg" },
-            { tokens: ["redis"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redis/redis-original.svg" },
-            { tokens: ["docker"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg" },
-            { tokens: ["kubernetes", "k8s"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kubernetes/kubernetes-plain.svg" },
-            { tokens: ["git"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" },
-            { tokens: ["github"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" },
-            { tokens: ["gitlab"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/gitlab/gitlab-original.svg" },
-            { tokens: ["figma"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg" },
-            { tokens: ["firebase"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firebase/firebase-plain.svg" },
-            { tokens: ["supabase"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/supabase/supabase-original.svg" },
-            { tokens: ["linux"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg" },
-            { tokens: ["ubuntu"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/ubuntu/ubuntu-plain.svg" },
-            { tokens: ["vscode", "visual studio code"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg" },
-            { tokens: ["postman"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postman/postman-original.svg" },
-            { tokens: ["npm"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/npm/npm-original-wordmark.svg" },
-            { tokens: ["yarn"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/yarn/yarn-original.svg" },
-            { tokens: ["pnpm"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pnpm/pnpm-original.svg" },
-            { tokens: ["webpack"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/webpack/webpack-original.svg" },
-            { tokens: ["vite"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vitejs/vitejs-original.svg" },
-            { tokens: ["graphql"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/graphql/graphql-plain.svg" },
-            { tokens: ["aws"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original-wordmark.svg" },
-        ];
-
-        const matched = iconByToken.find(({ tokens }) =>
-            tokens.some((token) => normalized === token || normalized.includes(token))
-        );
-
-        return matched?.icon || null;
-    };
+    const tabText: TranslationText = t;
 
     const menuItems: { key: MenuKey; label: string }[] = [
         { key: "home", label: t.menu.home },
         { key: "about", label: t.menu.about },
+        { key: "career", label: t.menu.career },
         { key: "achievement", label: t.menu.achievement },
         { key: "project", label: t.menu.project },
         { key: "personal-project", label: t.menu.personalProject },
@@ -309,49 +270,45 @@ export default function PortfolioSidebarLayout({
         { key: "contact", label: t.menu.contact },
     ];
 
-    const renderProjectCard = (project: any) => (
-        <div
-            key={project._id}
-            className="rounded-xl border border-white/10 bg-surface p-5 transition-colors hover:border-primary/40"
-        >
-            <h3 className="text-lg font-semibold text-text">{project.title}</h3>
-            {project.shortDescription && (
-                <p className="mt-2 text-sm text-secondary">{project.shortDescription}</p>
-            )}
-            <div className="mt-4 flex flex-wrap gap-2">
-                {project.tags?.map((tag: string, index: number) => (
-                    <span key={`${project._id}-${index}`} className="rounded-full bg-background px-3 py-1 text-xs text-secondary">
-                        {tag}
-                    </span>
-                ))}
-            </div>
-            <div className="mt-4 flex flex-wrap gap-3">
-                {project.slug?.current && (
-                    <Link
-                        href={`/projects/${project.slug.current}`}
-                        className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-background"
-                    >
-                        {t.openProject}
-                    </Link>
-                )}
-                {project.githubLink && (
-                    <a
-                        href={project.githubLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="rounded-md border border-white/15 px-4 py-2 text-sm font-medium text-text hover:border-primary/50"
-                    >
-                        {t.openRepo}
-                    </a>
-                )}
-            </div>
-        </div>
-    );
+    const renderActiveTab = () => {
+        switch (activeMenu) {
+            case "home":
+                return <HomeTab profile={profile} t={tabText} />;
+            case "about":
+                return <AboutTab profile={profile} education={education} t={tabText} />;
+            case "career":
+                return <CareerTab jobs={jobs} t={tabText} />;
+            case "achievement":
+                return <AchievementTab achievementItems={achievementItems} t={tabText} />;
+            case "project":
+                return (
+                    <ProjectsTab
+                        title={t.projectTitle}
+                        projects={mainProjects}
+                        emptyText={t.projectEmpty}
+                    />
+                );
+            case "personal-project":
+                return (
+                    <ProjectsTab
+                        title={t.personalProjectTitle}
+                        projects={personalProjects}
+                        emptyText={t.personalProjectEmpty}
+                    />
+                );
+            case "github":
+                return <GithubTab contact={contact} t={tabText} />;
+            case "contact":
+                return <ContactTab contact={contact} profile={profile} sendEmail={tabText.sendEmail} title={tabText.contactTitle} />;
+            default:
+                return null;
+        }
+    };
 
     return (
-        <div className="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-6 px-4 py-6 md:flex-row md:px-6 lg:px-8">
+        <div className="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-6 px-4 py-6 md:flex-row md:gap-0 md:px-6 lg:px-8">
             <aside className="md:sticky md:top-6 md:h-[calc(100vh-3rem)] md:w-80 md:shrink-0">
-                <div className="flex h-full flex-col rounded-2xl border border-white/10 bg-surface p-5">
+            <div className="flex h-full flex-col rounded-2xl bg-surface p-5">
                     <div className="mb-6 flex flex-col items-center text-center">
                         <div className="relative h-24 w-24 overflow-hidden rounded-full border border-white/20 bg-background">
                             {profile?.profileImage ? (
@@ -432,21 +389,36 @@ export default function PortfolioSidebarLayout({
                         </div>
                     </div>
 
-                    <nav className="flex flex-col gap-2 text-center">
+                    <div className="mb-4 border-t border-white/10" aria-hidden="true"></div>
+
+                    <nav ref={menuNavRef} className="relative flex flex-col gap-2 pl-3">
+                        <span
+                            aria-hidden="true"
+                            className="pointer-events-none absolute left-0 w-1.5 rounded-full bg-primary transition-all duration-300 ease-out"
+                            style={{
+                                top: `${menuIndicatorStyle.top}px`,
+                                height: `${menuIndicatorStyle.height}px`,
+                                opacity: menuIndicatorStyle.opacity,
+                            }}
+                        ></span>
                         {menuItems.map((item) => {
                             const active = activeMenu === item.key;
                             return (
                                 <button
                                     key={item.key}
+                                    ref={(element) => {
+                                        menuButtonRefs.current[item.key] = element;
+                                    }}
                                     type="button"
                                     onClick={() => setActiveMenu(item.key)}
-                                    className={`w-full rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
+                                    aria-current={active ? "page" : undefined}
+                                    className={`group relative z-10 flex w-full items-center gap-3 rounded-lg border px-4 py-3 text-left text-sm transition-all duration-300 ${
                                         active
-                                            ? "bg-primary text-background"
-                                            : "bg-background text-text hover:bg-background/70"
+                                            ? "border-primary/40 bg-primary/20 font-semibold text-primary"
+                                            : "border-transparent bg-background text-text hover:border-white/10 hover:bg-background/70"
                                     }`}
                                 >
-                                    {item.label}
+                                    <span>{item.label}</span>
                                 </button>
                             );
                         })}
@@ -454,190 +426,10 @@ export default function PortfolioSidebarLayout({
                 </div>
             </aside>
 
-            <section className="min-w-0 flex-1 rounded-2xl border border-white/10 bg-background p-5 md:p-8">
-                {activeMenu === "home" && (
-                    <div>
-                        <h1 className="text-3xl font-bold text-text">{t.homeTitle}</h1>
-                        <p className="mt-2 text-secondary">{t.homeDescription}</p>
+            <div className="mx-4 hidden w-px self-stretch bg-white/10 md:block lg:mx-6" aria-hidden="true"></div>
 
-                        <div className="mt-7 rounded-xl border border-white/10 bg-surface p-5">
-                            <h2 className="text-lg font-semibold text-text">{t.summaryTitle}</h2>
-                            <p className="mt-3 text-sm leading-relaxed text-secondary">{profile?.shortBio || profile?.headline}</p>
-                        </div>
-
-                        <div className="mt-8">
-                            <h2 className="text-xl font-semibold text-text">{t.hardSkillsTitle}</h2>
-                            {hardSkills.length > 0 ? (
-                                <div className="mt-4 grid grid-cols-4 gap-4 sm:grid-cols-5 lg:grid-cols-7">
-                                    {hardSkills.map((skill: string, index: number) => (
-                                        <div
-                                            key={`${skill}-${index}`}
-                                            className="group flex items-center justify-center"
-                                            title={skill}
-                                        >
-                                            <div className="flex h-14 w-14 items-center justify-center transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-110">
-                                                {getHardSkillIcon(skill) ? (
-                                                    <img
-                                                        src={getHardSkillIcon(skill) || ""}
-                                                        alt={skill}
-                                                        className="h-12 w-12 object-contain"
-                                                        loading="lazy"
-                                                    />
-                                                ) : (
-                                                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-surface text-xs font-bold uppercase text-primary">
-                                                        {getSkillLogoText(skill)}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <p className="mt-3 text-sm text-secondary">{t.hardSkillsEmpty}</p>
-                            )}
-                        </div>
-
-                        <div className="mt-8">
-                            <h2 className="text-xl font-semibold text-text">{t.softSkillsTitle}</h2>
-                            {softSkills.length > 0 ? (
-                                <div className="mt-4 flex flex-wrap gap-2">
-                                    {softSkills.map((skill: string, index: number) => (
-                                        <span
-                                            key={`${skill}-soft-${index}`}
-                                            className="rounded-full border border-white/20 px-4 py-2 text-sm text-secondary"
-                                        >
-                                            {skill}
-                                        </span>
-                                    ))}
-                                </div>
-                            ) : (
-                                <p className="mt-3 text-sm text-secondary">{t.softSkillsEmpty}</p>
-                            )}
-                        </div>
-                    </div>
-                )}
-
-                {activeMenu === "about" && (
-                    <div>
-                        <h2 className="text-3xl font-bold text-text">{t.aboutTitle}</h2>
-                        {profile?.location && <p className="mt-2 text-primary">{profile.location}</p>}
-
-                        <div className="prose prose-invert mt-5 max-w-none text-secondary">
-                            {profile?.fullBio ? <PortableText value={profile.fullBio} /> : <p>{profile?.shortBio}</p>}
-                        </div>
-
-                        {!!jobs?.length && (
-                            <div className="mt-8 space-y-4">
-                                {jobs.map((job) => (
-                                    <div key={job._id} className="rounded-lg border border-white/10 bg-surface p-4">
-                                        <p className="text-lg font-semibold text-text">{job.jobTitle}</p>
-                                        <p className="text-sm text-secondary">{job.name}</p>
-                                        <p className="mt-2 text-sm text-secondary">{job.description}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                )}
-
-                {activeMenu === "achievement" && (
-                    <div>
-                        <h2 className="text-3xl font-bold text-text">{t.achievementTitle}</h2>
-                        <div className="mt-6 space-y-4">
-                            {(achievementItems.length > 0 ? achievementItems : education || []).map((item: any) => (
-                                <div
-                                    key={item._id}
-                                    className="rounded-lg border border-white/10 bg-surface p-4 text-secondary"
-                                >
-                                    <p className="font-semibold text-text">{item.title || item.schoolName}</p>
-                                    {item.shortDescription && <p className="mt-2 text-sm">{item.shortDescription}</p>}
-                                    {item.degree && (
-                                        <p className="mt-2 text-sm">
-                                            {item.degree} {item.fieldOfStudy ? `- ${item.fieldOfStudy}` : ""}
-                                        </p>
-                                    )}
-                                </div>
-                            ))}
-                            {achievementItems.length === 0 && (!education || education.length === 0) && (
-                                <p className="text-secondary">{t.achievementEmpty}</p>
-                            )}
-                        </div>
-                    </div>
-                )}
-
-                {activeMenu === "project" && (
-                    <div>
-                        <h2 className="text-3xl font-bold text-text">{t.projectTitle}</h2>
-                        <div className="mt-6 grid gap-4 md:grid-cols-2">
-                            {mainProjects.length > 0 ? mainProjects.map(renderProjectCard) : <p className="text-secondary">{t.projectEmpty}</p>}
-                        </div>
-                    </div>
-                )}
-
-                {activeMenu === "personal-project" && (
-                    <div>
-                        <h2 className="text-3xl font-bold text-text">{t.personalProjectTitle}</h2>
-                        <div className="mt-6 grid gap-4 md:grid-cols-2">
-                            {personalProjects.length > 0
-                                ? personalProjects.map(renderProjectCard)
-                                : <p className="text-secondary">{t.personalProjectEmpty}</p>}
-                        </div>
-                    </div>
-                )}
-
-                {activeMenu === "github" && (
-                    <div>
-                        <h2 className="text-3xl font-bold text-text">{t.githubTitle}</h2>
-                        {contact?.github && (
-                            <a
-                                href={contact.github}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="mt-4 inline-flex rounded-md bg-primary px-4 py-2 text-sm font-medium text-background"
-                            >
-                                {contact.github}
-                            </a>
-                        )}
-
-                        <div className="mt-6 space-y-3">
-                            {githubRepositories.length > 0 ? (
-                                githubRepositories.map((project) => (
-                                    <a
-                                        key={project._id}
-                                        href={project.githubLink}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="block rounded-lg border border-white/10 bg-surface p-4 text-text hover:border-primary/40"
-                                    >
-                                        <p className="font-semibold">{project.title}</p>
-                                        <p className="mt-1 text-sm text-secondary">{project.githubLink}</p>
-                                    </a>
-                                ))
-                            ) : (
-                                <p className="text-secondary">{t.githubEmpty}</p>
-                            )}
-                        </div>
-                    </div>
-                )}
-
-                {activeMenu === "contact" && (
-                    <div>
-                        <h2 className="text-3xl font-bold text-text">{t.contactTitle}</h2>
-                        <div className="mt-6 grid gap-3 text-secondary sm:grid-cols-2">
-                            {contact?.email && <p>Email: {contact.email}</p>}
-                            {contact?.whatsapp && <p>WhatsApp: {contact.whatsapp}</p>}
-                            {contact?.linkedin && <p>LinkedIn: {contact.linkedin}</p>}
-                            {contact?.instagram && <p>Instagram: {contact.instagram}</p>}
-                        </div>
-
-                        <a
-                            href={`mailto:${contact?.email || profile?.email || ""}`}
-                            className="mt-6 inline-flex rounded-md bg-primary px-5 py-3 text-sm font-semibold text-background"
-                        >
-                            {t.sendEmail}
-                        </a>
-                    </div>
-                )}
+            <section className="min-w-0 flex-1 rounded-2xl bg-background p-5 md:p-8">
+                {renderActiveTab()}
             </section>
         </div>
     );

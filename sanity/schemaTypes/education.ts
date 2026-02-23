@@ -36,5 +36,17 @@ export const education = defineType({
             type: 'array',
             of: [{ type: 'block' }]
         }),
+        defineField({
+            name: 'organizationExperience',
+            title: 'Organization Experience',
+            type: 'array',
+            of: [{ type: 'string' }],
+        }),
+        defineField({
+            name: 'achievements',
+            title: 'Achievements',
+            type: 'array',
+            of: [{ type: 'string' }],
+        }),
     ],
 })

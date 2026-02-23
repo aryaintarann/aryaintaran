@@ -9,8 +9,8 @@ export const revalidate = 0;
 
 export async function generateStaticParams() {
     const query = groq`*[_type == "project"]{ "slug": slug.current }`;
-    const slugs = await client.fetch(query);
-    return slugs.map((slug: any) => ({ slug: slug.slug }));
+    const slugs = await client.fetch(query) as Array<{ slug: string }>;
+    return slugs.map((slugItem) => ({ slug: slugItem.slug }));
 }
 
 export default async function ProjectDetail({ params }: { params: Promise<{ slug: string }> }) {

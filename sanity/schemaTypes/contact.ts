@@ -48,5 +48,11 @@ export const contact = defineType({
             type: 'url',
             initialValue: 'https://instagram.com/',
         }),
+        defineField({
+            name: 'tiktok',
+            title: 'TikTok URL',
+            type: 'url',
+            initialValue: 'https://www.tiktok.com/@',
+        }),
     ],
 })

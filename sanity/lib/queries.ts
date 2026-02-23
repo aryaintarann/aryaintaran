@@ -34,7 +34,9 @@ export const educationQuery = groq`
     fieldOfStudy,
     startDate,
     endDate,
-    description
+    description,
+    organizationExperience,
+    achievements
   }
 `;
 
@@ -54,6 +56,7 @@ export const jobQuery = groq`
 export const projectQuery = groq`
   *[_type == "project"] | order(_createdAt desc) {
     _id,
+    _createdAt,
     title,
     slug,
     logo,

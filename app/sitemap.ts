@@ -6,9 +6,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const baseUrl = 'https://aryaintaran.dev'
 
     // Get all projects
-    const projects = await client.fetch(groq`*[_type == "projects"] { "slug": slug.current, _updatedAt }`)
+    const projects = await client.fetch(groq`*[_type == "project"] { "slug": slug.current, _updatedAt }`) as Array<{ slug: string; _updatedAt: string }>
 
-    const projectUrls = projects.map((project: any) => ({
+    const projectUrls = projects.map((project) => ({
         url: `${baseUrl}/projects/${project.slug}`,
         lastModified: new Date(project._updatedAt),
         changeFrequency: 'monthly' as const,

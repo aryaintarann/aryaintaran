@@ -64,7 +64,7 @@ export default function Chatbot() {
 
             const data = await response.json();
             setMessages((prev) => [...prev, { role: "assistant", content: data.text || "Maaf, tidak ada respons." }]);
-        } catch (error) {
+        } catch {
             setMessages((prev) => [
                 ...prev,
                 {
@@ -94,7 +94,7 @@ export default function Chatbot() {
         let listType = ""; // "ul" or "ol"
 
         for (let i = 0; i < lines.length; i++) {
-            let line = lines[i];
+            const line = lines[i];
             const formatInline = (s: string) =>
                 s
                     .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
