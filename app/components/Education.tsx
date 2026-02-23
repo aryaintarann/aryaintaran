@@ -29,7 +29,7 @@ export default function Education({ education }: EducationProps) {
                     <div className="relative border-l border-white/10 ml-4 md:ml-0 space-y-12 pl-8 md:pl-12">
                         {education.map((edu, index) => (
                             <div key={edu._id} className="relative">
-                                <span className="absolute -left-[41px] md:-left-[53px] top-1 h-5 w-5 rounded-full border-4 border-background bg-primary"></span>
+                                <span className="absolute -left-10.25 md:-left-13.25 top-1 h-5 w-5 rounded-full border-4 border-background bg-primary"></span>
                                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
                                     <h3 className="text-xl font-bold text-text">{edu.schoolName}</h3>
                                     <span className="text-sm text-secondary font-mono">

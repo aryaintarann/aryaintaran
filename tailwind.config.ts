@@ -9,11 +9,11 @@ const config: Config = {
     theme: {
         extend: {
             colors: {
-                background: "#0f172a", // Deep Navy (slate-900)
-                surface: "#1e293b",    // Lighter Navy (slate-800)
-                primary: "#38bdf8",    // Sky blue for accents
-                secondary: "#94a3b8",  // Slate 400 for secondary text
-                text: "#f8fafc",       // Slate 50 for main text
+                background: "rgb(var(--color-background) / <alpha-value>)",
+                surface: "rgb(var(--color-surface) / <alpha-value>)",
+                primary: "rgb(var(--color-primary) / <alpha-value>)",
+                secondary: "rgb(var(--color-secondary) / <alpha-value>)",
+                text: "rgb(var(--color-text) / <alpha-value>)",
             },
             fontFamily: {
                 sans: ['var(--font-inter)', 'sans-serif'],

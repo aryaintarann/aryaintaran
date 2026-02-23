@@ -11,7 +11,6 @@ import {
 
 const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
 
-// Build system prompt from Sanity data
 async function buildSystemPrompt(): Promise<string> {
     const [profile, education, jobs, projects, contact] = await Promise.all([
         client.fetch(profileQuery),
@@ -105,7 +104,6 @@ export async function POST(req: NextRequest) {
 
         const systemPrompt = await buildSystemPrompt();
 
-        // Build conversation history for Gemini
         const contents = messages.map((msg: { role: string; content: string }) => ({
             role: msg.role === "assistant" ? "model" : "user",
             parts: [{ text: msg.content }],

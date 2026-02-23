@@ -77,7 +77,6 @@ export const PortfolioPDFDocument = ({ data }: Props) => (
     <Document>
         <Page size="A4" style={styles.page}>
 
-            {/* Header */}
             <View style={styles.section}>
                 <Text style={styles.header}>{data.profile?.fullName || 'Portfolio'}</Text>
                 <Text style={{ textAlign: 'center', fontSize: 14, color: '#475569' }}>
@@ -91,7 +90,6 @@ export const PortfolioPDFDocument = ({ data }: Props) => (
                 </Text>
             </View>
 
-            {/* Experience */}
             {data.jobs && data.jobs.length > 0 && (
                 <View style={styles.section}>
                     <Text style={styles.subHeader}>Experience</Text>
@@ -107,7 +105,6 @@ export const PortfolioPDFDocument = ({ data }: Props) => (
                 </View>
             )}
 
-            {/* Projects */}
             {data.projects && data.projects.length > 0 && (
                 <View style={styles.section}>
                     <Text style={styles.subHeader}>Projects</Text>
@@ -126,7 +123,6 @@ export const PortfolioPDFDocument = ({ data }: Props) => (
                 </View>
             )}
 
-            {/* Education */}
             {data.education && data.education.length > 0 && (
                 <View style={styles.section}>
                     <Text style={styles.subHeader}>Education</Text>
@@ -142,7 +138,6 @@ export const PortfolioPDFDocument = ({ data }: Props) => (
                 </View>
             )}
 
-            {/* Skills */}
             {data.profile?.skills && (
                 <View style={styles.section}>
                     <Text style={styles.subHeader}>Skills</Text>

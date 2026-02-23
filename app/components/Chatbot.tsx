@@ -87,7 +87,6 @@ export default function Chatbot() {
         sendMessage(message);
     };
 
-    // Markdown renderer
     const formatMessage = (text: string): string => {
         const lines = text.split("\n");
         let html = "";
@@ -96,8 +95,6 @@ export default function Chatbot() {
 
         for (let i = 0; i < lines.length; i++) {
             let line = lines[i];
-
-            // Apply inline formatting
             const formatInline = (s: string) =>
                 s
                     .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
@@ -107,7 +104,6 @@ export default function Chatbot() {
                         '<code style="background:rgba(255,255,255,0.1);padding:1px 5px;border-radius:4px;font-size:0.8em">$1</code>'
                     );
 
-            // Heading (## or ###)
             const headingMatch = line.match(/^(#{1,3})\s+(.+)/);
             if (headingMatch) {
                 if (inList) { html += `</${listType}>`; inList = false; }
@@ -117,7 +113,6 @@ export default function Chatbot() {
                 continue;
             }
 
-            // Bullet list item (- or *)
             const bulletMatch = line.match(/^[\s]*[-*]\s+(.+)/);
             if (bulletMatch) {
                 if (!inList || listType !== "ul") {
@@ -130,7 +125,6 @@ export default function Chatbot() {
                 continue;
             }
 
-            // Numbered list item
             const numMatch = line.match(/^[\s]*(\d+)[.)]\s+(.+)/);
             if (numMatch) {
                 if (!inList || listType !== "ol") {
@@ -143,23 +137,19 @@ export default function Chatbot() {
                 continue;
             }
 
-            // Close list if we hit a non-list line
             if (inList) {
                 html += `</${listType}>`;
                 inList = false;
             }
 
-            // Empty line = spacing
             if (line.trim() === "") {
                 html += '<div style="height:6px"></div>';
                 continue;
             }
 
-            // Normal paragraph
             html += `<div style="margin:2px 0">${formatInline(line)}</div>`;
         }
 
-        // Close any open list
         if (inList) html += `</${listType}>`;
 
         return html;
@@ -167,10 +157,9 @@ export default function Chatbot() {
 
     return (
         <>
-            {/* Floating Chat Button */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className={`fixed bottom-6 right-6 z-[9999] w-14 h-14 rounded-full flex items-center justify-center shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-110 ${isOpen
+                className={`fixed bottom-6 right-6 z-9999 w-14 h-14 rounded-full flex items-center justify-center shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-110 ${isOpen
                     ? "bg-surface text-secondary rotate-0"
                     : "bg-primary text-background"
                     }`}
@@ -205,22 +194,19 @@ export default function Chatbot() {
                                 d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
                             />
                         </svg>
-                        {/* Pulse animation */}
                         <span className="absolute w-full h-full rounded-full bg-primary animate-ping opacity-20"></span>
                     </>
                 )}
             </button>
 
-            {/* Chat Window */}
             <div
-                className={`fixed bottom-24 right-6 z-[9998] w-[380px] max-w-[calc(100vw-2rem)] transition-all duration-300 origin-bottom-right ${isOpen
+                className={`fixed bottom-24 right-6 z-9998 w-95 max-w-[calc(100vw-2rem)] transition-all duration-300 origin-bottom-right ${isOpen
                     ? "scale-100 opacity-100 pointer-events-auto"
                     : "scale-95 opacity-0 pointer-events-none"
                     }`}
             >
-                <div className="bg-background/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-black/50 overflow-hidden flex flex-col h-[520px] max-h-[70vh]">
-                    {/* Header */}
-                    <div className="bg-surface/80 backdrop-blur-sm px-5 py-4 border-b border-white/5 flex-shrink-0">
+                <div className="bg-background/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-black/50 overflow-hidden flex flex-col h-130 max-h-[70vh]">
+                    <div className="bg-surface/80 backdrop-blur-sm px-5 py-4 border-b border-white/5 shrink-0">
                         <div className="flex items-center gap-3">
                             <div className="relative">
                                 <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
@@ -251,9 +237,7 @@ export default function Chatbot() {
                         </div>
                     </div>
 
-                    {/* Messages */}
                     <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin">
-                        {/* Welcome Message */}
                         {messages.length === 0 && (
                             <div className="text-center py-6">
                                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
@@ -274,11 +258,10 @@ export default function Chatbot() {
                                 <h4 className="text-text font-semibold mb-1">
                                     Halo! 👋
                                 </h4>
-                                <p className="text-secondary text-sm mb-6 max-w-[260px] mx-auto">
+                                <p className="text-secondary text-sm mb-6 max-w-65 mx-auto">
                                     Saya AI assistant untuk portfolio Arya. Tanya apa saja!
                                 </p>
 
-                                {/* Quick Actions */}
                                 {showQuickActions && (
                                     <div className="flex flex-wrap gap-2 justify-center">
                                         {QUICK_ACTIONS.map((action) => (
@@ -312,7 +295,6 @@ export default function Chatbot() {
                             </div>
                         ))}
 
-                        {/* Loading Indicator */}
                         {isLoading &&
                             messages[messages.length - 1]?.role !== "assistant" && (
                                 <div className="flex justify-start">
@@ -329,10 +311,9 @@ export default function Chatbot() {
                         <div ref={messagesEndRef} />
                     </div>
 
-                    {/* Input */}
                     <form
                         onSubmit={handleSubmit}
-                        className="p-3 border-t border-white/5 bg-surface/30 flex-shrink-0"
+                        className="p-3 border-t border-white/5 bg-surface/30 shrink-0"
                     >
                         <div className="flex gap-2">
                             <input
@@ -347,7 +328,7 @@ export default function Chatbot() {
                             <button
                                 type="submit"
                                 disabled={!input.trim() || isLoading}
-                                className="w-10 h-10 rounded-xl bg-primary text-background flex items-center justify-center hover:bg-primary/90 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex-shrink-0"
+                                className="w-10 h-10 rounded-xl bg-primary text-background flex items-center justify-center hover:bg-primary/90 transition-all disabled:opacity-30 disabled:cursor-not-allowed shrink-0"
                             >
                                 <svg
                                     className="w-4 h-4"

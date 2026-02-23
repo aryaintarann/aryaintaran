@@ -20,7 +20,7 @@ export default function Experience({ jobs }: ExperienceProps) {
                         {jobs.map((job) => (
                             <div key={job._id} className="group bg-background p-6 md:p-8 rounded-xl border border-white/5 hover:border-primary/20 transition-all">
                                 <div className="flex flex-col md:flex-row gap-6">
-                                    <div className="flex-shrink-0">
+                                    <div className="shrink-0">
                                         {job.logo ? (
                                             <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-white/5">
                                                 <Image
@@ -36,7 +36,7 @@ export default function Experience({ jobs }: ExperienceProps) {
                                             </div>
                                         )}
                                     </div>
-                                    <div className="flex-grow">
+                                    <div className="grow">
                                         <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
                                             <div>
                                                 <h3 className="text-xl font-bold text-text group-hover:text-primary transition-colors">{job.jobTitle}</h3>

@@ -71,17 +71,15 @@ export default function Hero({ profile, contact }: HeroProps) {
 
     return (
         <section ref={container} id="home" className="min-h-screen relative overflow-hidden bg-background flex flex-col justify-center">
-            {/* Background Lines Removed */}
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full h-full pt-16 md:pt-0">
                 <div className="flex flex-col md:flex-row items-center justify-between h-full gap-12 md:gap-8">
 
-                    {/* Left Content */}
                     <div className="flex-1 z-10 text-center md:text-left pt-12 md:pt-0">
                         <div className="flex items-center justify-center md:justify-start gap-4 mb-6 hero-text-element w-full">
-                            <span className="w-8 h-[2px] bg-secondary inline-block"></span>
+                            <span className="w-8 h-0.5 bg-secondary inline-block"></span>
                             <span className="text-secondary font-medium tracking-widest text-sm uppercase">Hello</span>
-                            <span className="w-8 h-[2px] bg-secondary inline-block md:hidden"></span>
+                            <span className="w-8 h-0.5 bg-secondary inline-block md:hidden"></span>
                         </div>
 
                         <h1 className="hero-text-element text-3xl sm:text-4xl lg:text-6xl font-black text-text mb-4 tracking-tight leading-tight whitespace-normal sm:whitespace-nowrap">
@@ -111,9 +109,8 @@ export default function Hero({ profile, contact }: HeroProps) {
                         </div>
                     </div>
 
-                    {/* Right Image */}
                     <div className="flex-1 relative h-[50vh] md:h-screen w-full flex items-end justify-center md:justify-end hero-image z-0">
-                        <div className="relative w-full h-full max-h-[800px] max-w-lg">
+                        <div className="relative w-full h-full max-h-200 max-w-lg">
 
                             {profile?.heroImage || profile?.profileImage ? (
                                 <div className="absolute bottom-0 w-full h-[90%] md:h-[85%]">
@@ -124,7 +121,7 @@ export default function Hero({ profile, contact }: HeroProps) {
                                         className="object-contain object-bottom drop-shadow-2xl"
                                         priority
                                     />
-                                    <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-background to-transparent"></div>
+                                    <div className="absolute bottom-0 left-0 w-full h-24 bg-linear-to-t from-background to-transparent"></div>
                                 </div>
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center text-secondary">No Image</div>
@@ -134,9 +131,7 @@ export default function Hero({ profile, contact }: HeroProps) {
                 </div>
             </div>
 
-            {/* Bottom Elements */}
             <div className="absolute bottom-8 left-0 w-full px-4 sm:px-6 lg:px-8 flex justify-between items-end pointer-events-none">
-                {/* Socials - Bottom Left */}
                 <div className="hidden md:flex gap-6 pointer-events-auto pl-4 lg:pl-12 pb-4">
                     {socialLinks.map((link) => (
                         <a
@@ -152,7 +147,6 @@ export default function Hero({ profile, contact }: HeroProps) {
                     ))}
                 </div>
 
-                {/* Scroll Indicator - Bottom Right */}
                 <div ref={scrollRef} className="hidden md:flex flex-col items-center gap-2 pointer-events-auto pr-4 lg:pr-12 pb-4 cursor-pointer" onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}>
                     <span className="text-[10px] font-bold tracking-widest text-secondary uppercase py-2" style={{ writingMode: 'vertical-rl' }}>Scroll Down</span>
                     <svg className="w-5 h-5 text-primary animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>

@@ -25,7 +25,7 @@ export default function Navbar() {
         <nav className="fixed w-full z-50 bg-white/90 backdrop-blur-sm border-b border-gray-200 shadow-sm">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
-                    <div className="flex-shrink-0">
+                    <div className="shrink-0">
                         <Link href="/" className="flex items-center">
                             <div className="relative w-10 h-10">
                                 <Image
