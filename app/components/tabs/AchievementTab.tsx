@@ -48,7 +48,7 @@ export default function AchievementTab({ achievementItems, t }: AchievementTabPr
                                     role="img"
                                     aria-label={item.title || "Certificate image"}
                                     className="h-full w-full bg-cover bg-center"
-                                    style={{ backgroundImage: `url(${urlForImage(item.image).width(800).height(500).url()})` }}
+                                    style={{ backgroundImage: `url(${urlForImage(item.image as never).width(800).height(500).url()})` }}
                                 ></div>
                             ) : (
                                 <div className="flex h-full w-full items-center justify-center text-sm text-secondary">
@@ -95,7 +95,7 @@ export default function AchievementTab({ achievementItems, t }: AchievementTabPr
                                     role="img"
                                     aria-label={activeCertificate.title || "Certificate preview"}
                                     className="h-full w-full bg-contain bg-center bg-no-repeat"
-                                    style={{ backgroundImage: `url(${urlForImage(activeCertificate.image).width(1600).height(1000).url()})` }}
+                                    style={{ backgroundImage: `url(${urlForImage(activeCertificate.image as never).width(1600).height(1000).url()})` }}
                                 ></div>
                             ) : (
                                 <div className="flex h-full min-h-65 items-center justify-center text-secondary">

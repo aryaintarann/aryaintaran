@@ -11,7 +11,17 @@ import AchievementTab from "./tabs/AchievementTab";
 import ProjectsTab from "./tabs/ProjectsTab";
 import GithubTab from "./tabs/GithubTab";
 import ContactTab from "@/app/components/tabs/ContactTab";
-import type { ContactData, EducationData, JobData, ProfileData, ProjectData, TranslationText } from "./tabs/types";
+import type {
+    AboutProfileData,
+    ContactData,
+    EducationData,
+    GithubData,
+    HomeProfileData,
+    JobData,
+    ProjectData,
+    SidebarProfileData,
+    TranslationText,
+} from "./tabs/types";
 
 type MenuKey =
     | "home"
@@ -24,11 +34,15 @@ type MenuKey =
     | "contact";
 
 interface PortfolioSidebarLayoutProps {
-    profile: ProfileData;
+    profile: HomeProfileData;
+    aboutProfile?: AboutProfileData;
+    sidebarProfile?: SidebarProfileData;
     education: EducationData[];
     jobs: JobData[];
     projects: ProjectData[];
+    github: GithubData;
     contact: ContactData;
+    menuContent?: Partial<TranslationText>;
 }
 
 const languageText = {
@@ -140,11 +154,18 @@ const languageText = {
 
 export default function PortfolioSidebarLayout({
     profile,
+    aboutProfile,
+    sidebarProfile,
     education,
     jobs,
     projects,
+    github,
     contact,
+    menuContent,
 }: PortfolioSidebarLayoutProps) {
+    const profileImageUrl = sidebarProfile?.profileImage
+        ? urlForImage(sidebarProfile.profileImage as never).width(300).height(300).url()
+        : "";
     const [activeMenu, setActiveMenu] = useState<MenuKey>("home");
     const [language, setLanguage] = useState<"id" | "en">(() => {
         if (typeof window === "undefined") return "id";
@@ -257,7 +278,10 @@ export default function PortfolioSidebarLayout({
         [projects]
     );
 
-    const tabText: TranslationText = t;
+    const tabText: TranslationText = {
+        ...t,
+        ...(menuContent || {}),
+    };
 
     const menuItems: { key: MenuKey; label: string }[] = [
         { key: "home", label: t.menu.home },
@@ -275,7 +299,7 @@ export default function PortfolioSidebarLayout({
             case "home":
                 return <HomeTab profile={profile} t={tabText} />;
             case "about":
-                return <AboutTab profile={profile} education={education} t={tabText} />;
+                return <AboutTab profile={aboutProfile} education={education} t={tabText} />;
             case "career":
                 return <CareerTab jobs={jobs} t={tabText} />;
             case "achievement":
@@ -283,23 +307,23 @@ export default function PortfolioSidebarLayout({
             case "project":
                 return (
                     <ProjectsTab
-                        title={t.projectTitle}
+                        title={tabText.projectTitle}
                         projects={mainProjects}
-                        emptyText={t.projectEmpty}
+                        emptyText={tabText.projectEmpty}
                     />
                 );
             case "personal-project":
                 return (
                     <ProjectsTab
-                        title={t.personalProjectTitle}
+                        title={tabText.personalProjectTitle}
                         projects={personalProjects}
-                        emptyText={t.personalProjectEmpty}
+                        emptyText={tabText.personalProjectEmpty}
                     />
                 );
             case "github":
-                return <GithubTab contact={contact} t={tabText} />;
+                return <GithubTab github={github} contact={contact} t={tabText} />;
             case "contact":
-                return <ContactTab contact={contact} profile={profile} sendEmail={tabText.sendEmail} title={tabText.contactTitle} />;
+                return <ContactTab contact={contact} sendEmail={tabText.sendEmail} title={tabText.contactTitle} />;
             default:
                 return null;
         }
@@ -311,9 +335,9 @@ export default function PortfolioSidebarLayout({
             <div className="flex h-full flex-col rounded-2xl bg-surface p-5">
                     <div className="mb-6 flex flex-col items-center text-center">
                         <div className="relative h-24 w-24 overflow-hidden rounded-full border border-white/20 bg-background">
-                            {profile?.profileImage ? (
+                            {profileImageUrl ? (
                                 <Image
-                                    src={urlForImage(profile.profileImage).width(300).height(300).url()}
+                                    src={profileImageUrl}
                                     alt={profile?.fullName || "Profile"}
                                     fill
                                     className="object-cover"
@@ -324,7 +348,7 @@ export default function PortfolioSidebarLayout({
                         </div>
 
                         <p className="mt-4 text-base font-semibold text-text">{profile?.fullName || "Your Name"}</p>
-                        <p className="mt-1 text-xs text-secondary">{profile?.headline || "Portfolio"}</p>
+                        <p className="mt-1 text-xs text-secondary">{sidebarProfile?.headline || "Portfolio"}</p>
 
                         <button
                             onClick={() => setOpenSettings((value) => !value)}

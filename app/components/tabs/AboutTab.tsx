@@ -1,9 +1,8 @@
-import { PortableText } from "next-sanity";
 import { useState } from "react";
-import type { EducationData, ProfileData, TranslationText } from "./types";
+import type { AboutProfileData, EducationData, TranslationText } from "./types";
 
 interface AboutTabProps {
-    profile: ProfileData;
+    profile?: AboutProfileData;
     education: EducationData[];
     t: TranslationText;
 }
@@ -27,6 +26,8 @@ const getSchoolInitials = (schoolName: string) => {
 export default function AboutTab({ profile, education, t }: AboutTabProps) {
     const [openDetailIds, setOpenDetailIds] = useState<Record<string, boolean>>({});
 
+    const bioText = profile?.aboutMe || "";
+
     const toggleDetail = (id: string) => {
         setOpenDetailIds((prev) => ({
             ...prev,
@@ -37,10 +38,9 @@ export default function AboutTab({ profile, education, t }: AboutTabProps) {
     return (
         <div>
             <h2 className="text-3xl font-bold text-text">{t.aboutTitle}</h2>
-            {profile?.location && <p className="mt-2 text-primary">{profile.location}</p>}
 
             <div className="prose prose-invert mt-5 max-w-none text-secondary">
-                {profile?.fullBio ? <PortableText value={profile.fullBio} /> : <p>{profile?.shortBio}</p>}
+                <p className="whitespace-pre-line">{bioText}</p>
             </div>
 
             {!!education?.length && (
@@ -104,7 +104,7 @@ export default function AboutTab({ profile, education, t }: AboutTabProps) {
                                                         clipRule="evenodd"
                                                     />
                                                 </svg>
-                                                <span>{openDetailIds[edu._id] ? "Hide detail" : t.educationDetailLabel}</span>
+                                                <span>{openDetailIds[edu._id] ? t.hideDetailLabel : t.educationDetailLabel}</span>
                                             </button>
 
                                             <div

@@ -1,14 +1,44 @@
-import type { TypedObject } from "sanity";
+type RichTextChild = {
+    text?: string;
+};
+
+type RichTextBlock = {
+    children?: RichTextChild[];
+};
+
+type GenericImage = Record<string, unknown> | null;
+
+export interface HomeProfileData {
+    _id?: string;
+    fullName?: string;
+    summary?: string;
+    hardSkills?: string[];
+    softSkills?: string[];
+}
+
+export interface AboutProfileData {
+    _id?: string;
+    aboutMe?: string;
+}
+
+export interface SidebarProfileData {
+    _id?: string;
+    profileImage?: GenericImage;
+    headline?: string;
+}
 
 export interface ProfileData {
     fullName?: string;
     name?: string;
     headline?: string;
+    summary?: string;
+    hardSkills?: string[];
+    softSkills?: string[];
     shortBio?: string;
-    fullBio?: TypedObject | TypedObject[];
+    fullBio?: string | RichTextBlock[];
     email?: string;
     location?: string;
-    profileImage?: Record<string, unknown>;
+    profileImage?: GenericImage;
     skills?: string[];
 }
 
@@ -19,7 +49,7 @@ export interface EducationData {
     fieldOfStudy?: string;
     startDate?: string;
     endDate?: string;
-    description?: TypedObject | TypedObject[];
+    description?: string | RichTextBlock[];
     organizationExperience?: string[];
     achievements?: string[];
 }
@@ -28,7 +58,7 @@ export interface JobData {
     _id: string;
     name?: string;
     jobTitle?: string;
-    logo?: Record<string, unknown>;
+    logo?: GenericImage;
     url?: string;
     description?: string;
     startDate?: string;
@@ -40,9 +70,9 @@ export interface ProjectData {
     _createdAt?: string;
     title?: string;
     shortDescription?: string;
-    description?: string | TypedObject | TypedObject[];
-    image?: Record<string, unknown>;
-    logo?: Record<string, unknown>;
+    description?: string | RichTextBlock[];
+    image?: GenericImage;
+    logo?: GenericImage;
     link?: string;
     githubLink?: string;
     tags?: string[];
@@ -58,6 +88,19 @@ export interface ContactData {
     instagram?: string;
     tiktok?: string;
     github?: string;
+}
+
+export interface GithubData {
+    profileUrl?: string;
+    username?: string;
+    description?: string;
+    contributionsTitle?: string;
+    repositoriesTitle?: string;
+    githubContributionsTitle?: string;
+    githubRepositoriesTitle?: string;
+    showContributions?: boolean;
+    showRepositories?: boolean;
+    repositoriesLimit?: number;
 }
 
 export interface TranslationText {

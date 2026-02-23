@@ -96,7 +96,7 @@ const renderProjectCard = (project: ProjectData, onOpen: (item: ProjectData) => 
                     role="img"
                     aria-label={project.title || "Project preview"}
                     className="h-full w-full bg-cover bg-center"
-                    style={{ backgroundImage: `url(${urlForImage(project.image).width(1200).height(700).url()})` }}
+                    style={{ backgroundImage: `url(${urlForImage(project.image as never).width(1200).height(700).url()})` }}
                 ></div>
             ) : (
                 <div className="flex h-full w-full items-center justify-center text-sm text-secondary">No preview</div>
@@ -114,7 +114,7 @@ const renderProjectCard = (project: ProjectData, onOpen: (item: ProjectData) => 
                         role="img"
                         aria-label={`${project.title || "Project"} logo`}
                         className="h-6 w-6 bg-contain bg-center bg-no-repeat"
-                        style={{ backgroundImage: `url(${urlForImage(project.logo).width(64).height(64).url()})` }}
+                        style={{ backgroundImage: `url(${urlForImage(project.logo as never).width(64).height(64).url()})` }}
                     ></div>
                 </div>
             )}
@@ -220,7 +220,7 @@ export default function ProjectsTab({ title, projects, emptyText }: ProjectsTabP
                                 aria-label={selectedProject.title || "Project preview"}
                                 className="h-full w-full bg-contain bg-center bg-no-repeat"
                                 style={{
-                                    backgroundImage: `url(${urlForImage(selectedProject.image).width(1600).height(1000).url()})`,
+                                    backgroundImage: `url(${urlForImage(selectedProject.image as never).width(1600).height(1000).url()})`,
                                 }}
                             ></div>
                         ) : (

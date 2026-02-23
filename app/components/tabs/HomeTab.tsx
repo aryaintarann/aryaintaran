@@ -1,30 +1,31 @@
 import { useMemo } from "react";
-import type { ProfileData, TranslationText } from "./types";
-
-const hardSkillRegex = /(html|css|javascript|typescript|react|next|node|express|python|java|php|laravel|mysql|postgres|mongodb|docker|git|tailwind|figma|ui|ux|api|sql|firebase|supabase|aws|linux|c\+\+|c#|go|kotlin|swift)/i;
-const softSkillRegex = /(communication|teamwork|leadership|problem solving|time management|adaptability|critical thinking|collaboration|creativity|public speaking|manajemen waktu|komunikasi|kerja sama|kepemimpinan|adaptasi|problem solving)/i;
+import type { HomeProfileData, TranslationText } from "./types";
 
 interface HomeTabProps {
-    profile: ProfileData;
+    profile: HomeProfileData;
     t: TranslationText;
 }
 
 export default function HomeTab({ profile, t }: HomeTabProps) {
-    const allSkills = useMemo(
-        () => (profile?.skills || []).filter((skill: string) => typeof skill === "string" && skill.trim().length > 0),
-        [profile?.skills]
+    const explicitHardSkills = useMemo(
+        () => (profile?.hardSkills || []).filter((skill: string) => typeof skill === "string" && skill.trim().length > 0),
+        [profile?.hardSkills]
     );
 
-    const hardSkills = useMemo(
-        () => allSkills.filter((skill: string) => hardSkillRegex.test(skill)),
-        [allSkills]
+    const explicitSoftSkills = useMemo(
+        () => (profile?.softSkills || []).filter((skill: string) => typeof skill === "string" && skill.trim().length > 0),
+        [profile?.softSkills]
     );
+
+    const hardSkills = useMemo(() => {
+        if (explicitHardSkills.length > 0) return explicitHardSkills;
+        return [];
+    }, [explicitHardSkills]);
 
     const softSkills = useMemo(() => {
-        const explicitSoft = allSkills.filter((skill: string) => softSkillRegex.test(skill));
-        if (explicitSoft.length > 0) return explicitSoft;
-        return allSkills.filter((skill: string) => !hardSkillRegex.test(skill));
-    }, [allSkills]);
+        if (explicitSoftSkills.length > 0) return explicitSoftSkills;
+        return [];
+    }, [explicitSoftSkills]);
 
     const getSkillLogoText = (skill: string) => {
         const clean = skill.replace(/[^a-zA-Z0-9+.#]/g, " ").trim();
@@ -113,7 +114,7 @@ export default function HomeTab({ profile, t }: HomeTabProps) {
             <p className="mt-2 text-secondary">{profile?.fullName || "Arya Ngurah Intaran"}</p>
 
             <div className="mt-7">
-                <p className="text-sm leading-relaxed text-secondary">{profile?.shortBio || profile?.headline}</p>
+                <p className="text-sm leading-relaxed text-secondary">{profile?.summary}</p>
             </div>
 
             <div className="mt-8 border-t border-white/10" aria-hidden="true"></div>

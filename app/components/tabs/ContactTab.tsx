@@ -1,9 +1,8 @@
-import type { ContactData, ProfileData } from "./types";
+import type { ContactData } from "./types";
 import type { ReactNode } from "react";
 
 interface ContactTabProps {
     contact: ContactData | null;
-    profile: ProfileData | null;
     sendEmail: string;
     title: string;
 }
@@ -56,8 +55,8 @@ function LinkCard({
     );
 }
 
-export default function ContactTab({ contact, profile, sendEmail, title }: ContactTabProps) {
-    const email = contact?.email || profile?.email;
+export default function ContactTab({ contact, sendEmail, title }: ContactTabProps) {
+    const email = contact?.email;
 
     return (
         <div>

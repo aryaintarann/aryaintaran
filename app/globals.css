@@ -19,6 +19,34 @@ html[data-theme="light"] {
 body {
   color: rgb(var(--color-text));
   background: rgb(var(--color-background));
+  overflow-x: hidden;
+}
+
+.github-calendar-responsive {
+  width: 100%;
+}
+
+.github-calendar-responsive > * {
+  width: 100%;
+}
+
+.github-calendar-responsive svg {
+  width: 100%;
+  height: auto;
+}
+
+.github-calendar-responsive .react-activity-calendar {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.github-calendar-responsive .react-activity-calendar__scroll-container {
+  overflow-x: hidden !important;
+}
+
+.github-calendar-responsive .react-activity-calendar__calendar {
+  width: 100% !important;
+  max-width: 100% !important;
 }
 
 @layer utilities {

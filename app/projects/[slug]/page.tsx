@@ -1,6 +1,6 @@
 import { client } from "@/sanity/lib/client";
-import { groq } from "next-sanity";
 import { urlForImage } from "@/sanity/lib/image";
+import { groq } from "next-sanity";
 import Image from "next/image";
 import Link from "next/link";
 import { PortableText } from "next-sanity";
@@ -8,15 +8,25 @@ import { PortableText } from "next-sanity";
 export const revalidate = 0;
 
 export async function generateStaticParams() {
-    const query = groq`*[_type == "project"]{ "slug": slug.current }`;
-    const slugs = await client.fetch(query) as Array<{ slug: string }>;
-    return slugs.map((slugItem) => ({ slug: slugItem.slug }));
+    const slugs = await client.fetch(groq`*[_type == "project" && defined(slug.current)] { "slug": slug.current }`) as Array<{ slug: string }>;
+    return slugs.map((item) => ({ slug: item.slug }));
 }
 
 export default async function ProjectDetail({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;
-    const query = groq`*[_type == "project" && slug.current == $slug][0]`;
-    const project = await client.fetch(query, { slug });
+    const project = await client.fetch(
+        groq`*[_type == "project" && slug.current == $slug][0] {
+          _id,
+          title,
+          shortDescription,
+          description,
+          link,
+          githubLink,
+          tags,
+          image
+        }`,
+        { slug }
+    );
 
     if (!project) {
         return (
@@ -52,10 +62,10 @@ export default async function ProjectDetail({ params }: { params: Promise<{ slug
                 </div>
 
                 <div className="relative w-full h-64 md:h-96 rounded-xl overflow-hidden mb-12 border border-white/10">
-                    {project.image ? (
+                    {project?.image ? (
                         <Image
-                            src={urlForImage(project.image).url()}
-                            alt={project.title}
+                            src={urlForImage(project.image).width(1400).height(900).url()}
+                            alt={project.title || "Project image"}
                             fill
                             className="object-cover"
                             priority
@@ -70,10 +80,10 @@ export default async function ProjectDetail({ params }: { params: Promise<{ slug
                 <div className="bg-surface/30 p-8 rounded-xl border border-white/5">
                     <h2 className="text-2xl font-bold text-text mb-4">About This Project</h2>
                     <div className="prose prose-invert prose-lg max-w-none text-secondary">
-                        {project.description ? (
+                        {project?.description ? (
                             <PortableText value={project.description} />
                         ) : (
-                            <p>{project.shortDescription}</p>
+                            <p className="whitespace-pre-line">{project.shortDescription}</p>
                         )}
                     </div>
 

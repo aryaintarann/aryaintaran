@@ -1,13 +1,7 @@
 import { NextRequest } from "next/server";
 import { GoogleGenAI } from "@google/genai";
 import { client } from "@/sanity/lib/client";
-import {
-    profileQuery,
-    educationQuery,
-    jobQuery,
-    projectQuery,
-    contactQuery,
-} from "@/sanity/lib/queries";
+import { contactQuery, educationQuery, githubQuery, jobQuery, profileQuery, projectQuery } from "@/sanity/lib/queries";
 
 const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
 
@@ -41,6 +35,11 @@ interface ContactInfo {
     instagram?: string;
 }
 
+interface GithubInfo {
+    profileUrl?: string;
+    username?: string;
+}
+
 interface ProfileInfo {
     fullName?: string;
     headline?: string;
@@ -50,13 +49,14 @@ interface ProfileInfo {
 }
 
 async function buildSystemPrompt(): Promise<string> {
-    const [profile, education, jobs, projects, contact] = await Promise.all([
+    const [profile, education, jobs, projects, github, contact] = await Promise.all([
         client.fetch(profileQuery),
         client.fetch(educationQuery),
         client.fetch(jobQuery),
         client.fetch(projectQuery),
+        client.fetch(githubQuery),
         client.fetch(contactQuery),
-    ]) as [ProfileInfo, EducationItem[], JobItem[], ProjectItem[], ContactInfo];
+    ]) as [ProfileInfo, EducationItem[], JobItem[], ProjectItem[], GithubInfo, ContactInfo];
 
     const skillsList = profile?.skills?.join(", ") || "Belum ada data";
 
@@ -98,7 +98,7 @@ async function buildSystemPrompt(): Promise<string> {
         contact?.email ? `Email: ${contact.email}` : null,
         contact?.whatsapp ? `WhatsApp: ${contact.whatsapp}` : null,
         contact?.linkedin ? `LinkedIn: ${contact.linkedin}` : null,
-        contact?.github ? `GitHub: ${contact.github}` : null,
+        github?.profileUrl ? `GitHub: ${github.profileUrl}` : contact?.github ? `GitHub: ${contact.github}` : null,
         contact?.instagram ? `Instagram: ${contact.instagram}` : null,
     ]
         .filter(Boolean)
