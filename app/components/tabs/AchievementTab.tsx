@@ -9,6 +9,8 @@ interface AchievementTabProps {
     t: TranslationText;
 }
 
+const MODAL_TRANSITION_MS = 240;
+
 const toIssuedLabel = (value?: string) => {
     if (!value) return "Issued recently";
     const date = new Date(value);
@@ -29,8 +31,21 @@ const getIssuedDate = (value?: string) => {
 
 export default function AchievementTab({ achievementItems, t }: AchievementTabProps) {
     const [activeCertificate, setActiveCertificate] = useState<ProjectData | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const closeModal = () => setActiveCertificate(null);
+    const openModal = (item: ProjectData) => {
+        setActiveCertificate(item);
+        requestAnimationFrame(() => {
+            setIsModalOpen(true);
+        });
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        window.setTimeout(() => {
+            setActiveCertificate(null);
+        }, MODAL_TRANSITION_MS);
+    };
 
     return (
         <div>
@@ -40,7 +55,7 @@ export default function AchievementTab({ achievementItems, t }: AchievementTabPr
                     <article
                         key={item._id}
                         className="cursor-pointer overflow-hidden rounded-2xl border border-white/10 bg-surface transition-colors hover:border-primary/35"
-                        onClick={() => setActiveCertificate(item)}
+                        onClick={() => openModal(item)}
                     >
                         <div className="relative h-48 w-full bg-background">
                             {item.image ? (
@@ -82,29 +97,39 @@ export default function AchievementTab({ achievementItems, t }: AchievementTabPr
 
             {activeCertificate && (
                 <div
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-3 md:p-6"
+                    className={`fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-3 transition-opacity duration-300 md:items-center md:p-6 no-scrollbar ${
+                        isModalOpen ? "bg-black/60 backdrop-blur-sm opacity-100" : "bg-black/0 opacity-0"
+                    }`}
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label={activeCertificate.title || "Certificate detail"}
                     onClick={closeModal}
                 >
                     <div
-                        className="relative grid max-h-[94vh] w-full max-w-6xl overflow-hidden rounded-2xl border border-white/10 bg-surface md:grid-cols-[1.6fr_1fr]"
+                        className={`relative mt-3 w-full max-w-6xl overflow-hidden rounded-2xl border border-white/10 bg-background shadow-2xl transition-all duration-300 md:mt-0 ${
+                            isModalOpen ? "translate-y-0 scale-100 opacity-100" : "translate-y-3 scale-95 opacity-0"
+                        }`}
+                        style={{ backgroundColor: "rgb(var(--color-background))" }}
                         onClick={(event) => event.stopPropagation()}
                     >
-                        <div className="min-h-65 bg-background">
+                        <div className="bg-background md:mr-[38%]">
                             {activeCertificate.image ? (
-                                <div
-                                    role="img"
-                                    aria-label={activeCertificate.title || "Certificate preview"}
-                                    className="h-full w-full bg-contain bg-center bg-no-repeat"
-                                    style={{ backgroundImage: `url(${urlForImage(activeCertificate.image as never).width(1600).height(1000).url()})` }}
-                                ></div>
+                                <img
+                                    src={urlForImage(activeCertificate.image as never).width(1600).height(1000).url()}
+                                    alt={activeCertificate.title || "Certificate preview"}
+                                    className="block max-h-[52vh] w-full object-contain object-top md:max-h-[92vh]"
+                                />
                             ) : (
-                                <div className="flex h-full min-h-65 items-center justify-center text-secondary">
+                                <div className="flex min-h-52 w-full items-center justify-center text-secondary md:min-h-[70vh]">
                                     No certificate preview
                                 </div>
                             )}
                         </div>
 
-                        <div className="relative overflow-y-auto bg-surface p-6">
+                        <div
+                            className="relative max-h-[42vh] overflow-y-auto overflow-x-hidden bg-background p-5 md:absolute md:inset-y-0 md:right-0 md:w-[38%] md:max-h-none md:p-6 no-scrollbar"
+                            style={{ backgroundColor: "rgb(var(--color-background))" }}
+                        >
                             <button
                                 type="button"
                                 aria-label="Close certificate detail"
@@ -115,8 +140,8 @@ export default function AchievementTab({ achievementItems, t }: AchievementTabPr
                             </button>
 
                             <div className="pr-10">
-                                <h3 className="text-3xl font-semibold text-text">{activeCertificate.title}</h3>
-                                <p className="mt-2 text-xl text-secondary">
+                                <h3 className="text-2xl font-semibold text-text md:text-3xl">{activeCertificate.title}</h3>
+                                <p className="mt-2 text-base text-secondary md:text-lg">
                                     {activeCertificate.shortDescription || "Certificate Issuer"}
                                 </p>
 
