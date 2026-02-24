@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
+import { usePathname, useRouter } from "next/navigation";
 import { urlForImage } from "@/sanity/lib/image";
 import HomeTab from "./tabs/HomeTab";
 import AboutTab from "./tabs/AboutTab";
@@ -33,6 +34,8 @@ type MenuKey =
     | "github"
     | "contact";
 
+type LanguageKey = "id" | "en";
+
 interface PortfolioSidebarLayoutProps {
     profile: HomeProfileData;
     aboutProfile?: AboutProfileData;
@@ -43,6 +46,8 @@ interface PortfolioSidebarLayoutProps {
     github: GithubData;
     contact: ContactData;
     menuContent?: Partial<TranslationText>;
+    initialLanguage?: LanguageKey;
+    initialMenu?: MenuKey;
 }
 
 const languageText = {
@@ -162,13 +167,17 @@ export default function PortfolioSidebarLayout({
     github,
     contact,
     menuContent,
+    initialLanguage = "id",
+    initialMenu = "home",
 }: PortfolioSidebarLayoutProps) {
+    const router = useRouter();
+    const pathname = usePathname();
     const profileImageUrl = sidebarProfile?.profileImage
         ? urlForImage(sidebarProfile.profileImage as never).width(300).height(300).url()
         : "";
-    const [activeMenu, setActiveMenu] = useState<MenuKey>("home");
-    const [language, setLanguage] = useState<"id" | "en">(() => {
-        if (typeof window === "undefined") return "id";
+    const [activeMenu, setActiveMenu] = useState<MenuKey>(initialMenu);
+    const [language, setLanguage] = useState<LanguageKey>(() => {
+        if (typeof window === "undefined") return initialLanguage;
         const savedLanguage = window.localStorage.getItem("portfolio-language");
         return savedLanguage === "en" ? "en" : "id";
     });
@@ -200,6 +209,21 @@ export default function PortfolioSidebarLayout({
         document.documentElement.lang = language;
         window.localStorage.setItem("portfolio-language", language);
     }, [language]);
+
+    useEffect(() => {
+        setActiveMenu(initialMenu);
+    }, [initialMenu]);
+
+    useEffect(() => {
+        setLanguage(initialLanguage);
+    }, [initialLanguage]);
+
+    useEffect(() => {
+        const targetPath = `/${language}/${activeMenu}`;
+        if (pathname !== targetPath) {
+            router.replace(targetPath, { scroll: false });
+        }
+    }, [activeMenu, language, pathname, router]);
 
     useEffect(() => {
         const panel = settingsPanelRef.current;
