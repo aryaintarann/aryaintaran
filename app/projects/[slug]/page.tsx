@@ -69,6 +69,8 @@ export default async function ProjectDetail({ params }: { params: Promise<{ slug
                             fill
                             className="object-cover"
                             priority
+                            fetchPriority="high"
+                            sizes="(min-width: 1024px) 896px, (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)"
                         />
                     ) : (
                         <div className="w-full h-full bg-surface flex items-center justify-center text-secondary">

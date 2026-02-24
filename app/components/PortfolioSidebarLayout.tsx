@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
 import { usePathname, useRouter } from "next/navigation";
@@ -8,10 +9,6 @@ import { urlForImage } from "@/sanity/lib/image";
 import HomeTab from "./tabs/HomeTab";
 import AboutTab from "./tabs/AboutTab";
 import CareerTab from "./tabs/CareerTab";
-import AchievementTab from "./tabs/AchievementTab";
-import ProjectsTab from "./tabs/ProjectsTab";
-import GithubTab from "./tabs/GithubTab";
-import ContactTab from "@/app/components/tabs/ContactTab";
 import type {
     AboutProfileData,
     ContactData,
@@ -23,6 +20,26 @@ import type {
     SidebarProfileData,
     TranslationText,
 } from "./tabs/types";
+
+const AchievementTab = dynamic(() => import("./tabs/AchievementTab"), {
+    ssr: false,
+    loading: () => <div className="p-4 text-sm text-secondary">Loading...</div>,
+});
+
+const ProjectsTab = dynamic(() => import("./tabs/ProjectsTab"), {
+    ssr: false,
+    loading: () => <div className="p-4 text-sm text-secondary">Loading...</div>,
+});
+
+const GithubTab = dynamic(() => import("./tabs/GithubTab"), {
+    ssr: false,
+    loading: () => <div className="p-4 text-sm text-secondary">Loading...</div>,
+});
+
+const ContactTab = dynamic(() => import("@/app/components/tabs/ContactTab"), {
+    ssr: false,
+    loading: () => <div className="p-4 text-sm text-secondary">Loading...</div>,
+});
 
 type MenuKey =
     | "home"
@@ -376,6 +393,7 @@ export default function PortfolioSidebarLayout({
                                     alt={profile?.fullName || "Profile"}
                                     fill
                                     className="object-cover"
+                                    sizes="96px"
                                 />
                             ) : (
                                 <div className="flex h-full w-full items-center justify-center text-xs text-secondary">No Photo</div>

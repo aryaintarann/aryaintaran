@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Chatbot from "./components/Chatbot";
+import ChatbotLoader from "./components/ChatbotLoader";
 
 const inter = Inter({ subsets: ["latin"], variable: '--font-inter' });
 
@@ -61,7 +61,7 @@ export default function RootLayout({
         <main className="min-h-screen">
           {children}
         </main>
-        <Chatbot />
+        <ChatbotLoader />
       </body>
     </html>
   );
