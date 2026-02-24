@@ -1,5 +1,41 @@
 import type { StructureResolver } from "sanity/structure";
 
+const languageDocItems = (
+  S: Parameters<StructureResolver>[0],
+  schemaType: string,
+  baseId: string,
+  titleId: string,
+  titleEn: string
+) =>
+  S.list()
+    .title("Language")
+    .items([
+      S.listItem()
+        .title(titleId)
+        .child(
+          S.document()
+            .schemaType(schemaType)
+            .documentId(`${baseId}-id`)
+            .title(titleId)
+        ),
+      S.listItem()
+        .title(titleEn)
+        .child(
+          S.document()
+            .schemaType(schemaType)
+            .documentId(`${baseId}-en`)
+            .title(titleEn)
+        ),
+      S.listItem()
+        .title("Default / Fallback")
+        .child(
+          S.document()
+            .schemaType(schemaType)
+            .documentId(`${baseId}-main`)
+            .title("Default / Fallback")
+        ),
+    ]);
+
 export const structure: StructureResolver = (S) =>
   S.list()
     .title("Content")
@@ -8,10 +44,13 @@ export const structure: StructureResolver = (S) =>
         .title("Side Menu")
         .id("side-menu")
         .child(
-          S.document()
-            .schemaType("sidebarProfile")
-            .documentId("sidebar-profile-main")
-            .title("Side Menu Profile")
+          languageDocItems(
+            S,
+            "sidebarProfile",
+            "sidebar-profile",
+            "Side Menu Profile (ID)",
+            "Side Menu Profile (EN)"
+          )
         ),
 
       S.listItem()
@@ -23,20 +62,10 @@ export const structure: StructureResolver = (S) =>
             .items([
               S.listItem()
                 .title("Home Tab Settings")
-                .child(
-                  S.document()
-                    .schemaType("homeContent")
-                    .documentId("home-content-main")
-                    .title("Home Tab Settings")
-                ),
+                .child(languageDocItems(S, "homeContent", "home-content", "Home Tab Settings (ID)", "Home Tab Settings (EN)")),
               S.listItem()
                 .title("Home Profile Data")
-                .child(
-                  S.document()
-                    .schemaType("homeProfile")
-                    .documentId("home-profile-main")
-                    .title("Home Profile Data")
-                ),
+                .child(languageDocItems(S, "homeProfile", "home-profile", "Home Profile Data (ID)", "Home Profile Data (EN)")),
             ])
         ),
 
@@ -49,21 +78,31 @@ export const structure: StructureResolver = (S) =>
             .items([
               S.listItem()
                 .title("About Tab Settings")
-                .child(
-                  S.document()
-                    .schemaType("aboutContent")
-                    .documentId("about-content-main")
-                    .title("About Tab Settings")
-                ),
+                .child(languageDocItems(S, "aboutContent", "about-content", "About Tab Settings (ID)", "About Tab Settings (EN)")),
               S.listItem()
                 .title("About Profile")
+                .child(languageDocItems(S, "aboutProfile", "about-profile", "About Profile (ID)", "About Profile (EN)")),
+              S.listItem()
+                .title("Education (ID)")
                 .child(
-                  S.document()
-                    .schemaType("aboutProfile")
-                    .documentId("about-profile-main")
-                    .title("About Profile")
+                  S.documentTypeList("education")
+                    .title("Education (ID)")
+                    .filter('_type == "education" && language == "id"')
                 ),
-              S.documentTypeListItem("education").title("Education"),
+              S.listItem()
+                .title("Education (EN)")
+                .child(
+                  S.documentTypeList("education")
+                    .title("Education (EN)")
+                    .filter('_type == "education" && language == "en"')
+                ),
+              S.listItem()
+                .title("Education (Default)")
+                .child(
+                  S.documentTypeList("education")
+                    .title("Education (Default)")
+                    .filter('_type == "education" && !defined(language)')
+                ),
             ])
         ),
 
@@ -76,13 +115,28 @@ export const structure: StructureResolver = (S) =>
             .items([
               S.listItem()
                 .title("Career Tab Settings")
+                .child(languageDocItems(S, "careerContent", "career-content", "Career Tab Settings (ID)", "Career Tab Settings (EN)")),
+              S.listItem()
+                .title("Career Items (ID)")
                 .child(
-                  S.document()
-                    .schemaType("careerContent")
-                    .documentId("career-content-main")
-                    .title("Career Tab Settings")
+                  S.documentTypeList("job")
+                    .title("Career Items (ID)")
+                    .filter('_type == "job" && language == "id"')
                 ),
-              S.documentTypeListItem("job").title("Career Items"),
+              S.listItem()
+                .title("Career Items (EN)")
+                .child(
+                  S.documentTypeList("job")
+                    .title("Career Items (EN)")
+                    .filter('_type == "job" && language == "en"')
+                ),
+              S.listItem()
+                .title("Career Items (Default)")
+                .child(
+                  S.documentTypeList("job")
+                    .title("Career Items (Default)")
+                    .filter('_type == "job" && !defined(language)')
+                ),
             ])
         ),
 
@@ -95,19 +149,32 @@ export const structure: StructureResolver = (S) =>
             .items([
               S.listItem()
                 .title("Achievement Tab Settings")
-                .child(
-                  S.document()
-                    .schemaType("achievementContent")
-                    .documentId("achievement-content-main")
-                    .title("Achievement Tab Settings")
-                ),
+                .child(languageDocItems(S, "achievementContent", "achievement-content", "Achievement Tab Settings (ID)", "Achievement Tab Settings (EN)")),
               S.listItem()
-                .title("Achievement Items")
+                .title("Achievement Items (ID)")
                 .child(
                   S.documentTypeList("project")
-                    .title("Achievement Items")
+                    .title("Achievement Items (ID)")
                     .filter(
-                      '_type == "project" && ("certificate" in tags || "certification" in tags || "sertifikat" in tags || "piagam" in tags)'
+                      '_type == "project" && language == "id" && ("certificate" in tags || "certification" in tags || "sertifikat" in tags || "piagam" in tags)'
+                    )
+                ),
+              S.listItem()
+                .title("Achievement Items (EN)")
+                .child(
+                  S.documentTypeList("project")
+                    .title("Achievement Items (EN)")
+                    .filter(
+                      '_type == "project" && language == "en" && ("certificate" in tags || "certification" in tags || "sertifikat" in tags || "piagam" in tags)'
+                    )
+                ),
+              S.listItem()
+                .title("Achievement Items (Default)")
+                .child(
+                  S.documentTypeList("project")
+                    .title("Achievement Items (Default)")
+                    .filter(
+                      '_type == "project" && !defined(language) && ("certificate" in tags || "certification" in tags || "sertifikat" in tags || "piagam" in tags)'
                     )
                 ),
             ])
@@ -122,19 +189,32 @@ export const structure: StructureResolver = (S) =>
             .items([
               S.listItem()
                 .title("Project Tab Settings")
-                .child(
-                  S.document()
-                    .schemaType("projectContent")
-                    .documentId("project-content-main")
-                    .title("Project Tab Settings")
-                ),
+                .child(languageDocItems(S, "projectContent", "project-content", "Project Tab Settings (ID)", "Project Tab Settings (EN)")),
               S.listItem()
-                .title("Project Items")
+                .title("Project Items (ID)")
                 .child(
                   S.documentTypeList("project")
-                    .title("Project Items")
+                    .title("Project Items (ID)")
                     .filter(
-                      '_type == "project" && !("personal" in tags) && !("certificate" in tags) && !("certification" in tags) && !("sertifikat" in tags) && !("piagam" in tags)'
+                      '_type == "project" && language == "id" && !("personal" in tags) && !("certificate" in tags) && !("certification" in tags) && !("sertifikat" in tags) && !("piagam" in tags)'
+                    )
+                ),
+              S.listItem()
+                .title("Project Items (EN)")
+                .child(
+                  S.documentTypeList("project")
+                    .title("Project Items (EN)")
+                    .filter(
+                      '_type == "project" && language == "en" && !("personal" in tags) && !("certificate" in tags) && !("certification" in tags) && !("sertifikat" in tags) && !("piagam" in tags)'
+                    )
+                ),
+              S.listItem()
+                .title("Project Items (Default)")
+                .child(
+                  S.documentTypeList("project")
+                    .title("Project Items (Default)")
+                    .filter(
+                      '_type == "project" && !defined(language) && !("personal" in tags) && !("certificate" in tags) && !("certification" in tags) && !("sertifikat" in tags) && !("piagam" in tags)'
                     )
                 ),
             ])
@@ -149,18 +229,27 @@ export const structure: StructureResolver = (S) =>
             .items([
               S.listItem()
                 .title("Personal Project Tab Settings")
-                .child(
-                  S.document()
-                    .schemaType("personalProjectContent")
-                    .documentId("personal-project-content-main")
-                    .title("Personal Project Tab Settings")
-                ),
+                .child(languageDocItems(S, "personalProjectContent", "personal-project-content", "Personal Project Tab Settings (ID)", "Personal Project Tab Settings (EN)")),
               S.listItem()
-                .title("Personal Project Items")
+                .title("Personal Project Items (ID)")
                 .child(
                   S.documentTypeList("project")
-                    .title("Personal Project Items")
-                    .filter('_type == "project" && "personal" in tags')
+                    .title("Personal Project Items (ID)")
+                    .filter('_type == "project" && language == "id" && "personal" in tags')
+                ),
+              S.listItem()
+                .title("Personal Project Items (EN)")
+                .child(
+                  S.documentTypeList("project")
+                    .title("Personal Project Items (EN)")
+                    .filter('_type == "project" && language == "en" && "personal" in tags')
+                ),
+              S.listItem()
+                .title("Personal Project Items (Default)")
+                .child(
+                  S.documentTypeList("project")
+                    .title("Personal Project Items (Default)")
+                    .filter('_type == "project" && !defined(language) && "personal" in tags')
                 ),
             ])
         ),
@@ -169,10 +258,7 @@ export const structure: StructureResolver = (S) =>
         .title("GitHub")
         .id("github")
         .child(
-          S.document()
-            .schemaType("github")
-            .documentId("github-main")
-            .title("GitHub Content")
+          languageDocItems(S, "github", "github", "GitHub Content (ID)", "GitHub Content (EN)")
         ),
 
       S.listItem()
@@ -184,20 +270,10 @@ export const structure: StructureResolver = (S) =>
             .items([
               S.listItem()
                 .title("Contact Tab Settings")
-                .child(
-                  S.document()
-                    .schemaType("contactContent")
-                    .documentId("contact-content-main")
-                    .title("Contact Tab Settings")
-                ),
+                .child(languageDocItems(S, "contactContent", "contact-content", "Contact Tab Settings (ID)", "Contact Tab Settings (EN)")),
               S.listItem()
                 .title("Contact Data")
-                .child(
-                  S.document()
-                    .schemaType("contact")
-                    .documentId("contact-main")
-                    .title("Contact Data")
-                ),
+                .child(languageDocItems(S, "contact", "contact", "Contact Data (ID)", "Contact Data (EN)")),
             ])
         ),
     ]);

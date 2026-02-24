@@ -176,16 +176,8 @@ export default function PortfolioSidebarLayout({
         ? urlForImage(sidebarProfile.profileImage as never).width(300).height(300).url()
         : "";
     const [activeMenu, setActiveMenu] = useState<MenuKey>(initialMenu);
-    const [language, setLanguage] = useState<LanguageKey>(() => {
-        if (typeof window === "undefined") return initialLanguage;
-        const savedLanguage = window.localStorage.getItem("portfolio-language");
-        return savedLanguage === "en" ? "en" : "id";
-    });
-    const [theme, setTheme] = useState<"light" | "dark">(() => {
-        if (typeof window === "undefined") return "dark";
-        const savedTheme = window.localStorage.getItem("portfolio-theme");
-        return savedTheme === "light" ? "light" : "dark";
-    });
+    const [language, setLanguage] = useState<LanguageKey>(initialLanguage);
+    const [theme, setTheme] = useState<"light" | "dark">("dark");
     const [openSettings, setOpenSettings] = useState(false);
     const settingsPanelRef = useRef<HTMLDivElement>(null);
     const menuNavRef = useRef<HTMLElement>(null);
@@ -199,6 +191,13 @@ export default function PortfolioSidebarLayout({
     );
 
     const t = languageText[language];
+
+    useEffect(() => {
+        const savedTheme = window.localStorage.getItem("portfolio-theme");
+        if (savedTheme === "light" || savedTheme === "dark") {
+            setTheme(savedTheme);
+        }
+    }, []);
 
     useEffect(() => {
         document.documentElement.setAttribute("data-theme", theme);

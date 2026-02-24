@@ -5,6 +5,12 @@ export const sidebarProfile = defineType({
   title: "Sidebar Profile",
   type: "document",
   fields: [
+    defineField({
+      name: "language",
+      title: "Language",
+      type: "string",
+      options: { list: [{ title: "Indonesian", value: "id" }, { title: "English", value: "en" }] },
+    }),
     defineField({ name: "profileImage", title: "Profile Photo", type: "image" }),
     defineField({ name: "headline", title: "Headline", type: "string" }),
   ],

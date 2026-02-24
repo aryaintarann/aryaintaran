@@ -5,6 +5,12 @@ export const education = defineType({
   title: "Education",
   type: "document",
   fields: [
+    defineField({
+      name: "language",
+      title: "Language",
+      type: "string",
+      options: { list: [{ title: "Indonesian", value: "id" }, { title: "English", value: "en" }] },
+    }),
     defineField({ name: "schoolName", title: "School Name", type: "string" }),
     defineField({ name: "degree", title: "Degree", type: "string" }),
     defineField({ name: "fieldOfStudy", title: "Field of Study", type: "string" }),

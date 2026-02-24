@@ -14,6 +14,7 @@ import { profile } from "./profile";
 import { project } from "./project";
 import { projectContent } from "./projectContent";
 import { sidebarProfile } from "./sidebarProfile";
+import { translationCache } from "./translationCache";
 
 export const schemaTypes = [
 	homeContent,
@@ -32,4 +33,5 @@ export const schemaTypes = [
 	project,
 	github,
 	contact,
+	translationCache,
 ];

@@ -5,6 +5,12 @@ export const homeContent = defineType({
   title: "Home Content",
   type: "document",
   fields: [
+    defineField({
+      name: "language",
+      title: "Language",
+      type: "string",
+      options: { list: [{ title: "Indonesian", value: "id" }, { title: "English", value: "en" }] },
+    }),
     defineField({ name: "homeTitle", title: "Home Title", type: "string" }),
     defineField({ name: "hardSkillsTitle", title: "Hard Skills Title", type: "string" }),
     defineField({ name: "softSkillsTitle", title: "Soft Skills Title", type: "string" }),

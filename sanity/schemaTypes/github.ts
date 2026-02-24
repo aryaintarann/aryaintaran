@@ -5,6 +5,12 @@ export const github = defineType({
   title: "GitHub",
   type: "document",
   fields: [
+    defineField({
+      name: "language",
+      title: "Language",
+      type: "string",
+      options: { list: [{ title: "Indonesian", value: "id" }, { title: "English", value: "en" }] },
+    }),
     defineField({ name: "githubTitle", title: "GitHub Tab Title", type: "string" }),
     defineField({ name: "profileUrl", title: "GitHub Profile URL", type: "url" }),
     defineField({ name: "username", title: "GitHub Username", type: "string" }),

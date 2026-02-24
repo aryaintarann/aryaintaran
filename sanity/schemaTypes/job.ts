@@ -5,6 +5,12 @@ export const job = defineType({
   title: "Job",
   type: "document",
   fields: [
+    defineField({
+      name: "language",
+      title: "Language",
+      type: "string",
+      options: { list: [{ title: "Indonesian", value: "id" }, { title: "English", value: "en" }] },
+    }),
     defineField({ name: "name", title: "Company Name", type: "string" }),
     defineField({ name: "jobTitle", title: "Job Title", type: "string" }),
     defineField({ name: "logo", title: "Company Logo", type: "image" }),

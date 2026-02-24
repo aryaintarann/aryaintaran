@@ -5,6 +5,12 @@ export const project = defineType({
   title: "Project",
   type: "document",
   fields: [
+    defineField({
+      name: "language",
+      title: "Language",
+      type: "string",
+      options: { list: [{ title: "Indonesian", value: "id" }, { title: "English", value: "en" }] },
+    }),
     defineField({ name: "title", title: "Title", type: "string" }),
     defineField({ name: "slug", title: "Slug", type: "slug", options: { source: "title" } }),
     defineField({ name: "logo", title: "Logo", type: "image" }),

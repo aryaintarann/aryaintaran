@@ -5,6 +5,12 @@ export const achievementContent = defineType({
   title: "Achievement Content",
   type: "document",
   fields: [
+    defineField({
+      name: "language",
+      title: "Language",
+      type: "string",
+      options: { list: [{ title: "Indonesian", value: "id" }, { title: "English", value: "en" }] },
+    }),
     defineField({ name: "achievementTitle", title: "Achievement Title", type: "string" }),
     defineField({ name: "achievementEmpty", title: "Achievement Empty Text", type: "string" }),
   ],
