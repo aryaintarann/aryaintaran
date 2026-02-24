@@ -211,6 +211,18 @@ export default function PortfolioSidebarLayout({
     }, [language]);
 
     useEffect(() => {
+        if (typeof window === "undefined") return;
+
+        const snapshot = {
+            fullName: profile?.fullName || "",
+            headline: sidebarProfile?.headline || "",
+            profileImageUrl: profileImageUrl || "",
+        };
+
+        window.localStorage.setItem("portfolio-sidebar-snapshot", JSON.stringify(snapshot));
+    }, [profile?.fullName, profileImageUrl, sidebarProfile?.headline]);
+
+    useEffect(() => {
         setActiveMenu(initialMenu);
     }, [initialMenu]);
 

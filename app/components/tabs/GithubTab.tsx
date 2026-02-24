@@ -113,6 +113,8 @@ export default function GithubTab({ github, contact, t }: GithubTabProps) {
                                     blockMargin={3}
                                     fontSize={12}
                                     showWeekdayLabels={false}
+                                    throwOnError={false}
+                                    errorMessage={t.githubFailed}
                                 />
                             </div>
                         </a>
