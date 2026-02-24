@@ -1,20 +1,53 @@
 "use client";
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import { usePathname } from "next/navigation";
 
 interface Message {
     role: "user" | "assistant";
     content: string;
 }
 
-const QUICK_ACTIONS = [
-    { label: "👋 Siapa Arya?", message: "Siapa Arya Intaran?" },
-    { label: "💼 Pengalaman", message: "Apa saja pengalaman kerja Arya?" },
-    { label: "🛠️ Skills", message: "Skills apa saja yang dimiliki?" },
-    { label: "🚀 Proyek", message: "Apa saja proyek yang pernah dibuat?" },
-    { label: "📬 Kontak", message: "Bagaimana cara menghubungi Arya?" },
-];
+type ChatLanguage = "id" | "en";
+
+const chatUi = {
+    id: {
+        quickActions: [
+            { label: "👋 Siapa Arya?", message: "Siapa Arya Intaran?" },
+            { label: "💼 Pengalaman", message: "Apa saja pengalaman kerja Arya?" },
+            { label: "🛠️ Skills", message: "Skills apa saja yang dimiliki?" },
+            { label: "🚀 Proyek", message: "Apa saja proyek yang pernah dibuat?" },
+            { label: "📬 Kontak", message: "Bagaimana cara menghubungi Arya?" },
+        ],
+        subtitle: "Tanya apa saja tentang Arya ✨",
+        greetTitle: "Halo! 👋",
+        greetText: "Saya AI assistant untuk portfolio Arya. Tanya apa saja!",
+        placeholder: "Ketik pesan...",
+        errorText: "Terjadi kesalahan, silakan coba lagi.",
+        fallbackText: "Maaf, tidak ada respons.",
+        networkErrorText:
+            "Maaf, terjadi kesalahan. Silakan coba lagi atau hubungi langsung melalui halaman Contact 😊",
+    },
+    en: {
+        quickActions: [
+            { label: "👋 Who is Arya?", message: "Who is Arya Intaran?" },
+            { label: "💼 Experience", message: "What work experience does Arya have?" },
+            { label: "🛠️ Skills", message: "What skills does Arya have?" },
+            { label: "🚀 Projects", message: "What projects has Arya built?" },
+            { label: "📬 Contact", message: "How can I contact Arya?" },
+        ],
+        subtitle: "Ask anything about Arya ✨",
+        greetTitle: "Hi! 👋",
+        greetText: "I’m Arya’s portfolio AI assistant. Ask me anything!",
+        placeholder: "Type your message...",
+        errorText: "Something went wrong, please try again.",
+        fallbackText: "Sorry, no response received.",
+        networkErrorText:
+            "Sorry, something went wrong. Please try again or contact Arya directly from the Contact section 😊",
+    },
+} as const;
 
 export default function Chatbot() {
+    const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState("");
@@ -22,6 +55,9 @@ export default function Chatbot() {
     const [showQuickActions, setShowQuickActions] = useState(true);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+
+    const language: ChatLanguage = pathname?.startsWith("/en") ? "en" : "id";
+    const ui = chatUi[language];
 
     const scrollToBottom = useCallback(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -51,26 +87,25 @@ export default function Chatbot() {
             const response = await fetch("/api/chat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ messages: newMessages }),
+                body: JSON.stringify({ messages: newMessages, language, path: pathname || "/" }),
             });
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => null);
-                const errorMsg = errorData?.message || "Terjadi kesalahan, silakan coba lagi.";
+                const errorMsg = errorData?.message || ui.errorText;
                 setMessages((prev) => [...prev, { role: "assistant", content: errorMsg }]);
                 setIsLoading(false);
                 return;
             }
 
             const data = await response.json();
-            setMessages((prev) => [...prev, { role: "assistant", content: data.text || "Maaf, tidak ada respons." }]);
+            setMessages((prev) => [...prev, { role: "assistant", content: data.text || ui.fallbackText }]);
         } catch {
             setMessages((prev) => [
                 ...prev,
                 {
                     role: "assistant",
-                    content:
-                        "Maaf, terjadi kesalahan. Silakan coba lagi atau hubungi langsung melalui halaman Contact 😊",
+                    content: ui.networkErrorText,
                 },
             ]);
         } finally {
@@ -231,7 +266,7 @@ export default function Chatbot() {
                                     AI Assistant
                                 </h3>
                                 <p className="text-secondary/70 text-xs">
-                                    Tanya apa saja tentang Arya ✨
+                                    {ui.subtitle}
                                 </p>
                             </div>
                         </div>
@@ -256,15 +291,15 @@ export default function Chatbot() {
                                     </svg>
                                 </div>
                                 <h4 className="text-text font-semibold mb-1">
-                                    Halo! 👋
+                                    {ui.greetTitle}
                                 </h4>
                                 <p className="text-secondary text-sm mb-6 max-w-65 mx-auto">
-                                    Saya AI assistant untuk portfolio Arya. Tanya apa saja!
+                                    {ui.greetText}
                                 </p>
 
                                 {showQuickActions && (
                                     <div className="flex flex-wrap gap-2 justify-center">
-                                        {QUICK_ACTIONS.map((action) => (
+                                        {ui.quickActions.map((action) => (
                                             <button
                                                 key={action.label}
                                                 onClick={() => handleQuickAction(action.message)}
@@ -321,7 +356,7 @@ export default function Chatbot() {
                                 type="text"
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
-                                placeholder="Ketik pesan..."
+                                placeholder={ui.placeholder}
                                 disabled={isLoading}
                                 className="flex-1 bg-surface border border-white/10 rounded-xl px-4 py-2.5 text-sm text-text placeholder-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all disabled:opacity-50"
                             />
