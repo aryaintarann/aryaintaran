@@ -274,6 +274,13 @@ export const structure: StructureResolver = (S) =>
               S.listItem()
                 .title("Contact Data")
                 .child(languageDocItems(S, "contact", "contact", "Contact Data (ID)", "Contact Data (EN)")),
+              S.listItem()
+                .title("Contact Form Messages")
+                .child(
+                  S.documentTypeList("contactSubmission")
+                    .title("Contact Form Messages")
+                    .defaultOrdering([{ field: "createdAt", direction: "desc" }])
+                ),
             ])
         ),
     ]);
