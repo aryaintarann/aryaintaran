@@ -3,6 +3,7 @@ import { aboutContent } from "./aboutContent";
 import { achievementContent } from "./achievementContent";
 import { careerContent } from "./careerContent";
 import { contact } from "./contact";
+import { contactSubmission } from "./contactSubmission";
 import { contactContent } from "./contactContent";
 import { education } from "./education";
 import { github } from "./github";
@@ -33,5 +34,6 @@ export const schemaTypes = [
 	project,
 	github,
 	contact,
+	contactSubmission,
 	translationCache,
 ];
