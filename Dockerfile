@@ -6,7 +6,11 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 FROM base AS deps
 COPY package*.json ./
-RUN npm ci
+RUN npm config set fetch-retries 5 \
+	&& npm config set fetch-retry-mintimeout 20000 \
+	&& npm config set fetch-retry-maxtimeout 120000 \
+	&& npm config set fetch-timeout 300000 \
+	&& npm ci
 
 FROM deps AS builder
 COPY . .
