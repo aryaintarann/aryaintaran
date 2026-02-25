@@ -29,6 +29,30 @@ const getIssuedDate = (value?: string) => {
     });
 };
 
+const getPlainTextFromValue = (value: ProjectData["description"]): string => {
+    if (!value) return "";
+    if (typeof value === "string") return value.trim();
+    if (!Array.isArray(value)) return "";
+
+    return value
+        .map((block) => {
+            if (!block || typeof block !== "object" || !("children" in block)) return "";
+            const children = (block as { children?: unknown }).children;
+            if (!Array.isArray(children)) return "";
+
+            return children
+                .map((child) => {
+                    if (!child || typeof child !== "object" || !("text" in child)) return "";
+                    const text = (child as { text?: unknown }).text;
+                    return typeof text === "string" ? text : "";
+                })
+                .join("");
+        })
+        .filter(Boolean)
+        .join("\n")
+        .trim();
+};
+
 export default function AchievementTab({ achievementItems, t }: AchievementTabProps) {
     const [activeCertificate, setActiveCertificate] = useState<ProjectData | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -46,6 +70,10 @@ export default function AchievementTab({ achievementItems, t }: AchievementTabPr
             setActiveCertificate(null);
         }, MODAL_TRANSITION_MS);
     };
+
+    const certificateDescription = activeCertificate
+        ? getPlainTextFromValue(activeCertificate.description) || activeCertificate.shortDescription || ""
+        : "";
 
     return (
         <div>
@@ -132,7 +160,7 @@ export default function AchievementTab({ achievementItems, t }: AchievementTabPr
                         >
                             <button
                                 type="button"
-                                aria-label="Close certificate detail"
+                                aria-label="Close"
                                 onClick={closeModal}
                                 className="absolute right-4 top-4 inline-flex h-8 w-8 items-center justify-center rounded-full bg-background text-text"
                             >
@@ -144,6 +172,10 @@ export default function AchievementTab({ achievementItems, t }: AchievementTabPr
                                 <p className="mt-2 text-base text-secondary md:text-lg">
                                     {activeCertificate.shortDescription || "Certificate Issuer"}
                                 </p>
+
+                                {certificateDescription && (
+                                    <p className="mt-5 whitespace-pre-line text-base text-secondary">{certificateDescription}</p>
+                                )}
 
                                 <div className="mt-6 space-y-5 text-base">
                                     <div>
@@ -165,6 +197,17 @@ export default function AchievementTab({ achievementItems, t }: AchievementTabPr
                                         <p className="text-sm uppercase tracking-wide text-secondary">Issue Date</p>
                                         <p className="mt-1 font-semibold text-text">{getIssuedDate(activeCertificate._createdAt)}</p>
                                     </div>
+                                </div>
+
+                                <div className="mt-6 flex flex-wrap items-center gap-2">
+                                    {(activeCertificate.tags || []).map((tag, index) => (
+                                        <span
+                                            key={`${activeCertificate._id}-detail-tag-${index}`}
+                                            className="rounded-full border border-white/15 px-2.5 py-1 text-[11px] text-secondary"
+                                        >
+                                            {tag}
+                                        </span>
+                                    ))}
                                 </div>
 
                                 {activeCertificate.link && (

@@ -1,10 +1,11 @@
 import type { ContactData } from "./types";
-import type { ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 
 interface ContactTabProps {
     contact: ContactData | null;
     sendEmail: string;
     title: string;
+    language: "id" | "en";
 }
 
 interface LinkCardProps {
@@ -55,8 +56,84 @@ function LinkCard({
     );
 }
 
-export default function ContactTab({ contact, sendEmail, title }: ContactTabProps) {
-    const email = contact?.email;
+export default function ContactTab({ contact, sendEmail, title, language }: ContactTabProps) {
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [message, setMessage] = useState("");
+    const [website, setWebsite] = useState("");
+    const [sending, setSending] = useState(false);
+    const [feedback, setFeedback] = useState<string | null>(null);
+
+    const ui = useMemo(
+        () =>
+            language === "en"
+                ? {
+                      fallbackTitle: "Fallback Contact Form",
+                      fallbackDesc: "If quick links fail, send me a direct message here.",
+                      name: "Your Name",
+                      email: "Your Email",
+                      message: "Message",
+                      submit: "Send Message",
+                      sent: "Message sent successfully. I will get back to you soon.",
+                      failed: "Failed to send message. Please try again in a moment.",
+                      invalid: "Please complete all fields before sending.",
+                  }
+                : {
+                      fallbackTitle: "Form Kontak Cadangan",
+                      fallbackDesc: "Jika link cepat bermasalah, kirim pesan langsung lewat form ini.",
+                      name: "Nama Anda",
+                      email: "Email Anda",
+                      message: "Pesan",
+                      submit: "Kirim Pesan",
+                      sent: "Pesan berhasil dikirim. Saya akan segera membalas.",
+                      failed: "Gagal mengirim pesan. Coba lagi beberapa saat.",
+                      invalid: "Lengkapi semua field sebelum mengirim.",
+                  },
+        [language]
+    );
+
+    const contactEmail = contact?.email;
+
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        if (!name.trim() || !email.trim() || !message.trim()) {
+            setFeedback(ui.invalid);
+            return;
+        }
+
+        setSending(true);
+        setFeedback(null);
+
+        try {
+            const response = await fetch("/api/contact", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: name.trim(),
+                    email: email.trim(),
+                    message: message.trim(),
+                    website: website.trim(),
+                    language,
+                }),
+            });
+
+            if (!response.ok) {
+                const payload = (await response.json().catch(() => null)) as { error?: string; message?: string } | null;
+                setFeedback(payload?.message || ui.failed);
+                return;
+            }
+
+            setName("");
+            setEmail("");
+            setMessage("");
+            setWebsite("");
+            setFeedback(ui.sent);
+        } catch {
+            setFeedback(ui.failed);
+        } finally {
+            setSending(false);
+        }
+    };
 
     return (
         <div>
@@ -66,7 +143,7 @@ export default function ContactTab({ contact, sendEmail, title }: ContactTabProp
                 <LinkCard
                     headline="Stay in Touch"
                     actionLabel={sendEmail}
-                    href={email ? `mailto:${email}` : undefined}
+                    href={contactEmail ? `mailto:${contactEmail}` : undefined}
                     className="bg-linear-to-r from-rose-700/80 to-red-800/80"
                     wide
                     icon={
@@ -131,6 +208,58 @@ export default function ContactTab({ contact, sendEmail, title }: ContactTabProp
                     }
                 />
             </div>
+
+            <section className="mt-8 rounded-xl border border-white/10 bg-surface/40 p-5 md:p-6">
+                <h3 className="text-xl font-semibold text-text">{ui.fallbackTitle}</h3>
+                <p className="mt-1 text-sm text-secondary">{ui.fallbackDesc}</p>
+
+                <form className="mt-4 space-y-3" onSubmit={handleSubmit}>
+                    <input
+                        type="text"
+                        value={name}
+                        onChange={(event) => setName(event.target.value)}
+                        placeholder={ui.name}
+                        className="w-full rounded-lg border border-white/10 bg-background px-3 py-2 text-sm text-text outline-none focus:border-primary/50"
+                        disabled={sending}
+                    />
+                    <input
+                        type="email"
+                        value={email}
+                        onChange={(event) => setEmail(event.target.value)}
+                        placeholder={ui.email}
+                        className="w-full rounded-lg border border-white/10 bg-background px-3 py-2 text-sm text-text outline-none focus:border-primary/50"
+                        disabled={sending}
+                    />
+                    <textarea
+                        value={message}
+                        onChange={(event) => setMessage(event.target.value)}
+                        placeholder={ui.message}
+                        rows={4}
+                        className="w-full rounded-lg border border-white/10 bg-background px-3 py-2 text-sm text-text outline-none focus:border-primary/50"
+                        disabled={sending}
+                    />
+
+                    <input
+                        type="text"
+                        tabIndex={-1}
+                        autoComplete="off"
+                        value={website}
+                        onChange={(event) => setWebsite(event.target.value)}
+                        className="hidden"
+                        aria-hidden="true"
+                    />
+
+                    <button
+                        type="submit"
+                        disabled={sending}
+                        className="inline-flex items-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-background transition-opacity hover:opacity-90 disabled:opacity-60"
+                    >
+                        {sending ? "..." : ui.submit}
+                    </button>
+
+                    {feedback && <p className="text-sm text-secondary">{feedback}</p>}
+                </form>
+            </section>
         </div>
     );
 }
