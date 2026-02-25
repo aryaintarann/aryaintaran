@@ -5,7 +5,7 @@ services:
       target: dev
     container_name: aryaintaran-dev
     ports:
-      - "3000:3000"
+      - "3891:3891"
     env_file:
       - .env.local
     environment:
@@ -20,7 +20,7 @@ services:
       - gemini_api_key
       - google_translate_api_key
       - sanity_api_write_token
-    command: npm run dev -- -p 3000
+    command: npm run dev
 
   app-prod:
     build:
@@ -28,7 +28,7 @@ services:
       target: runner
     container_name: aryaintaran-prod
     ports:
-      - "3000:3000"
+      - "3891:3891"
     env_file:
       - .env.local
     environment:
