@@ -68,8 +68,8 @@ Pastikan spesifikasi mesin (komputer/laptop) Anda sudah terinstal framework Java
 Jika Anda ingin mengubah konten di dalamnya (seperti proyek baru dan sebagainya), Anda dapat login dan mengakses Sanity Studio:
 
 1. Jalankan aplikasi seperti tahap `Memulai Development` di atas.
-2. Akses halaman `/studio` atau sesuai tautan Sanity CLI bawaan.
-3. Konten siap diedit dan dipublikasikan (Publish).
+2. Akses halaman `/studio`.
+3. Konten siap diedit dan dipublikasikan.
 
 ---
 *Dibuat dengan ❤️ oleh Arya Intaran*
