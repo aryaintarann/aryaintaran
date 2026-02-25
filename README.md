@@ -61,7 +61,7 @@ Pastikan spesifikasi mesin (komputer/laptop) Anda sudah terinstal framework Java
    npm run dev
    ```
 
-5. Buka tautan [http://localhost:3000](http://localhost:3000) pada peramban (browser) Anda untuk melihat hasilnya.
+5. Buka tautan [http://localhost:3891](http://localhost:3891) pada peramban (browser) Anda untuk melihat hasilnya.
 
 ## 🐳 Menjalankan dengan Docker
 
@@ -83,7 +83,7 @@ Project ini sudah disiapkan dengan `Dockerfile`, `.dockerignore`, dan `docker-co
    ```bash
    docker compose up --build app-dev
    ```
-5. Buka [http://localhost:3000](http://localhost:3000).
+5. Buka [http://localhost:3891](http://localhost:3891).
 
 ### Production Mode
 
@@ -92,7 +92,7 @@ Project ini sudah disiapkan dengan `Dockerfile`, `.dockerignore`, dan `docker-co
    ```bash
    docker compose up --build app-prod
    ```
-3. Buka [http://localhost:3000](http://localhost:3000).
+3. Buka [http://localhost:3891](http://localhost:3891).
 
 ### Catatan Keamanan
 
