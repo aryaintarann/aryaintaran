@@ -15,6 +15,7 @@ services:
     environment:
       GEMINI_API_KEY_FILE: /run/secrets/gemini_api_key
       GOOGLE_TRANSLATE_API_KEY_FILE: /run/secrets/google_translate_api_key
+      NODE_OPTIONS: --dns-result-order=ipv4first
       SANITY_API_WRITE_TOKEN_FILE: /run/secrets/sanity_api_write_token
     volumes:
       - .:/app
@@ -42,6 +43,7 @@ services:
     environment:
       GEMINI_API_KEY_FILE: /run/secrets/gemini_api_key
       GOOGLE_TRANSLATE_API_KEY_FILE: /run/secrets/google_translate_api_key
+      NODE_OPTIONS: --dns-result-order=ipv4first
       SANITY_API_WRITE_TOKEN_FILE: /run/secrets/sanity_api_write_token
     secrets:
       - gemini_api_key
