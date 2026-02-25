@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { PortableText } from "next-sanity";
 
-export const revalidate = 0;
+export const revalidate = 300;
 
 export async function generateStaticParams() {
     const slugs = await client.fetch(groq`*[_type == "project" && defined(slug.current)] { "slug": slug.current }`) as Array<{ slug: string }>;

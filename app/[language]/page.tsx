@@ -5,7 +5,7 @@ interface LanguagePageProps {
   params: Promise<{ language: string }>;
 }
 
-export const revalidate = 0;
+export const revalidate = 300;
 
 export default async function LanguagePage({ params }: LanguagePageProps) {
   const { language } = await params;
