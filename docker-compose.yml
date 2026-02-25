@@ -1,0 +1,49 @@
+services:
+  app-dev:
+    build:
+      context: .
+      target: dev
+    container_name: aryaintaran-dev
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.local
+    environment:
+      GEMINI_API_KEY_FILE: /run/secrets/gemini_api_key
+      GOOGLE_TRANSLATE_API_KEY_FILE: /run/secrets/google_translate_api_key
+      SANITY_API_WRITE_TOKEN_FILE: /run/secrets/sanity_api_write_token
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    secrets:
+      - gemini_api_key
+      - google_translate_api_key
+      - sanity_api_write_token
+    command: npm run dev -- -p 3000
+
+  app-prod:
+    build:
+      context: .
+      target: runner
+    container_name: aryaintaran-prod
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.local
+    environment:
+      GEMINI_API_KEY_FILE: /run/secrets/gemini_api_key
+      GOOGLE_TRANSLATE_API_KEY_FILE: /run/secrets/google_translate_api_key
+      SANITY_API_WRITE_TOKEN_FILE: /run/secrets/sanity_api_write_token
+    secrets:
+      - gemini_api_key
+      - google_translate_api_key
+      - sanity_api_write_token
+
+secrets:
+  gemini_api_key:
+    file: ./.docker/secrets/gemini_api_key.txt
+  google_translate_api_key:
+    file: ./.docker/secrets/google_translate_api_key.txt
+  sanity_api_write_token:
+    file: ./.docker/secrets/sanity_api_write_token.txt

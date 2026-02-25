@@ -63,6 +63,49 @@ Pastikan spesifikasi mesin (komputer/laptop) Anda sudah terinstal framework Java
 
 5. Buka tautan [http://localhost:3000](http://localhost:3000) pada peramban (browser) Anda untuk melihat hasilnya.
 
+## 🐳 Menjalankan dengan Docker
+
+Project ini sudah disiapkan dengan `Dockerfile`, `.dockerignore`, dan `docker-compose.yml`.
+
+### Prasyarat
+
+- Docker Desktop aktif di Windows
+
+### Development Mode (dengan hot reload)
+
+1. Pastikan file `.env.local` sudah ada.
+2. Buat file secrets lokal (jangan di-commit):
+   - `.docker/secrets/gemini_api_key.txt`
+   - `.docker/secrets/google_translate_api_key.txt`
+   - `.docker/secrets/sanity_api_write_token.txt`
+3. Isi masing-masing file hanya dengan 1 nilai token.
+4. Jalankan:
+   ```bash
+   docker compose up --build app-dev
+   ```
+5. Buka [http://localhost:3000](http://localhost:3000).
+
+### Production Mode
+
+1. Pastikan file `.env.local` dan file di folder `.docker/secrets/` sudah ada.
+2. Jalankan:
+   ```bash
+   docker compose up --build app-prod
+   ```
+3. Buka [http://localhost:3000](http://localhost:3000).
+
+### Catatan Keamanan
+
+- Untuk variabel sensitif (`GEMINI_API_KEY`, `GOOGLE_TRANSLATE_API_KEY`, `SANITY_API_WRITE_TOKEN`), gunakan file di `.docker/secrets/`.
+- Setelah pindah ke `.docker/secrets/`, hapus ketiga variabel sensitif tersebut dari `.env.local`.
+- Hindari menjalankan `docker compose config` di mesin bersama karena output dapat menampilkan konfigurasi environment.
+
+### Stop Container
+
+```bash
+docker compose down
+```
+
 ## 🧩 Manajemen Konten (Sanity Studio)
 
 Jika Anda ingin mengubah konten di dalamnya (seperti proyek baru dan sebagainya), Anda dapat login dan mengakses Sanity Studio:
@@ -71,5 +114,3 @@ Jika Anda ingin mengubah konten di dalamnya (seperti proyek baru dan sebagainya)
 2. Akses halaman `/studio`.
 3. Konten siap diedit dan dipublikasikan.
 
----
-*Dibuat dengan ❤️ oleh Arya Intaran*

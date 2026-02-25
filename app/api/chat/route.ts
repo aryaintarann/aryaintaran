@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { GoogleGenAI } from "@google/genai";
 import { client } from "@/sanity/lib/client";
+import { getServerSecret } from "@/app/lib/serverSecret";
 import {
     localizedContactQuery,
     localizedEducationQuery,
@@ -10,8 +11,6 @@ import {
     localizedProjectQuery,
     localizedSidebarProfileQuery,
 } from "@/sanity/lib/queries";
-
-const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
 
 interface EducationItem {
     schoolName?: string;
@@ -217,13 +216,16 @@ export async function POST(req: NextRequest) {
 
         const activeLanguage: ChatLanguage = language === "en" ? "en" : "id";
         const currentPath = typeof path === "string" && path.trim() ? path : "/";
+        const geminiApiKey = getServerSecret("GEMINI_API_KEY");
 
-        if (!process.env.GEMINI_API_KEY) {
+        if (!geminiApiKey) {
             return Response.json(
                 { error: "API key not configured" },
                 { status: 500 }
             );
         }
+
+        const genAI = new GoogleGenAI({ apiKey: geminiApiKey });
 
         const systemPrompt = await buildSystemPrompt(activeLanguage, currentPath);
 

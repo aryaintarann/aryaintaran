@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { createClient } from "next-sanity";
+import { getServerSecret } from "@/app/lib/serverSecret";
 
 const rateLimitStore = new Map<string, number[]>();
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
@@ -82,7 +83,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const token = process.env.SANITY_API_WRITE_TOKEN;
+    const token = getServerSecret("SANITY_API_WRITE_TOKEN");
     const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "";
     const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
     const apiVersion = process.env.NEXT_PUBLIC_SANITY_API_VERSION || "2024-02-12";

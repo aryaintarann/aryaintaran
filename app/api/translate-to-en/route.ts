@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { createClient } from "next-sanity";
 import crypto from "node:crypto";
+import { getServerSecret } from "@/app/lib/serverSecret";
 
 type JsonValue = string | number | boolean | null | JsonObject | JsonValue[];
 type JsonObject = { [key: string]: JsonValue };
@@ -31,7 +32,7 @@ function getSanityWriteClient() {
     projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "",
     dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
     apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION || "2024-02-12",
-    token: process.env.SANITY_API_WRITE_TOKEN,
+    token: getServerSecret("SANITY_API_WRITE_TOKEN"),
     useCdn: false,
   });
 }
@@ -40,7 +41,7 @@ const hashText = (text: string, targetLang: string) =>
   crypto.createHash("sha256").update(`${targetLang}:${text}`).digest("hex");
 
 async function translateWithGoogle(sourceText: string, targetLang: "en", sourceLang: "id") {
-  const apiKey = process.env.GOOGLE_TRANSLATE_API_KEY;
+  const apiKey = getServerSecret("GOOGLE_TRANSLATE_API_KEY");
   if (!apiKey) {
     throw new Error("GOOGLE_TRANSLATE_API_KEY is not configured");
   }
@@ -78,7 +79,7 @@ async function translateWithGoogle(sourceText: string, targetLang: "en", sourceL
 }
 
 async function translateWithGemini(sourceText: string, targetLang: "en", sourceLang: "id") {
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = getServerSecret("GEMINI_API_KEY");
   if (!apiKey) {
     throw new Error("GEMINI_API_KEY is not configured");
   }
@@ -146,8 +147,8 @@ async function translateWithGemini(sourceText: string, targetLang: "en", sourceL
 }
 
 async function translateText(sourceText: string, targetLang: "en", sourceLang: "id") {
-  const googleKey = process.env.GOOGLE_TRANSLATE_API_KEY;
-  const geminiKey = process.env.GEMINI_API_KEY;
+  const googleKey = getServerSecret("GOOGLE_TRANSLATE_API_KEY");
+  const geminiKey = getServerSecret("GEMINI_API_KEY");
 
   if (!googleKey && !geminiKey) {
     throw new Error("GOOGLE_TRANSLATE_API_KEY or GEMINI_API_KEY must be configured");
@@ -246,7 +247,7 @@ function toTargetDocumentId(sourceId: string) {
 
 export async function POST(req: NextRequest) {
   try {
-    const writeToken = process.env.SANITY_API_WRITE_TOKEN;
+    const writeToken = getServerSecret("SANITY_API_WRITE_TOKEN");
     if (!writeToken) {
       return Response.json({ error: "SANITY_API_WRITE_TOKEN is not configured" }, { status: 500 });
     }
