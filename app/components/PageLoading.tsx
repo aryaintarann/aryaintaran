@@ -70,7 +70,46 @@ export default function PageLoading() {
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-6 px-4 py-6 md:flex-row md:gap-0 md:px-6 lg:px-8">
-      <aside className="md:sticky md:top-6 md:h-[calc(100vh-3rem)] md:w-80 md:shrink-0">
+      <div className="mb-2 flex items-center justify-between rounded-xl border border-white/10 bg-surface/95 px-3 py-2.5 md:hidden">
+        <div className="flex min-w-0 items-center gap-3">
+          <div className="relative h-11 w-11 overflow-hidden rounded-full border border-white/20 bg-background">
+            {snapshot?.profileImageUrl ? (
+              <img
+                src={snapshot.profileImageUrl}
+                alt={snapshot.fullName || "Profile"}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-[10px] text-secondary">No Photo</div>
+            )}
+          </div>
+
+          <div className="min-w-0">
+            <div className="flex items-center">
+              <p className="truncate text-base font-semibold text-text">{snapshot?.fullName || "Portfolio"}</p>
+            </div>
+            <p className="truncate text-[11px] text-secondary">{snapshot?.headline || menuLabels[currentMenu as keyof typeof menuLabels] || "Portfolio"}</p>
+          </div>
+        </div>
+
+        <div className="ml-3 flex shrink-0 items-center gap-2">
+          <div className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-primary text-background">
+            <span className="text-[11px] font-bold uppercase">{language === "id" ? "ID" : "EN"}</span>
+          </div>
+          <div className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-background text-text">
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+          </div>
+          <div className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-background text-text">
+            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7h16M4 12h16M4 17h16" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <aside className="hidden md:sticky md:top-6 md:h-[calc(100vh-3rem)] md:w-80 md:shrink-0 md:block">
         <div className="flex h-full flex-col rounded-2xl bg-surface p-5">
           <div className="mb-6 flex flex-col items-center text-center">
             <div className="relative h-24 w-24 overflow-hidden rounded-full border border-white/20 bg-background">
