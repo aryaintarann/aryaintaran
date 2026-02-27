@@ -26,23 +26,26 @@ function extensionByMime(mime: string) {
 
 export const runtime = "nodejs";
 
-function toLocalUploadedFilePath(previousUrl: string, folder: string) {
+function toLocalUploadedFilePaths(previousUrl: string, folder: string): string[] {
     const expectedPrefix = `/uploads/${folder}/`;
     if (!previousUrl.startsWith(expectedPrefix)) {
-        return null;
+        return [];
     }
 
     const normalized = previousUrl.replaceAll("\\", "/");
     if (normalized.includes("..")) {
-        return null;
+        return [];
     }
 
     const fileName = normalized.slice(expectedPrefix.length);
     if (!fileName) {
-        return null;
+        return [];
     }
 
-    return path.join(process.cwd(), "public", "uploads", folder, fileName);
+    return [
+        path.join(process.cwd(), "data", "uploads", folder, fileName),
+        path.join(process.cwd(), "public", "uploads", folder, fileName),
+    ];
 }
 
 export async function POST(request: Request) {
@@ -81,7 +84,7 @@ export async function POST(request: Request) {
     const selectedTarget = UPLOAD_TARGETS[target];
     const fileName = `${selectedTarget.prefix}-${Date.now()}-${crypto.randomUUID()}${extension}`;
     const relativeDir = path.join("uploads", selectedTarget.folder);
-    const absoluteDir = path.join(process.cwd(), "public", relativeDir);
+    const absoluteDir = path.join(process.cwd(), "data", relativeDir);
     const absolutePath = path.join(absoluteDir, fileName);
 
     await mkdir(absoluteDir, { recursive: true });
@@ -89,8 +92,8 @@ export async function POST(request: Request) {
     await writeFile(absolutePath, Buffer.from(bytes));
 
     if (previousUrl) {
-        const oldFilePath = toLocalUploadedFilePath(previousUrl, selectedTarget.folder);
-        if (oldFilePath) {
+        const oldFilePaths = toLocalUploadedFilePaths(previousUrl, selectedTarget.folder);
+        for (const oldFilePath of oldFilePaths) {
             await unlink(oldFilePath).catch(() => undefined);
         }
     }
