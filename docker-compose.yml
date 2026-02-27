@@ -58,6 +58,8 @@ services:
       - gemini_api_key
       - google_translate_api_key
     restart: unless-stopped
+    volumes:
+      - ./public/uploads:/app/public/uploads
 
 secrets:
   gemini_api_key:
