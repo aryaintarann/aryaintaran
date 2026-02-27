@@ -88,16 +88,28 @@ Project ini sudah disiapkan dengan `Dockerfile`, `.dockerignore`, dan `docker-co
 
 ### Production Mode
 
-1. Pastikan file `.env.local` dan file di folder `.docker/secrets/` sudah ada.
-2. Jalankan:
+1. Pastikan file `.env.local` berisi minimal:
+   - `AUTH_SECRET`
+   - `ADMIN_EMAIL`
+   - `ADMIN_PASSWORD`
+   - `MYSQL_DATABASE` (opsional, default: `aryaintaran`)
+   - `MYSQL_USER` (opsional, default: `arya_user`)
+   - `MYSQL_PASSWORD` (opsional, default: `arya_password`)
+   - `MYSQL_ROOT_PASSWORD` (opsional, default: `root_password`)
+2. Pastikan file secret berikut ada:
+   - `.docker/secrets/gemini_api_key.txt`
+   - `.docker/secrets/google_translate_api_key.txt`
+3. Jalankan:
    ```bash
-   docker compose up --build app-prod
+   docker compose --env-file .env.local up -d --build app-prod
    ```
-3. Buka [http://localhost:3891](http://localhost:3891).
+4. Buka [http://localhost:3891](http://localhost:3891).
+
+Service MySQL internal akan otomatis ikut dijalankan oleh Docker Compose.
 
 ### Catatan Keamanan
 
-- Untuk variabel sensitif (`GEMINI_API_KEY`, `GOOGLE_TRANSLATE_API_KEY`, `AUTH_SECRET`, `ADMIN_PASSWORD`), gunakan file di `.docker/secrets/`.
+- Untuk variabel sensitif (`GEMINI_API_KEY`, `GOOGLE_TRANSLATE_API_KEY`, `AUTH_SECRET`, `ADMIN_PASSWORD`, `MYSQL_PASSWORD`, `MYSQL_ROOT_PASSWORD`), simpan dengan aman.
 - Setelah pindah ke `.docker/secrets/`, hapus variabel sensitif tersebut dari `.env.local`.
 - Hindari menjalankan `docker compose config` di mesin bersama karena output dapat menampilkan konfigurasi environment.
 
