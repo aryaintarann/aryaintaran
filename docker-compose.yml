@@ -1,24 +1,4 @@
 services:
-  mysql:
-    image: mysql:8.4
-    container_name: aryaintaran-mysql
-    restart: unless-stopped
-    command: --default-authentication-plugin=mysql_native_password
-    environment:
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-aryaintaran}
-      MYSQL_USER: ${MYSQL_USER:-arya_user}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-arya_password}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password}
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
-      interval: 10s
-      timeout: 5s
-      retries: 12
-
   app-dev:
     build:
       context: .
@@ -28,18 +8,17 @@ services:
         NEXT_PUBLIC_SANITY_DATASET: ${NEXT_PUBLIC_SANITY_DATASET:-production}
         NEXT_PUBLIC_SANITY_API_VERSION: ${NEXT_PUBLIC_SANITY_API_VERSION:-2024-02-12}
     container_name: aryaintaran-dev
-    depends_on:
-      mysql:
-        condition: service_healthy
     ports:
       - "3891:3891"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     dns:
       - 1.1.1.1
       - 8.8.8.8
     env_file:
       - .env.local
     environment:
-      DATABASE_URL: mysql://${MYSQL_USER:-arya_user}:${MYSQL_PASSWORD:-arya_password}@mysql:3306/${MYSQL_DATABASE:-aryaintaran}
+      DATABASE_URL: ${DATABASE_URL}
       GEMINI_API_KEY_FILE: /run/secrets/gemini_api_key
       GOOGLE_TRANSLATE_API_KEY_FILE: /run/secrets/google_translate_api_key
       NODE_OPTIONS: --dns-result-order=ipv4first
@@ -61,18 +40,17 @@ services:
         NEXT_PUBLIC_SANITY_DATASET: ${NEXT_PUBLIC_SANITY_DATASET:-production}
         NEXT_PUBLIC_SANITY_API_VERSION: ${NEXT_PUBLIC_SANITY_API_VERSION:-2024-02-12}
     container_name: aryaintaran-prod
-    depends_on:
-      mysql:
-        condition: service_healthy
     ports:
       - "3891:3891"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     dns:
       - 1.1.1.1
       - 8.8.8.8
     env_file:
       - .env.local
     environment:
-      DATABASE_URL: mysql://${MYSQL_USER:-arya_user}:${MYSQL_PASSWORD:-arya_password}@mysql:3306/${MYSQL_DATABASE:-aryaintaran}
+      DATABASE_URL: ${DATABASE_URL}
       GEMINI_API_KEY_FILE: /run/secrets/gemini_api_key
       GOOGLE_TRANSLATE_API_KEY_FILE: /run/secrets/google_translate_api_key
       NODE_OPTIONS: --dns-result-order=ipv4first
@@ -86,6 +64,3 @@ secrets:
     file: ./.docker/secrets/gemini_api_key.txt
   google_translate_api_key:
     file: ./.docker/secrets/google_translate_api_key.txt
-
-volumes:
-  mysql_data:
