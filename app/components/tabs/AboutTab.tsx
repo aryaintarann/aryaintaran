@@ -23,6 +23,11 @@ const getSchoolInitials = (schoolName: string) => {
     return `${parts[0][0] || ""}${parts[1][0] || ""}`.toUpperCase();
 };
 
+const getEducationLogoUrl = (value: unknown) => {
+    if (typeof value !== "string") return "";
+    return value.trim();
+};
+
 export default function AboutTab({ profile, education, t }: AboutTabProps) {
     const [openDetailIds, setOpenDetailIds] = useState<Record<string, boolean>>({});
 
@@ -50,6 +55,7 @@ export default function AboutTab({ profile, education, t }: AboutTabProps) {
 
                     <div className="mt-4 space-y-4">
                         {education.map((edu) => {
+                            const educationLogoUrl = getEducationLogoUrl(edu.logo);
                             return (
                                 <div
                                     key={edu._id}
@@ -72,7 +78,15 @@ export default function AboutTab({ profile, education, t }: AboutTabProps) {
 
                                 <div className="relative z-10 flex items-start gap-4">
                                     <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-background text-sm font-semibold text-text">
-                                        {getSchoolInitials(edu.schoolName || "")}
+                                        {educationLogoUrl ? (
+                                            <img
+                                                src={educationLogoUrl}
+                                                alt={edu.schoolName ? `Logo ${edu.schoolName}` : "Logo pendidikan"}
+                                                className="h-full w-full object-cover"
+                                            />
+                                        ) : (
+                                            getSchoolInitials(edu.schoolName || "")
+                                        )}
                                     </div>
 
                                     <div className="min-w-0 flex-1">

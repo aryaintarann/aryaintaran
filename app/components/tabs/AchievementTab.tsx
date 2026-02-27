@@ -1,6 +1,5 @@
 "use client";
 
-import { urlForImage } from "@/sanity/lib/image";
 import { useState } from "react";
 import type { ProjectData, TranslationText } from "./types";
 
@@ -15,10 +14,6 @@ const toIssuedLabel = (value?: string) => {
     if (!value) return "Issued recently";
     const date = new Date(value);
     return `Issued on ${date.toLocaleDateString("en-US", { month: "long", year: "numeric" })}`;
-};
-
-const getCredentialCode = (item: ProjectData) => {
-    return (item._id || "").replace(/[^a-zA-Z0-9]/g, "").slice(0, 14).toUpperCase();
 };
 
 const getIssuedDate = (value?: string) => {
@@ -53,6 +48,38 @@ const getPlainTextFromValue = (value: ProjectData["description"]): string => {
         .trim();
 };
 
+const getImageUrl = (image: ProjectData["image"]) => {
+    if (!image) return "";
+    if (typeof image === "string") return image;
+    return "";
+};
+
+const achievementCategoryConfig = {
+    sertifikat: "Sertifikat",
+    badge: "Badge",
+    penghargaan: "Penghargaan",
+} as const;
+
+type AchievementCategoryKey = keyof typeof achievementCategoryConfig;
+
+const getAchievementCategory = (tags?: string[]): AchievementCategoryKey | null => {
+    if (!Array.isArray(tags) || tags.length === 0) return null;
+
+    const normalized = tags.map((tag) => tag.toLowerCase().trim());
+    if (normalized.includes("badge")) return "badge";
+    if (normalized.includes("penghargaan")) return "penghargaan";
+    if (normalized.includes("sertifikat")) return "sertifikat";
+    if (normalized.includes("certificate") || normalized.includes("certification")) return "sertifikat";
+
+    return null;
+};
+
+const getAchievementCategoryLabel = (tags?: string[]) => {
+    const category = getAchievementCategory(tags);
+    if (!category) return "General";
+    return achievementCategoryConfig[category];
+};
+
 export default function AchievementTab({ achievementItems, t }: AchievementTabProps) {
     const [activeCertificate, setActiveCertificate] = useState<ProjectData | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -75,6 +102,10 @@ export default function AchievementTab({ achievementItems, t }: AchievementTabPr
         ? getPlainTextFromValue(activeCertificate.description) || activeCertificate.shortDescription || ""
         : "";
 
+    const activeCertificateCategory = activeCertificate
+        ? getAchievementCategoryLabel(activeCertificate.tags)
+        : "General";
+
     return (
         <div>
             <h2 className="text-3xl font-bold text-text">{t.achievementTitle}</h2>
@@ -91,7 +122,7 @@ export default function AchievementTab({ achievementItems, t }: AchievementTabPr
                                     role="img"
                                     aria-label={item.title || "Certificate image"}
                                     className="h-full w-full bg-cover bg-center"
-                                    style={{ backgroundImage: `url(${urlForImage(item.image as never).width(800).height(500).url()})` }}
+                                    style={{ backgroundImage: `url(${getImageUrl(item.image)})` }}
                                 ></div>
                             ) : (
                                 <div className="flex h-full w-full items-center justify-center text-sm text-secondary">
@@ -101,16 +132,13 @@ export default function AchievementTab({ achievementItems, t }: AchievementTabPr
                         </div>
 
                         <div className="p-4">
-                            <p className="text-xs uppercase tracking-wider text-secondary">{getCredentialCode(item)}</p>
-                            <h3 className="mt-2 line-clamp-2 text-2xl font-semibold text-text">{item.title}</h3>
+                            <h3 className="line-clamp-2 text-2xl font-semibold text-text">{item.title}</h3>
                             <p className="mt-2 text-base text-secondary">{item.shortDescription || "Certificate / Piagam"}</p>
 
                             <div className="mt-3 flex flex-wrap gap-2">
-                                {(item.tags || []).slice(0, 3).map((tag, index) => (
-                                    <span key={`${item._id}-tag-${index}`} className="rounded-full border border-white/15 px-3 py-1 text-xs text-secondary">
-                                        {tag}
-                                    </span>
-                                ))}
+                                <span className="rounded-full border border-white/15 px-3 py-1 text-xs text-secondary">
+                                    {getAchievementCategoryLabel(item.tags)}
+                                </span>
                             </div>
 
                             <div className="mt-4 border-t border-white/10 pt-3">
@@ -143,7 +171,7 @@ export default function AchievementTab({ achievementItems, t }: AchievementTabPr
                         <div className="bg-background md:mr-[38%]">
                             {activeCertificate.image ? (
                                 <img
-                                    src={urlForImage(activeCertificate.image as never).width(1600).height(1000).url()}
+                                    src={getImageUrl(activeCertificate.image)}
                                     alt={activeCertificate.title || "Certificate preview"}
                                     className="block max-h-[52vh] w-full object-contain object-top md:max-h-[92vh]"
                                 />
@@ -179,18 +207,8 @@ export default function AchievementTab({ achievementItems, t }: AchievementTabPr
 
                                 <div className="mt-6 space-y-5 text-base">
                                     <div>
-                                        <p className="text-sm uppercase tracking-wide text-secondary">Credential ID</p>
-                                        <p className="mt-1 font-semibold text-text">{getCredentialCode(activeCertificate)}</p>
-                                    </div>
-
-                                    <div>
-                                        <p className="text-sm uppercase tracking-wide text-secondary">Type</p>
-                                        <p className="mt-1 font-semibold text-text">{(activeCertificate.tags || ["Certificate"])[0]}</p>
-                                    </div>
-
-                                    <div>
                                         <p className="text-sm uppercase tracking-wide text-secondary">Category</p>
-                                        <p className="mt-1 font-semibold text-text">{(activeCertificate.tags || ["General"])[1] || "General"}</p>
+                                        <p className="mt-1 font-semibold text-text">{activeCertificateCategory}</p>
                                     </div>
 
                                     <div>
@@ -200,14 +218,9 @@ export default function AchievementTab({ achievementItems, t }: AchievementTabPr
                                 </div>
 
                                 <div className="mt-6 flex flex-wrap items-center gap-2">
-                                    {(activeCertificate.tags || []).map((tag, index) => (
-                                        <span
-                                            key={`${activeCertificate._id}-detail-tag-${index}`}
-                                            className="rounded-full border border-white/15 px-2.5 py-1 text-[11px] text-secondary"
-                                        >
-                                            {tag}
-                                        </span>
-                                    ))}
+                                    <span className="rounded-full border border-white/15 px-2.5 py-1 text-[11px] text-secondary">
+                                        {activeCertificateCategory}
+                                    </span>
                                 </div>
 
                                 {activeCertificate.link && (

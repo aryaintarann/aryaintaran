@@ -1,42 +1,31 @@
-import { client } from "@/sanity/lib/client";
-import { urlForImage } from "@/sanity/lib/image";
-import { groq } from "next-sanity";
-import Image from "next/image";
+import { getPublishedProjectDetailBySlug, listPublishedProjectSlugs } from "@/lib/public-projects";
 import Link from "next/link";
-import { PortableText } from "next-sanity";
+import { notFound } from "next/navigation";
 
 export const revalidate = 300;
 
 export async function generateStaticParams() {
-    const slugs = await client.fetch(groq`*[_type == "project" && defined(slug.current)] { "slug": slug.current }`) as Array<{ slug: string }>;
+    let slugs: Array<{ slug: string }> = [];
+    try {
+        slugs = await listPublishedProjectSlugs();
+    } catch (error) {
+        console.error("[mysql] generateStaticParams failed for project slugs", error);
+    }
+
     return slugs.map((item) => ({ slug: item.slug }));
 }
 
 export default async function ProjectDetail({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;
-    const project = await client.fetch(
-        groq`*[_type == "project" && slug.current == $slug][0] {
-          _id,
-          title,
-          shortDescription,
-          description,
-          link,
-          githubLink,
-          tags,
-          image
-        }`,
-        { slug }
-    );
+    let project = null;
+    try {
+        project = await getPublishedProjectDetailBySlug(slug);
+    } catch (error) {
+        console.error("[mysql] project detail fetch failed", error);
+    }
 
     if (!project) {
-        return (
-            <div className="min-h-screen pt-24 px-4 flex flex-col items-center justify-center text-center">
-                <h1 className="text-4xl font-bold text-text mb-4">Project Not Found</h1>
-                <Link href="/#projects" className="text-primary hover:underline">
-                    Back to Projects
-                </Link>
-            </div>
-        );
+        notFound();
     }
 
     return (
@@ -49,28 +38,24 @@ export default async function ProjectDetail({ params }: { params: Promise<{ slug
                 <h1 className="text-4xl md:text-5xl font-bold text-text mb-6">{project.title}</h1>
 
                 <div className="flex flex-wrap gap-4 mb-8">
-                    {project.link && (
-                        <a href={project.link} target="_blank" rel="noopener noreferrer" className="px-6 py-2 bg-primary text-background font-bold rounded hover:bg-opacity-90 transition-all">
+                    {project.projectUrl && (
+                        <a href={project.projectUrl} target="_blank" rel="noopener noreferrer" className="px-6 py-2 bg-primary text-background font-bold rounded hover:bg-opacity-90 transition-all">
                             Live Demo
                         </a>
                     )}
-                    {project.githubLink && (
-                        <a href={project.githubLink} target="_blank" rel="noopener noreferrer" className="px-6 py-2 border border-white/20 text-text font-bold rounded hover:bg-white/10 transition-all">
+                    {project.githubUrl && (
+                        <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="px-6 py-2 border border-white/20 text-text font-bold rounded hover:bg-white/10 transition-all">
                             GitHub Repo
                         </a>
                     )}
                 </div>
 
                 <div className="relative w-full h-64 md:h-96 rounded-xl overflow-hidden mb-12 border border-white/10">
-                    {project?.image ? (
-                        <Image
-                            src={urlForImage(project.image).width(1400).height(900).url()}
+                    {project.imageUrl ? (
+                        <img
+                            src={project.imageUrl}
                             alt={project.title || "Project image"}
-                            fill
-                            className="object-cover"
-                            priority
-                            fetchPriority="high"
-                            sizes="(min-width: 1024px) 896px, (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)"
+                            className="h-full w-full object-cover"
                         />
                     ) : (
                         <div className="w-full h-full bg-surface flex items-center justify-center text-secondary">
@@ -82,11 +67,7 @@ export default async function ProjectDetail({ params }: { params: Promise<{ slug
                 <div className="bg-surface/30 p-8 rounded-xl border border-white/5">
                     <h2 className="text-2xl font-bold text-text mb-4">About This Project</h2>
                     <div className="prose prose-invert prose-lg max-w-none text-secondary">
-                        {project?.description ? (
-                            <PortableText value={project.description} />
-                        ) : (
-                            <p className="whitespace-pre-line">{project.shortDescription}</p>
-                        )}
+                        <p className="whitespace-pre-line">{project.description || project.shortDescription}</p>
                     </div>
 
                     {project.tags && (

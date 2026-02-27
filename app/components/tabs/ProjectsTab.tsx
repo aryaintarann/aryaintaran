@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { urlForImage } from "@/sanity/lib/image";
 import type { ProjectData } from "./types";
 
 interface ProjectsTabProps {
@@ -10,22 +9,78 @@ interface ProjectsTabProps {
 
 const MODAL_TRANSITION_MS = 240;
 
+const getSkillLogoText = (skill: string) => {
+    const clean = skill.replace(/[^a-zA-Z0-9+.#]/g, " ").trim();
+    if (!clean) return "SK";
+    const parts = clean.split(/\s+/);
+    if (parts.length === 1) {
+        return parts[0].slice(0, 2).toUpperCase();
+    }
+    return `${parts[0][0] || ""}${parts[1][0] || ""}`.toUpperCase();
+};
+
 const getTagIcon = (tag: string) => {
-    const normalized = tag.toLowerCase().trim();
+    const normalized = tag
+        .toLowerCase()
+        .trim()
+        .replace(/[()]/g, "")
+        .replace(/\./g, "")
+        .replace(/\s+/g, " ");
 
     const iconByToken: Array<{ tokens: string[]; icon: string }> = [
+        { tokens: ["html", "html5"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" },
+        { tokens: ["css", "css3"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" },
+        { tokens: ["bootstrap"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bootstrap/bootstrap-original.svg" },
+        { tokens: ["sass", "scss"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/sass/sass-original.svg" },
         { tokens: ["typescript", "ts"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" },
         { tokens: ["javascript", "js"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" },
         { tokens: ["react"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" },
+        { tokens: ["redux"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redux/redux-original.svg" },
         { tokens: ["next", "nextjs"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg" },
+        { tokens: ["vue", "vuejs"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vuejs/vuejs-original.svg" },
+        { tokens: ["nuxt", "nuxtjs"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nuxtjs/nuxtjs-original.svg" },
+        { tokens: ["angular"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/angularjs/angularjs-original.svg" },
         { tokens: ["tailwind"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg" },
         { tokens: ["node"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" },
+        { tokens: ["express", "expressjs"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg" },
+        { tokens: ["nestjs", "nest"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nestjs/nestjs-original.svg" },
         { tokens: ["laravel"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-original.svg" },
         { tokens: ["php"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg" },
+        { tokens: ["python"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" },
+        { tokens: ["django"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/django/django-plain.svg" },
+        { tokens: ["flask"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/flask/flask-original.svg" },
+        { tokens: ["java"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" },
+        { tokens: ["spring"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original.svg" },
         { tokens: ["mysql"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" },
         { tokens: ["postgres", "postgresql"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg" },
+        { tokens: ["sqlite"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/sqlite/sqlite-original.svg" },
+        { tokens: ["mongodb"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg" },
+        { tokens: ["redis"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redis/redis-original.svg" },
         { tokens: ["kotlin"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kotlin/kotlin-original.svg" },
+        { tokens: ["swift"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/swift/swift-original.svg" },
         { tokens: ["go", "golang"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-original.svg" },
+        { tokens: ["rust"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/rust/rust-original.svg" },
+        { tokens: ["c#", "csharp"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/csharp/csharp-original.svg" },
+        { tokens: ["c++", "cpp"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg" },
+        { tokens: ["docker"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg" },
+        { tokens: ["kubernetes", "k8s"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kubernetes/kubernetes-plain.svg" },
+        { tokens: ["git"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" },
+        { tokens: ["github"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" },
+        { tokens: ["gitlab"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/gitlab/gitlab-original.svg" },
+        { tokens: ["figma"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg" },
+        { tokens: ["firebase"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firebase/firebase-plain.svg" },
+        { tokens: ["supabase"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/supabase/supabase-original.svg" },
+        { tokens: ["linux"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg" },
+        { tokens: ["ubuntu"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/ubuntu/ubuntu-plain.svg" },
+        { tokens: ["vscode", "visual studio code"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg" },
+        { tokens: ["postman"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postman/postman-original.svg" },
+        { tokens: ["npm"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/npm/npm-original-wordmark.svg" },
+        { tokens: ["yarn"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/yarn/yarn-original.svg" },
+        { tokens: ["pnpm"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pnpm/pnpm-original.svg" },
+        { tokens: ["webpack"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/webpack/webpack-original.svg" },
+        { tokens: ["vite"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vitejs/vitejs-original.svg" },
+        { tokens: ["graphql"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/graphql/graphql-plain.svg" },
+        { tokens: ["aws"], icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original-wordmark.svg" },
     ];
 
     const matched = iconByToken.find(({ tokens }) =>
@@ -69,6 +124,22 @@ const getProjectDescription = (project: ProjectData): string => {
     return project.shortDescription?.trim() || "";
 };
 
+const getImageUrl = (image: ProjectData["image"], width: number, height: number) => {
+    void width;
+    void height;
+    if (!image) return "";
+    if (typeof image === "string") return image;
+    return "";
+};
+
+const getLogoUrl = (logo: ProjectData["logo"], width: number, height: number) => {
+    void width;
+    void height;
+    if (!logo) return "";
+    if (typeof logo === "string") return logo;
+    return "";
+};
+
 const renderProjectCard = (project: ProjectData, onOpen: (item: ProjectData) => void) => (
     <article
         key={project._id}
@@ -96,7 +167,7 @@ const renderProjectCard = (project: ProjectData, onOpen: (item: ProjectData) => 
                     role="img"
                     aria-label={project.title || "Project preview"}
                     className="h-full w-full bg-cover bg-center"
-                    style={{ backgroundImage: `url(${urlForImage(project.image as never).width(1200).height(700).url()})` }}
+                    style={{ backgroundImage: `url(${getImageUrl(project.image, 1200, 700)})` }}
                 ></div>
             ) : (
                 <div className="flex h-full w-full items-center justify-center text-sm text-secondary">No preview</div>
@@ -114,7 +185,7 @@ const renderProjectCard = (project: ProjectData, onOpen: (item: ProjectData) => 
                         role="img"
                         aria-label={`${project.title || "Project"} logo`}
                         className="h-6 w-6 bg-contain bg-center bg-no-repeat"
-                        style={{ backgroundImage: `url(${urlForImage(project.logo as never).width(64).height(64).url()})` }}
+                        style={{ backgroundImage: `url(${getLogoUrl(project.logo, 64, 64)})` }}
                     ></div>
                 </div>
             )}
@@ -154,6 +225,14 @@ const renderProjectCard = (project: ProjectData, onOpen: (item: ProjectData) => 
                             className="h-7 w-7 bg-contain bg-center bg-no-repeat"
                             style={{ backgroundImage: `url(${icon})` }}
                         ></div>
+                    ) : index === 0 ? (
+                        <div
+                            key={`${project._id}-fallback-main-stack`}
+                            className="flex h-7 w-7 items-center justify-center rounded-full bg-surface text-[10px] font-bold uppercase text-primary"
+                            title={tag}
+                        >
+                            {getSkillLogoText(tag)}
+                        </div>
                     ) : (
                         <span key={`${project._id}-tag-${index}`} className="rounded-full border border-white/15 px-2.5 py-1 text-[11px] text-secondary">
                             {tag}
@@ -217,7 +296,7 @@ export default function ProjectsTab({ title, projects, emptyText }: ProjectsTabP
                     <div className="bg-background md:mr-[38%]">
                         {selectedProject.image ? (
                             <img
-                                src={urlForImage(selectedProject.image as never).width(1600).height(1000).url()}
+                                src={getImageUrl(selectedProject.image, 1600, 1000)}
                                 alt={selectedProject.title || "Project preview"}
                                 className="block max-h-[52vh] w-full object-contain object-top md:max-h-[92vh]"
                             />
@@ -260,11 +339,6 @@ export default function ProjectsTab({ title, projects, emptyText }: ProjectsTabP
                                 <div>
                                     <p className="text-sm uppercase tracking-wide text-secondary">Main Stack</p>
                                     <p className="mt-1 font-semibold text-text">{getDisplayTags(selectedProject)[0] || "Not specified"}</p>
-                                </div>
-
-                                <div>
-                                    <p className="text-sm uppercase tracking-wide text-secondary">Category</p>
-                                    <p className="mt-1 font-semibold text-text">{getDisplayTags(selectedProject)[1] || "General"}</p>
                                 </div>
                             </div>
 

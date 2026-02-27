@@ -5,7 +5,6 @@ import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
 import { usePathname, useRouter } from "next/navigation";
-import { urlForImage } from "@/sanity/lib/image";
 import HomeTab from "./tabs/HomeTab";
 import AboutTab from "./tabs/AboutTab";
 import CareerTab from "./tabs/CareerTab";
@@ -23,26 +22,29 @@ import type {
 
 const AchievementTab = dynamic(() => import("./tabs/AchievementTab"), {
     ssr: false,
-    loading: () => <div className="p-4 text-sm text-secondary">Loading...</div>,
 });
 
 const ProjectsTab = dynamic(() => import("./tabs/ProjectsTab"), {
     ssr: false,
-    loading: () => <div className="p-4 text-sm text-secondary">Loading...</div>,
 });
 
 const GithubTab = dynamic(() => import("./tabs/GithubTab"), {
     ssr: false,
-    loading: () => <div className="p-4 text-sm text-secondary">Loading...</div>,
 });
 
 const ContactTab = dynamic(() => import("@/app/components/tabs/ContactTab"), {
     ssr: false,
-    loading: () => <div className="p-4 text-sm text-secondary">Loading...</div>,
 });
+
+const getImageUrl = (image: unknown) => {
+    if (!image) return "";
+    if (typeof image === "string") return image;
+    return "";
+};
 
 const COMMAND_PALETTE_TRANSITION_MS = 240;
 const MOBILE_DRAWER_TRANSITION_MS = 240;
+const achievementTagRegex = /(certificate|certification|sertifikat|piagam)/i;
 
 const prefetchers: Partial<Record<MenuKey, () => Promise<unknown>>> = {
     achievement: () => import("./tabs/AchievementTab"),
@@ -121,7 +123,6 @@ const languageText = {
         githubTitle: "GitHub",
         githubContributionsTitle: "GitHub Contributions",
         githubRepositoriesTitle: "Repository Saya",
-        githubLoading: "Memuat data GitHub...",
         githubFailed: "Gagal memuat data GitHub.",
         githubNoProfile: "URL profil GitHub belum diisi.",
         githubNoRepositories: "Belum ada repository publik yang bisa ditampilkan.",
@@ -173,7 +174,6 @@ const languageText = {
         githubTitle: "GitHub",
         githubContributionsTitle: "GitHub Contributions",
         githubRepositoriesTitle: "My Repositories",
-        githubLoading: "Loading GitHub data...",
         githubFailed: "Failed to load GitHub data.",
         githubNoProfile: "GitHub profile URL is not configured yet.",
         githubNoRepositories: "No public repositories available to display.",
@@ -200,9 +200,7 @@ export default function PortfolioSidebarLayout({
 }: PortfolioSidebarLayoutProps) {
     const router = useRouter();
     const pathname = usePathname();
-    const profileImageUrl = sidebarProfile?.profileImage
-        ? urlForImage(sidebarProfile.profileImage as never).width(300).height(300).url()
-        : "";
+    const profileImageUrl = getImageUrl(sidebarProfile?.profileImage);
     const [activeMenu, setActiveMenu] = useState<MenuKey>(initialMenu);
     const [language, setLanguage] = useState<LanguageKey>(initialLanguage);
     const [theme, setTheme] = useState<"light" | "dark">("dark");
@@ -438,7 +436,8 @@ export default function PortfolioSidebarLayout({
         () =>
             (projects || []).filter(
                 (project) =>
-                    !(project?.tags || []).some((tag: string) => /personal/i.test(tag))
+                    !(project?.tags || []).some((tag: string) => /personal/i.test(tag)) &&
+                    !(project?.tags || []).some((tag: string) => achievementTagRegex.test(tag))
             ),
         [projects]
     );
@@ -447,7 +446,7 @@ export default function PortfolioSidebarLayout({
         () =>
             (projects || []).filter((project) =>
                 (project?.tags || []).some((tag: string) =>
-                    /(certificate|certification|sertifikat|piagam)/i.test(tag)
+                    achievementTagRegex.test(tag)
                 )
             ),
         [projects]
@@ -518,7 +517,6 @@ export default function PortfolioSidebarLayout({
                         contact={contact}
                         sendEmail={tabText.sendEmail}
                         title={tabText.contactTitle}
-                        language={language}
                     />
                 );
             default:

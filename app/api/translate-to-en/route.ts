@@ -1,10 +1,12 @@
 import { NextRequest } from "next/server";
-import { createClient } from "next-sanity";
 import crypto from "node:crypto";
+import { RowDataPacket } from "mysql2";
+import { ensureAdminTables, getMysqlPool } from "@/lib/mysql";
 import { getServerSecret } from "@/app/lib/serverSecret";
 
 type JsonValue = string | number | boolean | null | JsonObject | JsonValue[];
 type JsonObject = { [key: string]: JsonValue };
+type TranslationCacheRow = RowDataPacket & { translated_text?: string };
 
 const TRANSABLE_TYPES = new Set([
   "sidebarProfile",
@@ -18,24 +20,17 @@ const TRANSABLE_TYPES = new Set([
   "personalProjectContent",
   "contactContent",
   "education",
+  "educations",
   "job",
+  "jobs",
   "project",
+  "projects",
   "contact",
   "github",
 ]);
 
 const NON_TRANSLATABLE_KEY_PATTERN =
   /^(?:_id|_type|_rev|_createdAt|_updatedAt|language|slug|profileImage|image|logo|link|githubLink|url|email|whatsapp|linkedin|instagram|tiktok|github|tags|startDate|endDate)$/i;
-
-function getSanityWriteClient() {
-  return createClient({
-    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "",
-    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
-    apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION || "2024-02-12",
-    token: getServerSecret("SANITY_API_WRITE_TOKEN"),
-    useCdn: false,
-  });
-}
 
 const hashText = (text: string, targetLang: string) =>
   crypto.createHash("sha256").update(`${targetLang}:${text}`).digest("hex");
@@ -168,40 +163,44 @@ async function translateText(sourceText: string, targetLang: "en", sourceLang: "
   return translateWithGemini(sourceText, targetLang, sourceLang);
 }
 
-async function translateTextWithCache(client: ReturnType<typeof getSanityWriteClient>, sourceText: string) {
+async function translateTextWithCache(sourceText: string) {
   const normalized = sourceText.trim();
   if (!normalized) return sourceText;
 
+  await ensureAdminTables();
+  const pool = getMysqlPool();
+
   const hash = hashText(normalized, "en");
-  const cacheDocId = `translation-cache-${hash}`;
 
-  const cached = await client.fetch(
-    `*[_type == "translationCache" && hash == $hash][0]{ translatedText }`,
-    { hash }
-  ) as { translatedText?: string } | null;
+  const [rows] = await pool.query<TranslationCacheRow[]>(
+    `
+      SELECT translated_text
+      FROM admin_translation_cache
+      WHERE hash = ?
+      LIMIT 1
+    `,
+    [hash]
+  );
 
-  if (cached?.translatedText) {
-    return cached.translatedText;
+  if (rows.length > 0 && rows[0]?.translated_text) {
+    return rows[0].translated_text;
   }
 
   const translatedText = await translateText(normalized, "en", "id");
 
-  await client.createOrReplace({
-    _id: cacheDocId,
-    _type: "translationCache",
-    hash,
-    sourceText: normalized,
-    targetLang: "en",
-    translatedText,
-    provider: "google",
-    updatedAt: new Date().toISOString(),
-  });
+  await pool.query(
+    `
+      INSERT INTO admin_translation_cache (hash, source_text, target_lang, translated_text, provider)
+      VALUES (?, ?, 'en', ?, 'google')
+      ON DUPLICATE KEY UPDATE translated_text = VALUES(translated_text), provider = VALUES(provider)
+    `,
+    [hash, normalized, translatedText]
+  );
 
   return translatedText;
 }
 
 async function translateValue(
-  client: ReturnType<typeof getSanityWriteClient>,
   value: JsonValue,
   keyName?: string
 ): Promise<JsonValue> {
@@ -209,11 +208,11 @@ async function translateValue(
     if (keyName && NON_TRANSLATABLE_KEY_PATTERN.test(keyName)) {
       return value;
     }
-    return translateTextWithCache(client, value);
+    return translateTextWithCache(value);
   }
 
   if (Array.isArray(value)) {
-    const translatedArray = await Promise.all(value.map((item) => translateValue(client, item, keyName)));
+    const translatedArray = await Promise.all(value.map((item) => translateValue(item, keyName)));
     return translatedArray;
   }
 
@@ -224,7 +223,7 @@ async function translateValue(
         if (entryKey.startsWith("_")) {
           return [entryKey, entryValue] as const;
         }
-        const translated = await translateValue(client, entryValue, entryKey);
+        const translated = await translateValue(entryValue, entryKey);
         return [entryKey, translated] as const;
       })
     );
@@ -247,15 +246,10 @@ function toTargetDocumentId(sourceId: string) {
 
 export async function POST(req: NextRequest) {
   try {
-    const writeToken = getServerSecret("SANITY_API_WRITE_TOKEN");
-    if (!writeToken) {
-      return Response.json({ error: "SANITY_API_WRITE_TOKEN is not configured" }, { status: 500 });
-    }
-
     const body = (await req.json()) as {
       id?: string;
       type?: string;
-      document?: JsonObject;
+      document?: JsonValue;
     };
 
     const sourceId = body.id || "";
@@ -270,25 +264,34 @@ export async function POST(req: NextRequest) {
       return Response.json({ error: "Schema type is not enabled for translation" }, { status: 400 });
     }
 
-    const client = getSanityWriteClient();
-
-    const translatedPayload = await translateValue(client, sourceDocument) as JsonObject;
+    const translatedPayload = await translateValue(sourceDocument);
     const targetId = toTargetDocumentId(sourceId);
 
-    const cleanPayload = Object.fromEntries(
-      Object.entries(translatedPayload).filter(([key]) =>
-        !["_id", "_type", "_rev", "_createdAt", "_updatedAt"].includes(key)
-      )
-    );
+    const stripMetaFields = (value: JsonValue): JsonValue => {
+      if (Array.isArray(value)) {
+        return value.map((item) => stripMetaFields(item as JsonValue));
+      }
 
-    await client.createOrReplace({
-      _id: targetId,
-      _type: schemaType,
-      ...cleanPayload,
-      language: "en",
-    });
+      if (value && typeof value === "object") {
+        const entries = Object.entries(value as JsonObject).filter(
+          ([key]) => !["_id", "_type", "_rev", "_createdAt", "_updatedAt"].includes(key)
+        );
 
-    return Response.json({ success: true, targetId });
+        return Object.fromEntries(
+          entries.map(([key, val]) => [key, stripMetaFields(val as JsonValue)])
+        ) as JsonObject;
+      }
+
+      return value;
+    };
+
+    const cleanPayload = stripMetaFields(translatedPayload);
+    const translatedResult =
+      cleanPayload && typeof cleanPayload === "object" && !Array.isArray(cleanPayload)
+        ? ({ ...(cleanPayload as JsonObject), language: "en" } as JsonObject)
+        : cleanPayload;
+
+    return Response.json({ success: true, targetId, translated: translatedResult });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown translation error";
     return Response.json({ error: message }, { status: 500 });

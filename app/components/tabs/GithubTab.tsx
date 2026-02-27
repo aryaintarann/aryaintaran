@@ -129,7 +129,6 @@ export default function GithubTab({ github, contact, t }: GithubTabProps) {
             <div className="mt-8">
                 <h3 className="text-xl font-semibold text-text">{repositoriesTitle}</h3>
                 <div className="mt-4 space-y-3">
-                    {loading && <p className="text-secondary">{t.githubLoading}</p>}
                     {failed && <p className="text-secondary">{t.githubFailed}</p>}
 
                     {!loading && !failed && repos.length > 0 && repos.map((repo) => (

@@ -1,15 +1,19 @@
 import { MetadataRoute } from 'next'
-import { client } from '@/sanity/lib/client'
-import { groq } from 'next-sanity'
+import { listPublishedProjectSlugs } from '@/lib/public-projects'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const baseUrl = 'https://aryaintaran.dev'
 
-    const projects = await client.fetch(groq`*[_type == "project" && defined(slug.current)] { "slug": slug.current, _updatedAt }`) as Array<{ slug: string; _updatedAt?: string }>
+    let projects: Array<{ slug: string; updatedAt: string }> = []
+    try {
+        projects = await listPublishedProjectSlugs()
+    } catch (error) {
+        console.error('[mysql] sitemap project fetch failed', error)
+    }
 
     const projectUrls = projects.map((project) => ({
         url: `${baseUrl}/projects/${project.slug}`,
-        lastModified: project._updatedAt ? new Date(project._updatedAt) : new Date(),
+        lastModified: project.updatedAt ? new Date(project.updatedAt) : new Date(),
         changeFrequency: 'monthly' as const,
         priority: 0.8,
     }))

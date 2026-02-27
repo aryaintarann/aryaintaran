@@ -6,7 +6,7 @@ type RichTextBlock = {
     children?: RichTextChild[];
 };
 
-type GenericImage = Record<string, unknown> | null;
+export type GenericImage = Record<string, unknown> | string | null;
 
 export interface HomeProfileData {
     _id?: string;
@@ -47,6 +47,7 @@ export interface EducationData {
     schoolName?: string;
     degree?: string;
     fieldOfStudy?: string;
+    logo?: GenericImage;
     startDate?: string;
     endDate?: string;
     description?: string | RichTextBlock[];
@@ -132,7 +133,6 @@ export interface TranslationText {
     githubTitle: string;
     githubContributionsTitle: string;
     githubRepositoriesTitle: string;
-    githubLoading: string;
     githubFailed: string;
     githubNoProfile: string;
     githubNoRepositories: string;

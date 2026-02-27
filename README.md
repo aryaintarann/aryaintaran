@@ -9,14 +9,14 @@ Website ini juga dilengkapi dengan integrasi AI chatbot untuk membantu pengunjun
 - **Framework**: [Next.js 16](https://nextjs.org) (App Router)
 - **Library**: [React 19](https://react.dev/)
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
-- **CMS (Content Management)**: [Sanity.io](https://www.sanity.io/)
+- **Admin Panel**: Custom Admin Panel (Next.js + NextAuth)
 - **Animasi UI**: [GSAP](https://gsap.com/)
 - **AI Integrasi**: [Google Gemini API](https://deepmind.google/technologies/gemini/) (Chatbot)
 - **Deployment**: Recomendasi menggunakan [Vercel](https://vercel.com/)
 
 ## 📦 Fitur Utama
 
-- **Konten Dinamis**: Website ini telah terintegrasi dengan Sanity CMS, sehingga pembaruan profil, proyek, pendidikan, dan pengalaman kerja dapat dilakukan dengan mudah tanpa harus mengubah kode.
+- **Konten Dinamis**: Website ini menggunakan MySQL + custom admin panel untuk mengelola profil, proyek, pendidikan, pengalaman kerja, dan konten terlokalisasi tanpa perlu ubah kode.
 - **AI Chatbot**: Asisten pintar yang dibangun menggunakan **Google Gemini API** yang siap menjawab secara langsung di dalam website.
 - **Desain Responsif**: Desain yang dioptimalkan untuk berbagai layar peramban (Mobile, Tablet, Desktop).
 - **Animasi Halus**: Animasi menarik performa tinggi serta kustom dengan GSAP.
@@ -50,10 +50,12 @@ Pastikan spesifikasi mesin (komputer/laptop) Anda sudah terinstal framework Java
    ```
    Isi / lengkapi *value* berikut di dalam file `.env.local` yang baru saja dibuat:
    ```env
-   NEXT_PUBLIC_SANITY_PROJECT_ID=your_sanity_project_id
-   NEXT_PUBLIC_SANITY_DATASET=production
-   NEXT_PUBLIC_SANITY_API_VERSION=2024-02-12
    GEMINI_API_KEY=your_gemini_api_key
+   GOOGLE_TRANSLATE_API_KEY=your_google_translate_api_key
+   AUTH_SECRET=your_strong_random_secret
+   ADMIN_EMAIL=admin@example.com
+   ADMIN_PASSWORD=your_strong_admin_password
+   DATABASE_URL=mysql://root:password@localhost:3306/aryaintaran
    ```
 
 4. Menjalankan server development:
@@ -77,7 +79,6 @@ Project ini sudah disiapkan dengan `Dockerfile`, `.dockerignore`, dan `docker-co
 2. Buat file secrets lokal (jangan di-commit):
    - `.docker/secrets/gemini_api_key.txt`
    - `.docker/secrets/google_translate_api_key.txt`
-   - `.docker/secrets/sanity_api_write_token.txt`
 3. Isi masing-masing file hanya dengan 1 nilai token.
 4. Jalankan:
    ```bash
@@ -96,8 +97,8 @@ Project ini sudah disiapkan dengan `Dockerfile`, `.dockerignore`, dan `docker-co
 
 ### Catatan Keamanan
 
-- Untuk variabel sensitif (`GEMINI_API_KEY`, `GOOGLE_TRANSLATE_API_KEY`, `SANITY_API_WRITE_TOKEN`), gunakan file di `.docker/secrets/`.
-- Setelah pindah ke `.docker/secrets/`, hapus ketiga variabel sensitif tersebut dari `.env.local`.
+- Untuk variabel sensitif (`GEMINI_API_KEY`, `GOOGLE_TRANSLATE_API_KEY`, `AUTH_SECRET`, `ADMIN_PASSWORD`), gunakan file di `.docker/secrets/`.
+- Setelah pindah ke `.docker/secrets/`, hapus variabel sensitif tersebut dari `.env.local`.
 - Hindari menjalankan `docker compose config` di mesin bersama karena output dapat menampilkan konfigurasi environment.
 
 ### Stop Container
@@ -106,11 +107,17 @@ Project ini sudah disiapkan dengan `Dockerfile`, `.dockerignore`, dan `docker-co
 docker compose down
 ```
 
-## 🧩 Manajemen Konten (Sanity Studio)
+## 🧩 Manajemen Konten (Custom Admin Panel)
 
-Jika Anda ingin mengubah konten di dalamnya (seperti proyek baru dan sebagainya), Anda dapat login dan mengakses Sanity Studio:
+Admin panel sekarang menggunakan autentikasi NextAuth dengan kredensial dari environment variable:
 
-1. Jalankan aplikasi seperti tahap `Memulai Development` di atas.
-2. Akses halaman `/studio`.
-3. Konten siap diedit dan dipublikasikan.
+1. Tambahkan variabel berikut di `.env.local`:
+   - `AUTH_SECRET`
+   - `ADMIN_EMAIL`
+   - `ADMIN_PASSWORD`
+   - `DATABASE_URL` (format MySQL, contoh: `mysql://root:password@localhost:3306/aryaintaran`)
+2. Jalankan aplikasi seperti tahap `Memulai Development` di atas.
+3. Akses halaman `/admin/login`.
+4. Login menggunakan `ADMIN_EMAIL` dan `ADMIN_PASSWORD`.
+5. Kelola data project, konten profil/karier/kontak, dan localized text langsung dari dashboard `/admin` (fitur CRUD penuh).
 

@@ -22,6 +22,11 @@ const getCompanyInitials = (companyName: string) => {
     return `${parts[0][0] || ""}${parts[1][0] || ""}`.toUpperCase();
 };
 
+const getCompanyLogoUrl = (value: unknown) => {
+    if (typeof value !== "string") return "";
+    return value.trim();
+};
+
 const getWorkItems = (description?: string) => {
     if (!description) return [];
 
@@ -51,7 +56,10 @@ export default function CareerTab({ jobs, t }: CareerTabProps) {
                 <p className="mt-6 text-secondary">{t.careerEmpty}</p>
             ) : (
                 <div className="mt-6 grid gap-4 md:grid-cols-2">
-                    {jobs.map((job) => (
+                    {jobs.map((job) => {
+                        const companyLogoUrl = getCompanyLogoUrl(job.logo);
+
+                        return (
                         <article
                             key={job._id}
                             className="group relative overflow-hidden rounded-2xl border border-white/10 bg-surface/70 p-4 [--mouse-x:50%] [--mouse-y:50%]"
@@ -73,7 +81,15 @@ export default function CareerTab({ jobs, t }: CareerTabProps) {
 
                             <div className="relative z-10 flex items-start gap-4">
                                 <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-background text-sm font-semibold text-text">
-                                    {getCompanyInitials(job.name || "")}
+                                    {companyLogoUrl ? (
+                                        <img
+                                            src={companyLogoUrl}
+                                            alt={job.name ? `Logo ${job.name}` : "Logo perusahaan"}
+                                            className="h-full w-full object-cover"
+                                        />
+                                    ) : (
+                                        getCompanyInitials(job.name || "")
+                                    )}
                                 </div>
 
                                 <div className="min-w-0 flex-1">
@@ -138,7 +154,8 @@ export default function CareerTab({ jobs, t }: CareerTabProps) {
                                 </div>
                             </div>
                         </article>
-                    ))}
+                        );
+                    })}
                 </div>
             )}
         </div>

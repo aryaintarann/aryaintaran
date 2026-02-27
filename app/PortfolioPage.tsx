@@ -1,22 +1,6 @@
 import PortfolioSidebarLayout from "@/app/components/PortfolioSidebarLayout";
-import { client } from "@/sanity/lib/client";
-import {
-  localizedAboutContentQuery,
-  localizedAboutProfileQuery,
-  localizedAchievementContentQuery,
-  localizedCareerContentQuery,
-  localizedContactContentQuery,
-  localizedContactQuery,
-  localizedEducationQuery,
-  localizedGithubQuery,
-  localizedHomeContentQuery,
-  localizedHomeProfileQuery,
-  localizedJobQuery,
-  localizedPersonalProjectContentQuery,
-  localizedProjectContentQuery,
-  localizedProjectQuery,
-  localizedSidebarProfileQuery,
-} from "@/sanity/lib/queries";
+import { getPortfolioContent } from "@/lib/admin-content";
+import { listPublishedProjectsForPortfolio } from "@/lib/public-projects";
 
 export type LanguageKey = "id" | "en";
 export type MenuKey =
@@ -39,28 +23,24 @@ export default async function PortfolioPage({
   initialMenu,
 }: PortfolioPageProps) {
   const language = initialLanguage;
+  const [content, projectsFromDb] = await Promise.all([
+    getPortfolioContent(language),
+    (async () => {
+      try {
+        return await listPublishedProjectsForPortfolio(language);
+      } catch (error) {
+        console.error("[mysql] projects fetch failed", error);
+        return [];
+      }
+    })(),
+  ]);
 
-  const safeFetch = async <T,>(
-    label: string,
-    query: string,
-    params: Record<string, string>,
-    fallback: T
-  ): Promise<T> => {
-    try {
-      return await client.fetch<T>(query, params);
-    } catch (error) {
-      console.error(`[sanity] ${label} fetch failed`, error);
-      return fallback;
-    }
-  };
-
-  const [
+  const {
     homeProfile,
     aboutProfile,
     sidebarProfile,
     education,
     jobs,
-    projects,
     github,
     contact,
     homeContent,
@@ -70,71 +50,7 @@ export default async function PortfolioPage({
     projectContent,
     personalProjectContent,
     contactContent,
-  ] = await Promise.all([
-    safeFetch("homeProfile", localizedHomeProfileQuery, {
-      language,
-      languageId: `home-profile-${language}`,
-      mainId: "home-profile-main",
-    }, {}),
-    safeFetch("aboutProfile", localizedAboutProfileQuery, {
-      language,
-      languageId: `about-profile-${language}`,
-      mainId: "about-profile-main",
-    }, {}),
-    safeFetch("sidebarProfile", localizedSidebarProfileQuery, {
-      language,
-      languageId: `sidebar-profile-${language}`,
-      mainId: "sidebar-profile-main",
-    }, {}),
-    safeFetch("education", localizedEducationQuery, { language }, []),
-    safeFetch("jobs", localizedJobQuery, { language }, []),
-    safeFetch("projects", localizedProjectQuery, { language }, []),
-    safeFetch("github", localizedGithubQuery, {
-      language,
-      languageId: `github-${language}`,
-      mainId: "github-main",
-    }, {}),
-    safeFetch("contact", localizedContactQuery, {
-      language,
-      languageId: `contact-${language}`,
-      mainId: "contact-main",
-    }, {}),
-    safeFetch("homeContent", localizedHomeContentQuery, {
-      language,
-      languageId: `home-content-${language}`,
-      mainId: "home-content-main",
-    }, {}),
-    safeFetch("aboutContent", localizedAboutContentQuery, {
-      language,
-      languageId: `about-content-${language}`,
-      mainId: "about-content-main",
-    }, {}),
-    safeFetch("careerContent", localizedCareerContentQuery, {
-      language,
-      languageId: `career-content-${language}`,
-      mainId: "career-content-main",
-    }, {}),
-    safeFetch("achievementContent", localizedAchievementContentQuery, {
-      language,
-      languageId: `achievement-content-${language}`,
-      mainId: "achievement-content-main",
-    }, {}),
-    safeFetch("projectContent", localizedProjectContentQuery, {
-      language,
-      languageId: `project-content-${language}`,
-      mainId: "project-content-main",
-    }, {}),
-    safeFetch("personalProjectContent", localizedPersonalProjectContentQuery, {
-      language,
-      languageId: `personal-project-content-${language}`,
-      mainId: "personal-project-content-main",
-    }, {}),
-    safeFetch("contactContent", localizedContactContentQuery, {
-      language,
-      languageId: `contact-content-${language}`,
-      mainId: "contact-content-main",
-    }, {}),
-  ]);
+  } = content;
 
   const menuContent = {
     ...(homeContent || {}),
@@ -154,7 +70,7 @@ export default async function PortfolioPage({
       sidebarProfile={sidebarProfile}
       education={education}
       jobs={jobs}
-      projects={projects}
+      projects={projectsFromDb}
       github={github}
       contact={contact}
       menuContent={menuContent}

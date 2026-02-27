@@ -1,16 +1,8 @@
 import { NextRequest } from "next/server";
 import { GoogleGenAI } from "@google/genai";
-import { client } from "@/sanity/lib/client";
+import { getPortfolioContent } from "@/lib/admin-content";
+import { listPublishedProjectsForPortfolio } from "@/lib/public-projects";
 import { getServerSecret } from "@/app/lib/serverSecret";
-import {
-    localizedContactQuery,
-    localizedEducationQuery,
-    localizedGithubQuery,
-    localizedHomeProfileQuery,
-    localizedJobQuery,
-    localizedProjectQuery,
-    localizedSidebarProfileQuery,
-} from "@/sanity/lib/queries";
 
 interface EducationItem {
     schoolName?: string;
@@ -58,59 +50,28 @@ interface ProfileInfo {
 type ChatLanguage = "id" | "en";
 
 async function buildSystemPrompt(language: ChatLanguage, currentPath: string): Promise<string> {
-    const safeFetch = async <T,>(
-        query: string,
-        params: Record<string, string>,
-        fallback: T
-    ): Promise<T> => {
-        try {
-            return await client.fetch<T>(query, params);
-        } catch {
-            return fallback;
-        }
-    };
-
-    const [profile, sidebarProfile, education, jobs, projects, github, contact] = await Promise.all([
-        safeFetch<ProfileInfo>(
-            localizedHomeProfileQuery,
-            {
-                language,
-                languageId: `home-profile-${language}`,
-                mainId: "home-profile-main",
-            },
-            {}
-        ),
-        safeFetch<{ headline?: string }>(
-            localizedSidebarProfileQuery,
-            {
-                language,
-                languageId: `sidebar-profile-${language}`,
-                mainId: "sidebar-profile-main",
-            },
-            {}
-        ),
-        safeFetch<EducationItem[]>(localizedEducationQuery, { language }, []),
-        safeFetch<JobItem[]>(localizedJobQuery, { language }, []),
-        safeFetch<ProjectItem[]>(localizedProjectQuery, { language }, []),
-        safeFetch<GithubInfo>(
-            localizedGithubQuery,
-            {
-                language,
-                languageId: `github-${language}`,
-                mainId: "github-main",
-            },
-            {}
-        ),
-        safeFetch<ContactInfo>(
-            localizedContactQuery,
-            {
-                language,
-                languageId: `contact-${language}`,
-                mainId: "contact-main",
-            },
-            {}
-        ),
+    const [content, projects] = await Promise.all([
+        getPortfolioContent(language),
+        (async () => {
+            try {
+                const dbProjects = await listPublishedProjectsForPortfolio();
+                return dbProjects.map((project) => ({
+                    title: project.title,
+                    shortDescription: project.shortDescription,
+                    tags: project.tags,
+                })) as ProjectItem[];
+            } catch {
+                return [] as ProjectItem[];
+            }
+        })(),
     ]);
+
+    const profile = (content.homeProfile || {}) as ProfileInfo;
+    const sidebarProfile = (content.sidebarProfile || {}) as { headline?: string };
+    const education = (content.education || []) as EducationItem[];
+    const jobs = (content.jobs || []) as JobItem[];
+    const github = (content.github || {}) as GithubInfo;
+    const contact = (content.contact || {}) as ContactInfo;
 
     const skillsList = [
         ...(profile?.hardSkills || []),
