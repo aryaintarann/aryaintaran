@@ -120,7 +120,7 @@ export async function upsertManagedContent(language: ContentLanguage, key: Manag
     await pool.query(
         `
             INSERT INTO admin_content (content_key, language, data)
-            VALUES (?, ?, CAST(? AS JSON))
+            VALUES (?, ?, ?)
             ON DUPLICATE KEY UPDATE
                 data = VALUES(data)
         `,
