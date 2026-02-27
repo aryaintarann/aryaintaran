@@ -359,7 +359,7 @@ const renderProjectCard = (project: ProjectData, onOpen: (item: ProjectData) => 
                 )}
 
                 <div className="mt-4 flex flex-wrap items-center gap-2">
-                    {getDisplayTags(project).slice(0, 12).map((tag, index) => {
+                    {getDisplayTags(project).map((tag, index) => {
                         const icon = getTagIcon(tag);
                         return icon ? (
                             <div
