@@ -215,6 +215,7 @@ export default function PortfolioSidebarLayout({
     const commandPaletteTimerRef = useRef<number | null>(null);
     const mobileDrawerTimerRef = useRef<number | null>(null);
     const menuNavRef = useRef<HTMLElement>(null);
+    const tabContentRef = useRef<HTMLDivElement>(null);
     const menuButtonRefs = useRef<Partial<Record<MenuKey, HTMLButtonElement | null>>>({});
     const [menuIndicatorStyle, setMenuIndicatorStyle] = useState<{ top: number; height: number; opacity: number }>(
         {
@@ -258,6 +259,40 @@ export default function PortfolioSidebarLayout({
     useEffect(() => {
         setActiveMenu(initialMenu);
     }, [initialMenu]);
+
+    useEffect(() => {
+        const el = tabContentRef.current;
+        if (!el) return;
+        const sections = el.querySelectorAll(":scope > * > *");
+        if (sections.length === 0) return;
+
+        const targets: Element[] = [];
+        sections.forEach((section) => {
+            const isGrid =
+                section.children.length > 1 &&
+                (section.classList.contains("grid") ||
+                    getComputedStyle(section).display === "grid" ||
+                    getComputedStyle(section).display === "flex");
+            if (isGrid) {
+                Array.from(section.children).forEach((child) => targets.push(child));
+            } else {
+                targets.push(section);
+            }
+        });
+
+        if (targets.length === 0) return;
+        gsap.fromTo(
+            targets,
+            { opacity: 0, y: 24 },
+            {
+                opacity: 1,
+                y: 0,
+                duration: 0.7,
+                ease: "power3.out",
+                stagger: 0.12,
+            }
+        );
+    }, [activeMenu]);
 
     useEffect(() => {
         setLanguage(initialLanguage);
@@ -592,15 +627,13 @@ export default function PortfolioSidebarLayout({
 
             {isMobileMenuOpen && (
                 <div
-                    className={`fixed inset-0 z-9999 transition-all duration-300 md:hidden ${
-                        isMobileMenuVisible ? "bg-black/60 backdrop-blur-sm" : "bg-black/0"
-                    }`}
+                    className={`fixed inset-0 z-9999 transition-all duration-300 md:hidden ${isMobileMenuVisible ? "bg-black/60 backdrop-blur-sm" : "bg-black/0"
+                        }`}
                     onClick={closeMobileMenu}
                 >
                     <aside
-                        className={`h-full w-[88%] max-w-sm overflow-y-auto bg-surface p-4 shadow-2xl transition-transform duration-300 ease-out ${
-                            isMobileMenuVisible ? "translate-x-0" : "-translate-x-full"
-                        }`}
+                        className={`h-full w-[88%] max-w-sm overflow-y-auto bg-surface p-4 shadow-2xl transition-transform duration-300 ease-out ${isMobileMenuVisible ? "translate-x-0" : "-translate-x-full"
+                            }`}
                         onClick={(event) => event.stopPropagation()}
                     >
                         <div className="mb-4 flex items-start justify-between">
@@ -672,11 +705,10 @@ export default function PortfolioSidebarLayout({
                                         key={`mobile-${item.key}`}
                                         type="button"
                                         onClick={() => handleMenuSelect(item.key)}
-                                        className={`flex w-full items-center justify-between gap-3 rounded-lg border px-4 py-3 text-left text-sm transition-all duration-300 ${
-                                            active
-                                                ? "border-primary/40 bg-primary/20 font-semibold text-primary"
-                                                : "border-transparent bg-background text-text hover:border-white/10 hover:bg-background/70"
-                                        }`}
+                                        className={`flex w-full items-center justify-between gap-3 rounded-lg border px-4 py-3 text-left text-sm transition-all duration-300 ${active
+                                            ? "border-primary/40 bg-primary/20 font-semibold text-primary"
+                                            : "border-transparent bg-background text-text hover:border-white/10 hover:bg-background/70"
+                                            }`}
                                     >
                                         <span className="flex items-center gap-3">
                                             <span className={active ? "text-primary" : "text-secondary"}>
@@ -716,7 +748,7 @@ export default function PortfolioSidebarLayout({
             )}
 
             <aside className="hidden md:sticky md:top-6 md:h-[calc(100vh-3rem)] md:w-80 md:shrink-0 md:block">
-            <div className="flex h-full flex-col rounded-2xl bg-surface p-5">
+                <div className="flex h-full flex-col rounded-2xl bg-surface p-5">
                     <div className="mb-6 flex flex-col items-center text-center">
                         <div className="relative h-24 w-24 overflow-hidden rounded-full border border-white/20 bg-background">
                             {profileImageUrl ? (
@@ -833,11 +865,10 @@ export default function PortfolioSidebarLayout({
                                     onMouseEnter={() => prefetchTab(item.key)}
                                     onFocus={() => prefetchTab(item.key)}
                                     aria-current={active ? "page" : undefined}
-                                    className={`group relative z-10 flex w-full items-center gap-3 rounded-lg border px-4 py-3 text-left text-sm transition-all duration-300 ${
-                                        active
-                                            ? "border-primary/40 bg-primary/20 font-semibold text-primary"
-                                            : "border-transparent bg-background text-text hover:border-white/10 hover:bg-background/70"
-                                    }`}
+                                    className={`group relative z-10 flex w-full items-center gap-3 rounded-lg border px-4 py-3 text-left text-sm transition-all duration-300 ${active
+                                        ? "border-primary/40 bg-primary/20 font-semibold text-primary"
+                                        : "border-transparent bg-background text-text hover:border-white/10 hover:bg-background/70"
+                                        }`}
                                 >
                                     <span>{item.label}</span>
                                 </button>
@@ -849,21 +880,19 @@ export default function PortfolioSidebarLayout({
 
             <div className="mx-4 hidden w-px self-stretch bg-white/10 md:block lg:mx-6" aria-hidden="true"></div>
 
-            <section className="min-w-0 flex-1 rounded-2xl bg-background p-5 md:p-8">
+            <section ref={tabContentRef} className="min-w-0 flex-1 rounded-2xl bg-background p-5 md:p-8">
                 {renderActiveTab()}
             </section>
 
             {openCommandPalette && (
                 <div
-                    className={`fixed inset-0 z-10000 flex items-start justify-center overflow-y-auto p-3 transition-opacity duration-300 md:items-center md:p-6 ${
-                        isCommandPaletteVisible ? "bg-black/60 backdrop-blur-sm opacity-100" : "bg-black/0 opacity-0"
-                    }`}
+                    className={`fixed inset-0 z-10000 flex items-start justify-center overflow-y-auto p-3 transition-opacity duration-300 md:items-center md:p-6 ${isCommandPaletteVisible ? "bg-black/60 backdrop-blur-sm opacity-100" : "bg-black/0 opacity-0"
+                        }`}
                     onClick={closePalette}
                 >
                     <div
-                        className={`relative mt-3 w-full max-w-3xl overflow-hidden rounded-2xl border border-white/10 bg-background shadow-2xl transition-all duration-300 md:mt-0 ${
-                            isCommandPaletteVisible ? "translate-y-0 scale-100 opacity-100" : "translate-y-3 scale-95 opacity-0"
-                        }`}
+                        className={`relative mt-3 w-full max-w-3xl overflow-hidden rounded-2xl border border-white/10 bg-background shadow-2xl transition-all duration-300 md:mt-0 ${isCommandPaletteVisible ? "translate-y-0 scale-100 opacity-100" : "translate-y-3 scale-95 opacity-0"
+                            }`}
                         onClick={(event) => event.stopPropagation()}
                     >
                         <button
