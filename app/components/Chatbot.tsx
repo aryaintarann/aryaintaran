@@ -9,6 +9,15 @@ interface Message {
 
 type ChatLanguage = "id" | "en";
 
+const escapeHtml = (unsafe: string) => {
+    return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+};
+
 const chatUi = {
     id: {
         quickActions: [
@@ -123,7 +132,9 @@ export default function Chatbot() {
     };
 
     const formatMessage = (text: string): string => {
-        const lines = text.split("\n");
+        // [SECURITY] Prevents XSS by escaping any raw HTML tags BEFORE markdown parsing
+        const safeText = escapeHtml(text);
+        const lines = safeText.split("\n");
         let html = "";
         let inList = false;
         let listType = ""; // "ul" or "ol"
