@@ -119,6 +119,8 @@ export async function ensureAdminTables() {
             await ensureProjectColumn("title_en", "VARCHAR(255)", "title");
             await ensureProjectColumn("short_description_en", "TEXT", "short_description");
             await ensureProjectColumn("description_en", "LONGTEXT", "description");
+            await ensureProjectColumn("issued_month", "TINYINT", "is_published");
+            await ensureProjectColumn("issued_year", "SMALLINT", "issued_month");
         })();
     }
 

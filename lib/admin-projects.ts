@@ -19,6 +19,8 @@ export interface AdminProjectInput {
     category?: AdminProjectCategory;
     isFeatured?: boolean;
     isPublished?: boolean;
+    issuedMonth?: number;
+    issuedYear?: number;
 }
 
 export interface AdminProjectRecord {
@@ -38,6 +40,8 @@ export interface AdminProjectRecord {
     category: AdminProjectCategory;
     isFeatured: boolean;
     isPublished: boolean;
+    issuedMonth: number | null;
+    issuedYear: number | null;
     createdAt: string;
     updatedAt: string;
 }
@@ -59,6 +63,8 @@ interface AdminProjectRow extends RowDataPacket {
     category: AdminProjectCategory;
     is_featured: 0 | 1;
     is_published: 0 | 1;
+    issued_month: number | null;
+    issued_year: number | null;
     created_at: Date | string;
     updated_at: Date | string;
 }
@@ -114,6 +120,8 @@ const mapRecord = (row: AdminProjectRow): AdminProjectRecord => ({
     category: row.category,
     isFeatured: row.is_featured === 1,
     isPublished: row.is_published === 1,
+    issuedMonth: row.issued_month ?? null,
+    issuedYear: row.issued_year ?? null,
     createdAt: new Date(row.created_at).toISOString(),
     updatedAt: new Date(row.updated_at).toISOString(),
 });
@@ -149,6 +157,8 @@ function validateInput(input: AdminProjectInput) {
         category,
         isFeatured: Boolean(input.isFeatured),
         isPublished: input.isPublished !== false,
+        issuedMonth: input.issuedMonth != null ? Math.max(1, Math.min(12, Math.floor(Number(input.issuedMonth)))) : null,
+        issuedYear: input.issuedYear != null ? Math.floor(Number(input.issuedYear)) : null,
     };
 }
 
@@ -203,9 +213,11 @@ export async function createAdminProject(input: AdminProjectInput) {
                 tags,
                 category,
                 is_featured,
-                is_published
+                is_published,
+                issued_month,
+                issued_year
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `,
         [
             payload.title,
@@ -223,6 +235,8 @@ export async function createAdminProject(input: AdminProjectInput) {
             payload.category,
             payload.isFeatured ? 1 : 0,
             payload.isPublished ? 1 : 0,
+            payload.issuedMonth,
+            payload.issuedYear,
         ]
     );
 
@@ -262,7 +276,9 @@ export async function updateAdminProject(id: number, input: AdminProjectInput) {
                 tags = ?,
                 category = ?,
                 is_featured = ?,
-                is_published = ?
+                is_published = ?,
+                issued_month = ?,
+                issued_year = ?
             WHERE id = ?
         `,
         [
@@ -281,6 +297,8 @@ export async function updateAdminProject(id: number, input: AdminProjectInput) {
             payload.category,
             payload.isFeatured ? 1 : 0,
             payload.isPublished ? 1 : 0,
+            payload.issuedMonth,
+            payload.issuedYear,
             id,
         ]
     );

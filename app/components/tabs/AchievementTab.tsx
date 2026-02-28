@@ -10,15 +10,29 @@ interface AchievementTabProps {
 
 const MODAL_TRANSITION_MS = 240;
 
-const toIssuedLabel = (value?: string) => {
-    if (!value) return "Issued recently";
-    const date = new Date(value);
+const toIssuedLabel = (item: { _createdAt?: string; issuedMonth?: number; issuedYear?: number }) => {
+    if (item.issuedMonth && item.issuedYear) {
+        const date = new Date(item.issuedYear, item.issuedMonth - 1);
+        return `Issued on ${date.toLocaleDateString("en-US", { month: "long", year: "numeric" })}`;
+    }
+    if (item.issuedYear) {
+        return `Issued on ${item.issuedYear}`;
+    }
+    if (!item._createdAt) return "Issued recently";
+    const date = new Date(item._createdAt);
     return `Issued on ${date.toLocaleDateString("en-US", { month: "long", year: "numeric" })}`;
 };
 
-const getIssuedDate = (value?: string) => {
-    if (!value) return "Not specified";
-    return new Date(value).toLocaleDateString("en-US", {
+const getIssuedDate = (item: { _createdAt?: string; issuedMonth?: number; issuedYear?: number }) => {
+    if (item.issuedMonth && item.issuedYear) {
+        const date = new Date(item.issuedYear, item.issuedMonth - 1);
+        return date.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+    }
+    if (item.issuedYear) {
+        return String(item.issuedYear);
+    }
+    if (!item._createdAt) return "Not specified";
+    return new Date(item._createdAt).toLocaleDateString("en-US", {
         month: "long",
         year: "numeric",
     });
@@ -132,8 +146,8 @@ export default function AchievementTab({ achievementItems, t }: AchievementTabPr
                         </div>
 
                         <div className="p-4">
-                            <h3 className="line-clamp-2 text-2xl font-semibold text-text">{item.title}</h3>
-                            <p className="mt-2 text-base text-secondary">{item.shortDescription || "Certificate / Piagam"}</p>
+                            <h3 className="text-base font-semibold text-text">{item.title}</h3>
+                            <p className="mt-1.5 text-sm text-secondary">{item.shortDescription || "Certificate / Piagam"}</p>
 
                             <div className="mt-3 flex flex-wrap gap-2">
                                 <span className="rounded-full border border-white/15 px-3 py-1 text-xs text-secondary">
@@ -142,7 +156,7 @@ export default function AchievementTab({ achievementItems, t }: AchievementTabPr
                             </div>
 
                             <div className="mt-4 border-t border-white/10 pt-3">
-                                <p className="text-xs uppercase tracking-wide text-secondary">{toIssuedLabel(item._createdAt)}</p>
+                                <p className="text-xs uppercase tracking-wide text-secondary">{toIssuedLabel(item)}</p>
                             </div>
                         </div>
                     </article>
@@ -153,18 +167,16 @@ export default function AchievementTab({ achievementItems, t }: AchievementTabPr
 
             {activeCertificate && (
                 <div
-                    className={`fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-3 transition-opacity duration-300 md:items-center md:p-6 no-scrollbar ${
-                        isModalOpen ? "bg-black/60 backdrop-blur-sm opacity-100" : "bg-black/0 opacity-0"
-                    }`}
+                    className={`fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-3 transition-opacity duration-300 md:items-center md:p-6 no-scrollbar ${isModalOpen ? "bg-black/60 backdrop-blur-sm opacity-100" : "bg-black/0 opacity-0"
+                        }`}
                     role="dialog"
                     aria-modal="true"
                     aria-label={activeCertificate.title || "Certificate detail"}
                     onClick={closeModal}
                 >
                     <div
-                        className={`relative mt-3 w-full max-w-6xl overflow-hidden rounded-2xl border border-white/10 bg-background shadow-2xl transition-all duration-300 md:mt-0 ${
-                            isModalOpen ? "translate-y-0 scale-100 opacity-100" : "translate-y-3 scale-95 opacity-0"
-                        }`}
+                        className={`relative mt-3 w-full max-w-6xl overflow-hidden rounded-2xl border border-white/10 bg-background shadow-2xl transition-all duration-300 md:mt-0 ${isModalOpen ? "translate-y-0 scale-100 opacity-100" : "translate-y-3 scale-95 opacity-0"
+                            }`}
                         style={{ backgroundColor: "rgb(var(--color-background))" }}
                         onClick={(event) => event.stopPropagation()}
                     >
@@ -213,7 +225,7 @@ export default function AchievementTab({ achievementItems, t }: AchievementTabPr
 
                                     <div>
                                         <p className="text-sm uppercase tracking-wide text-secondary">Issue Date</p>
-                                        <p className="mt-1 font-semibold text-text">{getIssuedDate(activeCertificate._createdAt)}</p>
+                                        <p className="mt-1 font-semibold text-text">{getIssuedDate(activeCertificate)}</p>
                                     </div>
                                 </div>
 

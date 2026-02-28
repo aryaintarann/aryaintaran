@@ -17,6 +17,8 @@ type ProjectRecord = {
     category: "project" | "personal-project";
     isFeatured: boolean;
     isPublished: boolean;
+    issuedMonth: number | null;
+    issuedYear: number | null;
     createdAt: string;
     updatedAt: string;
 };
@@ -31,12 +33,42 @@ type FormState = {
     credentialUrl: string;
     tags: string;
     isPublished: boolean;
+    issuedMonth: string;
+    issuedYear: string;
 };
 
 const inputClassName =
     "w-full rounded-lg border border-white/10 bg-background px-3 py-2 text-sm text-text outline-none focus:border-primary/50";
 
+const selectClassName =
+    "w-full rounded-lg border border-white/10 bg-background px-3 py-2 text-sm text-text outline-none focus:border-primary/50 [&>option]:bg-white [&>option]:text-black";
+
 const achievementTagRegex = /(certificate|certification|sertifikat|piagam)/i;
+
+const MONTH_OPTIONS = [
+    { value: "", label: "-- Bulan --" },
+    { value: "1", label: "Januari" },
+    { value: "2", label: "Februari" },
+    { value: "3", label: "Maret" },
+    { value: "4", label: "April" },
+    { value: "5", label: "Mei" },
+    { value: "6", label: "Juni" },
+    { value: "7", label: "Juli" },
+    { value: "8", label: "Agustus" },
+    { value: "9", label: "September" },
+    { value: "10", label: "Oktober" },
+    { value: "11", label: "November" },
+    { value: "12", label: "Desember" },
+];
+
+const CURRENT_YEAR = new Date().getFullYear();
+const YEAR_OPTIONS = [
+    { value: "", label: "-- Tahun --" },
+    ...Array.from({ length: CURRENT_YEAR - 2014 }, (_, i) => ({
+        value: String(CURRENT_YEAR - i),
+        label: String(CURRENT_YEAR - i),
+    })),
+];
 
 const initialForm: FormState = {
     title: "",
@@ -48,6 +80,8 @@ const initialForm: FormState = {
     credentialUrl: "",
     tags: "",
     isPublished: true,
+    issuedMonth: "",
+    issuedYear: "",
 };
 
 function normalizeAchievementTags(tagsText: string, category: FormState["category"]) {
@@ -85,6 +119,8 @@ function toAchievementForm(project: ProjectRecord): FormState {
         credentialUrl: project.projectUrl || "",
         tags: tags.join(", "),
         isPublished: Boolean(project.isPublished),
+        issuedMonth: project.issuedMonth != null ? String(project.issuedMonth) : "",
+        issuedYear: project.issuedYear != null ? String(project.issuedYear) : "",
     };
 }
 
@@ -186,6 +222,8 @@ export default function AchievementManager() {
                     category: "project",
                     isFeatured: false,
                     isPublished: form.isPublished,
+                    issuedMonth: form.issuedMonth ? Number(form.issuedMonth) : null,
+                    issuedYear: form.issuedYear ? Number(form.issuedYear) : null,
                 }),
             });
 
@@ -254,6 +292,8 @@ export default function AchievementManager() {
                     category: "project",
                     isFeatured: false,
                     isPublished: form.isPublished,
+                    issuedMonth: form.issuedMonth ? Number(form.issuedMonth) : null,
+                    issuedYear: form.issuedYear ? Number(form.issuedYear) : null,
                 }),
             });
 
@@ -447,7 +487,7 @@ export default function AchievementManager() {
                     />
 
                     <select
-                        className={inputClassName}
+                        className={selectClassName}
                         value={form.category}
                         onChange={(event) =>
                             setForm((current) => ({
@@ -456,8 +496,8 @@ export default function AchievementManager() {
                                     event.target.value === "badge"
                                         ? "badge"
                                         : event.target.value === "penghargaan"
-                                          ? "penghargaan"
-                                          : "sertifikat",
+                                            ? "penghargaan"
+                                            : "sertifikat",
                             }))
                         }
                         disabled={submitting || uploadingImage}
@@ -466,6 +506,43 @@ export default function AchievementManager() {
                         <option value="badge">Kategori: Badge</option>
                         <option value="penghargaan">Kategori: Penghargaan</option>
                     </select>
+
+                    <div className="grid grid-cols-2 gap-3">
+                        <div>
+                            <label className="mb-1 block text-xs text-secondary">Bulan Issued</label>
+                            <select
+                                className={selectClassName}
+                                value={form.issuedMonth}
+                                onChange={(event) =>
+                                    setForm((current) => ({ ...current, issuedMonth: event.target.value }))
+                                }
+                                disabled={submitting}
+                            >
+                                {MONTH_OPTIONS.map((opt) => (
+                                    <option key={opt.value} value={opt.value}>
+                                        {opt.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div>
+                            <label className="mb-1 block text-xs text-secondary">Tahun Issued</label>
+                            <select
+                                className={selectClassName}
+                                value={form.issuedYear}
+                                onChange={(event) =>
+                                    setForm((current) => ({ ...current, issuedYear: event.target.value }))
+                                }
+                                disabled={submitting}
+                            >
+                                {YEAR_OPTIONS.map((opt) => (
+                                    <option key={opt.value} value={opt.value}>
+                                        {opt.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
 
                     <textarea
                         className={inputClassName}

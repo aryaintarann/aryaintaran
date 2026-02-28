@@ -465,9 +465,6 @@ export default function ProjectsTab({ title, projects, emptyText }: ProjectsTabP
 
                             <div className="pr-10">
                                 <h3 className="text-2xl font-semibold text-text md:text-3xl">{selectedProject.title || "Project"}</h3>
-                                <p className="mt-2 text-base text-secondary md:text-lg">
-                                    {selectedProject.shortDescription || "Project showcase"}
-                                </p>
 
                                 {selectedProjectDescription && (
                                     <p className="mt-5 whitespace-pre-line text-base text-secondary">
@@ -482,35 +479,11 @@ export default function ProjectsTab({ title, projects, emptyText }: ProjectsTabP
                                     </div>
 
                                     <div>
-                                        <p className="text-sm uppercase tracking-wide text-secondary">Main Stack</p>
-                                        <p className="mt-1 font-semibold text-text">{getDisplayTags(selectedProject)[0] || "Not specified"}</p>
+                                        <p className="text-sm uppercase tracking-wide text-secondary">Stack</p>
+                                        <p className="mt-1 font-semibold text-text">{getDisplayTags(selectedProject).join(", ") || "Not specified"}</p>
                                     </div>
                                 </div>
 
-                                <div className="mt-6 flex flex-wrap items-center gap-2">
-                                    {getDisplayTags(selectedProject).map((tag, index) => {
-                                        const icon = getTagIcon(tag);
-                                        return icon ? (
-                                            <div
-                                                key={`${selectedProject._id}-detail-icon-${index}`}
-                                                role="img"
-                                                aria-label={tag}
-                                                className="h-7 w-7 bg-contain bg-center bg-no-repeat"
-                                                style={{
-                                                    backgroundImage: `url(${icon.url})`,
-                                                    ...(icon.invertOnDark ? { filter: "invert(1) brightness(2)" } : {}),
-                                                }}
-                                            ></div>
-                                        ) : (
-                                            <span
-                                                key={`${selectedProject._id}-detail-tag-${index}`}
-                                                className="rounded-full border border-white/15 px-2.5 py-1 text-[11px] text-secondary"
-                                            >
-                                                {tag}
-                                            </span>
-                                        );
-                                    })}
-                                </div>
 
                                 <div className="mt-8 flex flex-wrap gap-3">
                                     {selectedProject.githubLink && (

@@ -80,6 +80,8 @@ export interface ProjectData {
     slug?: {
         current?: string;
     };
+    issuedMonth?: number;
+    issuedYear?: number;
 }
 
 export interface ContactData {

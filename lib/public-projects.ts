@@ -16,6 +16,8 @@ interface PublicProjectRow extends RowDataPacket {
     github_url: string | null;
     tags: unknown;
     category: "project" | "personal-project";
+    issued_month: number | null;
+    issued_year: number | null;
     updated_at: Date | string;
     created_at: Date | string;
 }
@@ -69,6 +71,8 @@ const mapPortfolioProject = (row: PublicProjectRow, language: "id" | "en") => ({
     slug: {
         current: row.slug,
     },
+    issuedMonth: row.issued_month ?? undefined,
+    issuedYear: row.issued_year ?? undefined,
 });
 
 const mapProjectDetail = (row: PublicProjectRow) => ({

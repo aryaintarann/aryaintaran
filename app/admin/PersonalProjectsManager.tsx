@@ -32,7 +32,7 @@ type FormState = {
     logoUrl: string;
     projectUrl: string;
     githubUrl: string;
-    mainStack: string;
+    stacks: string;
     tags: string;
     isFeatured: boolean;
     isPublished: boolean;
@@ -47,7 +47,7 @@ const initialForm: FormState = {
     logoUrl: "",
     projectUrl: "",
     githubUrl: "",
-    mainStack: "",
+    stacks: "",
     tags: "",
     isFeatured: false,
     isPublished: true,
@@ -65,7 +65,12 @@ function toPayload(form: FormState) {
         .filter(Boolean)
         .filter((tag) => !/^personal$/i.test(tag));
 
-    const tags = ["personal", form.mainStack.trim(), ...additionalTags].filter(
+    const stackTags = form.stacks
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter(Boolean);
+
+    const tags = ["personal", ...stackTags, ...additionalTags].filter(
         (tag, index, array) => tag && array.findIndex((item) => item.toLowerCase() === tag.toLowerCase()) === index
     );
 
@@ -97,8 +102,8 @@ function toForm(project: ProjectRecord): FormState {
         logoUrl: project.logoUrl || "",
         projectUrl: project.projectUrl || "",
         githubUrl: project.githubUrl || "",
-        mainStack: tags[0] || "",
-        tags: tags.slice(1).join(", "),
+        stacks: tags.join(", "),
+        tags: "",
         isFeatured: Boolean(project.isFeatured),
         isPublished: Boolean(project.isPublished),
     };
@@ -546,9 +551,9 @@ export default function PersonalProjectsManager() {
                     />
                     <input
                         className={inputClassName}
-                        placeholder="Main Stack (contoh: Next.js)"
-                        value={form.mainStack ?? ""}
-                        onChange={(event) => setForm((current) => ({ ...current, mainStack: event.target.value }))}
+                        placeholder="Stack (pisahkan dengan koma, contoh: Next.js, TypeScript)"
+                        value={form.stacks ?? ""}
+                        onChange={(event) => setForm((current) => ({ ...current, stacks: event.target.value }))}
                         disabled={submitting || uploadingMedia}
                     />
                     <input
