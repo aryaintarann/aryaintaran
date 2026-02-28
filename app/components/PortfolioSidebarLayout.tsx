@@ -263,17 +263,19 @@ export default function PortfolioSidebarLayout({
     useEffect(() => {
         const el = tabContentRef.current;
         if (!el) return;
-        const sections = el.querySelectorAll(":scope > * > *");
+
+        // Select the major structural elements we introduced via semantic HTML
+        // This targets the header and the immediate children of the sections (like articles or grid wrappers)
+        const sections = el.querySelectorAll(":scope > article > header, :scope > article > section > *, :scope > div > div");
         if (sections.length === 0) return;
 
         const targets: Element[] = [];
         sections.forEach((section) => {
-            const isGrid =
-                section.children.length > 1 &&
-                (section.classList.contains("grid") ||
-                    getComputedStyle(section).display === "grid" ||
-                    getComputedStyle(section).display === "flex");
-            if (isGrid) {
+            // Check if the element contains grid/flex child items by class or multiple children
+            const isGridWrapper = section.classList.contains("grid") || section.classList.contains("flex") || (section.children.length > 2 && !section.matches("header"));
+
+            if (isGridWrapper) {
+                // Animate grid items individually
                 Array.from(section.children).forEach((child) => targets.push(child));
             } else {
                 targets.push(section);
@@ -281,15 +283,19 @@ export default function PortfolioSidebarLayout({
         });
 
         if (targets.length === 0) return;
+
+        // Kill existing animations to prevent glitches during rapid tab switching
+        gsap.killTweensOf(targets);
+
         gsap.fromTo(
             targets,
-            { opacity: 0, y: 24 },
+            { opacity: 0, y: 20 },
             {
                 opacity: 1,
                 y: 0,
-                duration: 0.7,
-                ease: "power3.out",
-                stagger: 0.12,
+                duration: 1.2, // Slower duration
+                ease: "power2.out",
+                stagger: 0.2, // Slower stagger
             }
         );
     }, [activeMenu]);
