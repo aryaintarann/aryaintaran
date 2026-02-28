@@ -98,12 +98,14 @@ export default function GithubTab({ github, contact, t }: GithubTabProps) {
     }, [reposLimit, username]);
 
     return (
-        <div>
-            <h2 className="text-3xl font-bold text-text">{t.githubTitle}</h2>
-            {github?.description && <p className="mt-2 text-secondary">{github.description}</p>}
+        <article>
+            <header>
+                <h2 className="text-3xl font-bold text-text">{t.githubTitle}</h2>
+                {github?.description && <p className="mt-2 text-secondary">{github.description}</p>}
+            </header>
 
             {showContributions && (
-                <div className="mt-7">
+                <section className="mt-7">
                     <h3 className="text-xl font-semibold text-text">{contributionsTitle}</h3>
                     {username ? (
                         <div className="mt-3 rounded-xl border border-white/10 bg-surface p-3">
@@ -129,11 +131,11 @@ export default function GithubTab({ github, contact, t }: GithubTabProps) {
                     ) : (
                         <p className="mt-3 text-secondary">{t.githubNoProfile}</p>
                     )}
-                </div>
+                </section>
             )}
 
             {showRepositories && (
-                <div className="mt-8">
+                <section className="mt-8">
                     <h3 className="text-xl font-semibold text-text">{repositoriesTitle}</h3>
                     <div className="mt-4 space-y-3">
                         {failed && <p className="text-secondary">{t.githubFailed}</p>}
@@ -162,8 +164,8 @@ export default function GithubTab({ github, contact, t }: GithubTabProps) {
                             ))}
                         </div>
                     </div>
-                </div>
+                </section>
             )}
-        </div>
+        </article>
     );
 }

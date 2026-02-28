@@ -414,14 +414,16 @@ export default function ProjectsTab({ title, projects, emptyText }: ProjectsTabP
 
     return (
         <>
-            <div>
-                <h2 className="text-3xl font-bold text-text">{title}</h2>
-                <div className="mt-6 grid gap-4 md:grid-cols-2">
+            <article>
+                <header>
+                    <h2 className="text-3xl font-bold text-text">{title}</h2>
+                </header>
+                <section className="mt-6 grid gap-4 md:grid-cols-2">
                     {projects.length > 0
                         ? projects.map((project) => renderProjectCard(project, openModal))
                         : <p className="text-secondary">{emptyText}</p>}
-                </div>
-            </div>
+                </section>
+            </article>
 
             {selectedProject && (
                 <div

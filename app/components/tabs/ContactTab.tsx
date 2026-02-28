@@ -60,10 +60,12 @@ export default function ContactTab({ contact, sendEmail, title }: ContactTabProp
     const contactEmail = contact?.email;
 
     return (
-        <div>
-            <h2 className="text-3xl font-bold text-text">{title}</h2>
+        <article>
+            <header>
+                <h2 className="text-3xl font-bold text-text">{title}</h2>
+            </header>
 
-            <div className="mt-6 grid gap-4 md:grid-cols-2">
+            <section className="mt-6 grid gap-4 md:grid-cols-2">
                 <LinkCard
                     headline="Stay in Touch"
                     actionLabel={sendEmail}
@@ -131,7 +133,7 @@ export default function ContactTab({ contact, sendEmail, title }: ContactTabProp
                         </svg>
                     }
                 />
-            </div>
-        </div>
+            </section>
+        </article>
     );
 }

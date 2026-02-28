@@ -49,14 +49,17 @@ export default function CareerTab({ jobs, t }: CareerTabProps) {
     };
 
     return (
-        <div>
-            <h2 className="text-3xl font-bold text-text">{t.careerTitle}</h2>
+        <article>
+            <header>
+                <h2 className="text-3xl font-bold text-text">{t.careerTitle}</h2>
+            </header>
 
             {!jobs?.length ? (
-                <p className="mt-6 text-secondary">{t.careerEmpty}</p>
+                <p className="mt-5 text-secondary">{t.careerEmpty}</p>
             ) : (
-                <div className="mt-6 grid gap-4 md:grid-cols-2 items-start">
+                <section className="mt-8 space-y-4">
                     {jobs.map((job) => {
+                        const isExpanded = !!openDetailIds[job._id];
                         const companyLogoUrl = getCompanyLogoUrl(job.logo);
 
                         return (
@@ -104,13 +107,13 @@ export default function CareerTab({ jobs, t }: CareerTabProps) {
                                                 type="button"
                                                 onClick={() => toggleDetail(job._id)}
                                                 className="flex items-center gap-2 text-sm text-secondary transition-colors hover:text-text"
-                                                aria-expanded={!!openDetailIds[job._id]}
+                                                aria-expanded={isExpanded}
                                             >
                                                 <svg
                                                     aria-hidden="true"
                                                     viewBox="0 0 20 20"
                                                     fill="currentColor"
-                                                    className={`h-3.5 w-3.5 shrink-0 transition-transform duration-200 ${openDetailIds[job._id] ? "rotate-90" : "rotate-0"}`}
+                                                    className={`h-3.5 w-3.5 shrink-0 transition-transform duration-200 ${isExpanded ? "rotate-90" : "rotate-0"}`}
                                                 >
                                                     <path
                                                         fillRule="evenodd"
@@ -118,11 +121,11 @@ export default function CareerTab({ jobs, t }: CareerTabProps) {
                                                         clipRule="evenodd"
                                                     />
                                                 </svg>
-                                                <span>{openDetailIds[job._id] ? t.hideDetailLabel : t.educationDetailLabel}</span>
+                                                <span>{isExpanded ? t.hideDetailLabel : t.educationDetailLabel}</span>
                                             </button>
 
                                             <div
-                                                className={`grid overflow-hidden transition-all duration-300 ease-out ${openDetailIds[job._id] ? "mt-3 grid-rows-[1fr] opacity-100" : "mt-0 grid-rows-[0fr] opacity-0"
+                                                className={`grid overflow-hidden transition-all duration-300 ease-out ${isExpanded ? "mt-3 grid-rows-[1fr] opacity-100" : "mt-0 grid-rows-[0fr] opacity-0"
                                                     }`}
                                             >
                                                 <div className="overflow-hidden">
@@ -155,8 +158,8 @@ export default function CareerTab({ jobs, t }: CareerTabProps) {
                             </article>
                         );
                     })}
-                </div>
+                </section>
             )}
-        </div>
+        </article>
     );
 }

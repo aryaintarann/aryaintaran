@@ -109,17 +109,19 @@ export default function HomeTab({ profile, t }: HomeTabProps) {
     };
 
     return (
-        <div>
-            <h1 className="text-3xl font-bold text-text">{t.homeTitle}</h1>
-            <p className="mt-2 text-secondary">{profile?.fullName || "Arya Ngurah Intaran"}</p>
+        <article>
+            <header>
+                <h1 className="text-3xl font-bold text-text">{t.homeTitle}</h1>
+                <p className="mt-2 text-secondary">{profile?.fullName || "Arya Ngurah Intaran"}</p>
 
-            <div className="mt-7">
-                <p className="text-sm leading-relaxed text-secondary">{profile?.summary}</p>
-            </div>
+                <div className="mt-7">
+                    <p className="text-sm leading-relaxed text-secondary">{profile?.summary}</p>
+                </div>
+            </header>
 
             <div className="mt-8 border-t border-white/10" aria-hidden="true"></div>
 
-            <div className="mt-8">
+            <section className="mt-8">
                 <h2 className="text-xl font-semibold text-text">{t.hardSkillsTitle}</h2>
                 {hardSkills.length > 0 ? (
                     <div className="mt-4 grid grid-cols-4 gap-4 sm:grid-cols-5 lg:grid-cols-7">
@@ -149,11 +151,11 @@ export default function HomeTab({ profile, t }: HomeTabProps) {
                 ) : (
                     <p className="mt-3 text-sm text-secondary">{t.hardSkillsEmpty}</p>
                 )}
-            </div>
+            </section>
 
             <div className="mt-8 border-t border-white/10" aria-hidden="true"></div>
 
-            <div className="mt-8">
+            <section className="mt-8">
                 <h2 className="text-xl font-semibold text-text">{t.softSkillsTitle}</h2>
                 {softSkills.length > 0 ? (
                     <div className="mt-4 flex flex-wrap gap-2">
@@ -169,7 +171,7 @@ export default function HomeTab({ profile, t }: HomeTabProps) {
                 ) : (
                     <p className="mt-3 text-sm text-secondary">{t.softSkillsEmpty}</p>
                 )}
-            </div>
-        </div>
+            </section>
+        </article>
     );
 }

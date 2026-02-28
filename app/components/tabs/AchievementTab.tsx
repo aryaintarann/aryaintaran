@@ -121,9 +121,11 @@ export default function AchievementTab({ achievementItems, t }: AchievementTabPr
         : "General";
 
     return (
-        <div>
-            <h2 className="text-3xl font-bold text-text">{t.achievementTitle}</h2>
-            <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        <article>
+            <header>
+                <h2 className="text-3xl font-bold text-text">{t.achievementTitle}</h2>
+            </header>
+            <section className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                 {achievementItems.map((item) => (
                     <article
                         key={item._id}
@@ -163,7 +165,7 @@ export default function AchievementTab({ achievementItems, t }: AchievementTabPr
                 ))}
 
                 {achievementItems.length === 0 && <p className="text-secondary">{t.achievementEmpty}</p>}
-            </div>
+            </section>
 
             {activeCertificate && (
                 <div
@@ -251,6 +253,6 @@ export default function AchievementTab({ achievementItems, t }: AchievementTabPr
                     </div>
                 </div>
             )}
-        </div>
+        </article>
     );
 }
