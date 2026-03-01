@@ -5,13 +5,11 @@ import AboutSection from "@/components/sections/AboutSection";
 import SkillsSection from "@/components/sections/SkillsSection";
 import ProjectsSection from "@/components/sections/ProjectsSection";
 import ContactSection from "@/components/sections/ContactSection";
-import GSAPAnimations from "@/components/GSAPAnimations";
 
 export default function Home() {
   return (
     <main className="relative pb-24">
       <TopBar />
-      <GSAPAnimations />
       <HeroSection />
       <AboutSection />
       <SkillsSection />
@@ -21,8 +19,7 @@ export default function Home() {
 
       <footer className="py-8 px-8 text-center border-t border-border">
         <p className="text-sm text-muted-foreground">
-          © {new Date().getFullYear()} Arya Intaran. Built with Next.js &
-          GSAP.
+          © {new Date().getFullYear()} Arya Intaran.
         </p>
       </footer>
     </main>

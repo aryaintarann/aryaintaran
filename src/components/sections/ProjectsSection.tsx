@@ -2,6 +2,11 @@
 
 import { useRef } from "react";
 import { ArrowUpRight } from "lucide-react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const projects = [
     {
@@ -33,6 +38,43 @@ const projects = [
 export default function ProjectsSection() {
     const sectionRef = useRef<HTMLElement>(null);
 
+    useGSAP(() => {
+        const projectsTrack = document.querySelector(".projects-horizontal-track") as HTMLElement;
+        if (!projectsTrack) return;
+
+        const projectPanels = gsap.utils.toArray<HTMLElement>(".projects-panel");
+        const projectsTotalScroll = (projectPanels.length - 1) * window.innerWidth;
+
+        gsap.to(projectsTrack, {
+            x: -projectsTotalScroll,
+            ease: "none",
+            scrollTrigger: {
+                id: "projectsTrack",
+                trigger: ".projects-pin-wrapper",
+                pin: true,
+                scrub: 1,
+                start: "top top",
+                end: () => `+=${projectsTotalScroll}`,
+            },
+        });
+
+        gsap.utils.toArray<HTMLElement>(".project-bg-number").forEach((num) => {
+            gsap.to(num, {
+                y: "25%",
+                ease: "none",
+                scrollTrigger: {
+                    trigger: num.closest('.projects-panel'),
+                    start: "left right",
+                    end: "right left",
+                    horizontal: true,
+                    scrub: 1,
+                    containerAnimation: gsap.getById("projectsTrack") || undefined,
+                },
+            });
+        });
+        ScrollTrigger.refresh();
+    }, { scope: sectionRef, dependencies: [] });
+
     return (
         <section
             id="projects"
@@ -52,7 +94,7 @@ export default function ProjectsSection() {
                                 </span>
 
                                 <div className="flex items-start gap-8">
-                                    <span className="text-[clamp(6rem,15vw,14rem)] font-black text-[#CEF441]/20 leading-none select-none">
+                                    <span className="project-bg-number text-[clamp(6rem,15vw,14rem)] font-black text-[#CEF441]/20 leading-none select-none">
                                         {project.index}
                                     </span>
 

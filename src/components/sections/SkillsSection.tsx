@@ -1,6 +1,11 @@
 "use client";
 
 import { useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const skills = [
     {
@@ -55,6 +60,29 @@ const skills = [
 
 export default function SkillsSection() {
     const sectionRef = useRef<HTMLElement>(null);
+
+    useGSAP(() => {
+        gsap.utils.toArray<HTMLElement>(".tech-card").forEach((card, i) => {
+            gsap.fromTo(
+                card,
+                { opacity: 0, y: 60, rotateX: 10 },
+                {
+                    opacity: 1,
+                    y: 0,
+                    rotateX: 0,
+                    duration: 0.7,
+                    delay: i * 0.06,
+                    ease: "power3.out",
+                    scrollTrigger: {
+                        trigger: card,
+                        start: "top 92%",
+                        toggleActions: "play none none none",
+                    },
+                }
+            );
+        });
+        ScrollTrigger.refresh();
+    }, { scope: sectionRef, dependencies: [] });
 
     return (
         <section

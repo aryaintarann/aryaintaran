@@ -1,68 +1,155 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function HeroSection() {
     const sectionRef = useRef<HTMLElement>(null);
 
-    useEffect(() => {
-        if (!sectionRef.current) return;
-
-        const ctx = gsap.context(() => {
-            gsap.utils.toArray<HTMLElement>(".hero-orb").forEach((orb, i) => {
-                gsap.to(orb, {
-                    x: () => gsap.utils.random(-80, 80),
-                    y: () => gsap.utils.random(-60, 60),
-                    duration: gsap.utils.random(6, 10),
-                    repeat: -1,
-                    yoyo: true,
-                    ease: "sine.inOut",
-                    delay: i * 0.8,
-                });
-
-                gsap.to(orb, {
-                    scale: gsap.utils.random(0.8, 1.3),
-                    opacity: gsap.utils.random(0.03, 0.12),
-                    duration: gsap.utils.random(4, 7),
-                    repeat: -1,
-                    yoyo: true,
-                    ease: "sine.inOut",
-                    delay: i * 0.5,
-                });
-            });
-
-            gsap.to(".hero-grid", {
-                rotation: 0.5,
-                duration: 20,
-                repeat: -1,
-                yoyo: true,
-                ease: "none",
-            });
-
-            gsap.to(".hero-deco-text", {
-                x: 60,
-                duration: 15,
+    useGSAP(() => {
+        gsap.utils.toArray<HTMLElement>(".hero-orb").forEach((orb, i) => {
+            gsap.to(orb, {
+                x: () => gsap.utils.random(-80, 80),
+                y: () => gsap.utils.random(-60, 60),
+                duration: gsap.utils.random(6, 10),
                 repeat: -1,
                 yoyo: true,
                 ease: "sine.inOut",
+                delay: i * 0.8,
             });
 
-            gsap.utils.toArray<HTMLElement>(".hero-particle").forEach((p, i) => {
-                gsap.to(p, {
-                    y: -window.innerHeight,
-                    x: gsap.utils.random(-100, 100),
+            gsap.to(orb, {
+                scale: gsap.utils.random(0.8, 1.3),
+                opacity: gsap.utils.random(0.03, 0.12),
+                duration: gsap.utils.random(4, 7),
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut",
+                delay: i * 0.5,
+            });
+        });
+
+        gsap.to(".hero-grid", {
+            rotation: 0.5,
+            duration: 20,
+            repeat: -1,
+            yoyo: true,
+            ease: "none",
+        });
+
+        gsap.to(".hero-deco-text", {
+            x: 60,
+            duration: 15,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+        });
+
+        gsap.utils.toArray<HTMLElement>(".hero-particle").forEach((p, i) => {
+            gsap.to(p, {
+                y: -window.innerHeight,
+                x: gsap.utils.random(-100, 100),
+                opacity: 0,
+                duration: gsap.utils.random(6, 12),
+                repeat: -1,
+                delay: i * 1.5,
+                ease: "none",
+            });
+        });
+
+        gsap.fromTo(
+            ".hero-bg-text",
+            { opacity: 0, scale: 0.7, y: 40 },
+            { opacity: 0.08, scale: 1, y: 0, duration: 1.5, ease: "power4.out", delay: 1.6 }
+        );
+
+        const nameLines = gsap.utils.toArray<HTMLElement>(".hero-name-line");
+        nameLines.forEach((line, i) => {
+            gsap.fromTo(
+                line,
+                {
+                    y: 120,
                     opacity: 0,
-                    duration: gsap.utils.random(6, 12),
-                    repeat: -1,
-                    delay: i * 1.5,
-                    ease: "none",
-                });
-            });
-        }, sectionRef);
+                    rotationX: 40,
+                    skewX: i === 0 ? -8 : 8,
+                },
+                {
+                    y: 0,
+                    opacity: 1,
+                    rotationX: 0,
+                    skewX: 0,
+                    duration: 1.0,
+                    delay: 0.4 + i * 0.15,
+                    ease: "power4.out",
+                }
+            );
+        });
 
-        return () => ctx.revert();
-    }, []);
+        gsap.to(".hero-name", {
+            y: -8,
+            duration: 3,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+            delay: 1.6,
+        });
+
+        gsap.fromTo(
+            ".scroll-indicator",
+            { opacity: 0, y: -10 },
+            { opacity: 1, y: 0, duration: 0.8, delay: 1.8, ease: "power2.out" }
+        );
+
+        gsap.to(".scroll-indicator .scroll-line", {
+            scaleY: 1.5,
+            opacity: 0.3,
+            duration: 1.2,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+            delay: 2.2,
+        });
+
+        gsap.to(".hero-grid", {
+            y: "30%",
+            ease: "none",
+            scrollTrigger: {
+                trigger: sectionRef.current,
+                start: "top top",
+                end: "bottom top",
+                scrub: 1,
+            },
+        });
+
+        gsap.to(".hero-portrait-container", {
+            y: "15%",
+            ease: "none",
+            scrollTrigger: {
+                trigger: sectionRef.current,
+                start: "top top",
+                end: "bottom top",
+                scrub: 1.5,
+            },
+        });
+
+        gsap.to(".hero-name", {
+            y: "-40%",
+            ease: "none",
+            scrollTrigger: {
+                trigger: sectionRef.current,
+                start: "top top",
+                end: "bottom top",
+                scrub: 0.5,
+            },
+        });
+
+        ScrollTrigger.refresh();
+
+    }, { scope: sectionRef, dependencies: [] });
 
     return (
         <section
@@ -134,7 +221,7 @@ export default function HeroSection() {
                 </h1>
             </div>
 
-            <div className="absolute inset-0 flex items-end justify-center pointer-events-none z-20">
+            <div className="absolute inset-0 flex items-end justify-center pointer-events-none z-20 hero-portrait-container">
                 <div className="relative w-[clamp(280px,35vw,550px)] h-[75vh]">
                     <img
                         src="/hero-portrait.png"

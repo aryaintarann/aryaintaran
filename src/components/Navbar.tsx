@@ -7,11 +7,15 @@ import {
     Code2,
     FolderKanban,
     Mail,
-    FileText,
     Sun,
     Moon,
 } from "lucide-react";
 import { useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const navItems = [
     { id: "home", icon: Home, label: "Home" },
@@ -19,7 +23,6 @@ const navItems = [
     { id: "skills", icon: Code2, label: "Skills" },
     { id: "projects", icon: FolderKanban, label: "Projects" },
     { id: "contact", icon: Mail, label: "Contact" },
-    { id: "resume", icon: FileText, label: "Resume" },
 ];
 
 export default function Navbar() {
@@ -27,10 +30,26 @@ export default function Navbar() {
     const [activeSection, setActiveSection] = useState("home");
     const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
+    useGSAP(() => {
+        const sections = gsap.utils.toArray<HTMLElement>("section[id]");
+
+        sections.forEach((section) => {
+            ScrollTrigger.create({
+                trigger: section,
+                start: "top center",
+                end: "bottom center",
+                onToggle: (self) => {
+                    if (self.isActive) {
+                        setActiveSection(section.id);
+                    }
+                },
+            });
+        });
+
+        ScrollTrigger.refresh();
+    }, { dependencies: [] });
+
     const scrollToSection = (id: string) => {
-        if (id === "resume") {
-            return;
-        }
         setActiveSection(id);
         const el = document.getElementById(id);
         if (el) {

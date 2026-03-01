@@ -5,6 +5,11 @@ import { Send, Mail, MapPin, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function ContactSection() {
     const sectionRef = useRef<HTMLElement>(null);
@@ -19,6 +24,58 @@ export default function ContactSection() {
         const mailto = `mailto:hello@aryaintaran.dev?subject=Portfolio Contact from ${formData.name}&body=${formData.message}`;
         window.open(mailto);
     };
+
+    useGSAP(() => {
+        gsap.fromTo(
+            ".contact-title",
+            { opacity: 0, y: 120, clipPath: "inset(100% 0 0 0)" },
+            {
+                opacity: 1,
+                y: 0,
+                clipPath: "inset(0% 0 0 0)",
+                duration: 1.4,
+                ease: "power4.out",
+                scrollTrigger: {
+                    trigger: ".contact-title",
+                    start: "top 80%",
+                    toggleActions: "play none none none",
+                },
+            }
+        );
+
+        gsap.fromTo(
+            ".contact-info",
+            { opacity: 0, x: -60 },
+            {
+                opacity: 1,
+                x: 0,
+                duration: 1,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: ".contact-info",
+                    start: "top 85%",
+                    toggleActions: "play none none none",
+                },
+            }
+        );
+
+        gsap.fromTo(
+            ".contact-form",
+            { opacity: 0, x: 60 },
+            {
+                opacity: 1,
+                x: 0,
+                duration: 1,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: ".contact-form",
+                    start: "top 85%",
+                    toggleActions: "play none none none",
+                },
+            }
+        );
+        ScrollTrigger.refresh();
+    }, { scope: sectionRef, dependencies: [] });
 
     return (
         <section

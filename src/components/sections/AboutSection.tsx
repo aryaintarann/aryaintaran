@@ -1,6 +1,11 @@
 "use client";
 
 import { useRef, useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const educationData = [
     {
@@ -65,6 +70,64 @@ export default function AboutSection() {
     const [flippedEdu, setFlippedEdu] = useState<number | null>(null);
     const [flippedCareer, setFlippedCareer] = useState<number | null>(null);
 
+    useGSAP(() => {
+        const track = document.querySelector(".about-horizontal-track") as HTMLElement;
+        if (!track) return;
+
+        const panels = gsap.utils.toArray<HTMLElement>(".about-panel");
+        const totalScroll = (panels.length - 1) * window.innerWidth;
+
+        const tween = gsap.to(track, {
+            x: -totalScroll,
+            ease: "none",
+            scrollTrigger: {
+                trigger: ".about-pin-wrapper",
+                pin: true,
+                scrub: 1,
+                start: "top top",
+                end: () => `+=${totalScroll}`,
+                id: "aboutScroll",
+            },
+        });
+
+        panels.forEach((panel, i) => {
+            if (i === 0) return;
+            const content = panel.children[0];
+            if (content) {
+                gsap.fromTo(
+                    content,
+                    { opacity: 0, y: 30 },
+                    {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.5,
+                        scrollTrigger: {
+                            trigger: panel,
+                            containerAnimation: tween,
+                            start: "left 80%",
+                            toggleActions: "play none none none",
+                        },
+                    }
+                );
+            }
+        });
+
+        const aboutPortrait = sectionRef.current?.querySelector('.about-portrait-container');
+        if (aboutPortrait) {
+            gsap.to(aboutPortrait, {
+                y: "20%",
+                ease: "none",
+                scrollTrigger: {
+                    trigger: ".about-pin-wrapper",
+                    start: "top bottom",
+                    end: "bottom top",
+                    scrub: 1,
+                },
+            });
+        }
+        ScrollTrigger.refresh();
+    }, { scope: sectionRef, dependencies: [] });
+
     return (
         <section
             id="about"
@@ -93,7 +156,7 @@ export default function AboutSection() {
                                         technology to solve real-world problems.
                                     </p>
                                 </div>
-                                <div className="flex-shrink-0">
+                                <div className="flex-shrink-0 about-portrait-container">
                                     <div className="relative w-72 h-96 rounded-2xl overflow-hidden border-2 border-border">
                                         <img
                                             src="/hero-portrait.png"
