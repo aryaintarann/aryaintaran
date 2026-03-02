@@ -68,8 +68,9 @@ export default function Navbar() {
                         onClick={() => scrollToSection(item.id)}
                         onMouseEnter={() => setHoveredItem(item.id)}
                         onMouseLeave={() => setHoveredItem(null)}
+                        aria-label={`Navigate to ${item.label}`}
                         className={`relative flex items-center gap-2 px-3 py-2.5 rounded-full transition-all duration-300 cursor-pointer ${isActive
-                            ? "bg-[#CEF441] text-[#050505]"
+                            ? "bg-lime text-[#050505]"
                             : "text-foreground/70 hover:text-foreground"
                             }`}
                     >
@@ -87,6 +88,7 @@ export default function Navbar() {
 
             <button
                 onClick={toggleTheme}
+                aria-label="Toggle theme"
                 className="flex items-center gap-2 px-3 py-2.5 rounded-full text-foreground/70 hover:text-foreground transition-all duration-300 cursor-pointer"
             >
                 {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}

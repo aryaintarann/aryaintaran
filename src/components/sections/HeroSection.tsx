@@ -4,6 +4,7 @@ import { useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import Image from "next/image";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -223,10 +224,13 @@ export default function HeroSection() {
 
             <div className="absolute inset-0 flex items-end justify-center pointer-events-none z-20 hero-portrait-container">
                 <div className="relative w-[clamp(280px,35vw,550px)] h-[75vh]">
-                    <img
+                    <Image
                         src="/hero-portrait.png"
-                        alt="Arya Intaran"
-                        className="w-full h-full object-cover object-top grayscale"
+                        alt="Portrait of Arya Intaran"
+                        fill
+                        priority
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                        className="object-cover object-top grayscale"
                     />
                     <div
                         className="absolute bottom-0 left-0 right-0 h-1/3"
@@ -276,10 +280,11 @@ export default function HeroSection() {
             ))}
 
             <div className="scroll-indicator absolute bottom-24 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 opacity-0">
-                <span className="text-[10px] font-semibold tracking-[0.3em] uppercase text-muted-foreground">
+                <span className="sr-only">Scroll down to see more</span>
+                <span aria-hidden="true" className="text-[10px] font-semibold tracking-[0.3em] uppercase text-muted-foreground">
                     SCROLL
                 </span>
-                <div className="scroll-line w-px h-8 bg-gradient-to-b from-[#CEF441] to-transparent" />
+                <div aria-hidden="true" className="scroll-line w-px h-8 bg-gradient-to-b from-[#CEF441] to-transparent" />
             </div>
         </section>
     );

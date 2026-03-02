@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import Image from "next/image";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -136,7 +137,7 @@ export default function AboutSection() {
         >
             <div className="about-pin-wrapper">
                 <div className="about-horizontal-track flex">
-                    <div className="about-panel w-screen h-screen flex-shrink-0 flex flex-col justify-center px-8">
+                    <div className="about-panel w-screen h-screen shrink-0 flex flex-col justify-center px-8">
                         <div className="max-w-5xl mx-auto w-full">
                             <span className="section-num mb-8 block">01 / ABOUT ME</span>
                             <div className="flex items-center gap-16">
@@ -144,7 +145,7 @@ export default function AboutSection() {
                                     <h2 className="about-title text-[clamp(3rem,8vw,8rem)] font-black leading-[0.9] tracking-[-0.03em] mb-8">
                                         ABOUT
                                         <br />
-                                        <span className="text-[#CEF441]">ME</span>
+                                        <span className="text-lime">ME</span>
                                     </h2>
                                     <p className="text-xl leading-relaxed text-muted-foreground mb-6 max-w-xl">
                                         A passionate Full Stack Developer with expertise in building modern web
@@ -156,12 +157,14 @@ export default function AboutSection() {
                                         technology to solve real-world problems.
                                     </p>
                                 </div>
-                                <div className="flex-shrink-0 about-portrait-container">
+                                <div className="shrink-0 about-portrait-container">
                                     <div className="relative w-72 h-96 rounded-2xl overflow-hidden border-2 border-border">
-                                        <img
+                                        <Image
                                             src="/hero-portrait.png"
-                                            alt="Arya Intaran"
-                                            className="w-full h-full object-cover object-top"
+                                            alt="Portrait of Arya Intaran"
+                                            fill
+                                            sizes="(max-width: 768px) 100vw, 288px"
+                                            className="object-cover object-top grayscale"
                                         />
                                         <div
                                             className="absolute bottom-0 left-0 right-0 h-1/4"
@@ -176,7 +179,7 @@ export default function AboutSection() {
                     </div>
 
                     <div
-                        className="about-panel w-screen h-screen flex-shrink-0 relative"
+                        className="about-panel w-screen h-screen shrink-0 relative"
                         style={{ perspective: "2000px" }}
                     >
                         <div
@@ -195,18 +198,18 @@ export default function AboutSection() {
                                     <h2 className="text-[clamp(3rem,8vw,8rem)] font-black leading-[0.9] tracking-[-0.03em] mb-12">
                                         EDU
                                         <br />
-                                        <span className="text-[#CEF441]">CATION</span>
+                                        <span className="text-lime">CATION</span>
                                     </h2>
                                     <div className="space-y-8 max-w-2xl">
                                         {educationData.map((edu, i) => (
-                                            <div key={i} className={`border-l-2 ${edu.active ? "border-[#CEF441]" : "border-border"} pl-6`}>
+                                            <div key={i} className={`border-l-2 ${edu.active ? "border-lime" : "border-border"} pl-6`}>
                                                 <h3 className="text-2xl font-bold mb-1">{edu.title}</h3>
-                                                <p className="text-[#CEF441] font-semibold mb-2">{edu.school}</p>
+                                                <p className="text-lime font-semibold mb-2">{edu.school}</p>
                                                 <p className="text-sm text-muted-foreground tracking-wider">{edu.year}</p>
                                                 <p className="text-muted-foreground mt-3">{edu.summary}</p>
                                                 <button
                                                     onClick={() => setFlippedEdu(i)}
-                                                    className="mt-3 text-xs font-semibold tracking-[0.2em] text-[#CEF441] hover:text-[#b8d93a] transition-colors cursor-pointer pointer-events-auto uppercase"
+                                                    className="mt-3 text-xs font-semibold tracking-[0.2em] text-lime hover:text-lime-dark transition-colors cursor-pointer pointer-events-auto uppercase"
                                                 >
                                                     VIEW DETAILS →
                                                 </button>
@@ -227,13 +230,13 @@ export default function AboutSection() {
                                             {educationData[flippedEdu].title.split(" ").map((word, wi) => (
                                                 <span key={wi}>
                                                     {wi === educationData[flippedEdu].title.split(" ").length - 1
-                                                        ? <span className="text-[#CEF441]">{word}</span>
+                                                        ? <span className="text-lime">{word}</span>
                                                         : word + " "
                                                     }
                                                 </span>
                                             ))}
                                         </h2>
-                                        <p className="text-[#CEF441] font-semibold text-lg mb-2">
+                                        <p className="text-lime font-semibold text-lg mb-2">
                                             {educationData[flippedEdu].school}
                                         </p>
                                         <p className="text-sm text-muted-foreground tracking-wider mb-8">
@@ -246,7 +249,7 @@ export default function AboutSection() {
                                             <ul className="space-y-3">
                                                 {educationData[flippedEdu].details.map((detail, j) => (
                                                     <li key={j} className="flex items-start gap-3 text-muted-foreground">
-                                                        <span className="text-[#CEF441] mt-1 text-sm">●</span>
+                                                        <span className="text-lime mt-1 text-sm">●</span>
                                                         <span className="text-base">{detail}</span>
                                                     </li>
                                                 ))}
@@ -254,7 +257,7 @@ export default function AboutSection() {
                                         </div>
                                         <button
                                             onClick={() => setFlippedEdu(null)}
-                                            className="mt-10 bg-[#CEF441] text-[#050505] font-bold py-3 px-8 rounded-xl cursor-pointer pointer-events-auto hover:bg-[#b8d93a] transition-colors text-sm tracking-wider uppercase"
+                                            className="mt-10 bg-lime text-[#050505] font-bold py-3 px-8 rounded-xl cursor-pointer pointer-events-auto hover:bg-lime-dark transition-colors text-sm tracking-wider uppercase"
                                         >
                                             ← GO BACK
                                         </button>
@@ -265,7 +268,7 @@ export default function AboutSection() {
                     </div>
 
                     <div
-                        className="about-panel w-screen h-screen flex-shrink-0 relative"
+                        className="about-panel w-screen h-screen shrink-0 relative"
                         style={{ perspective: "2000px" }}
                     >
                         <div
@@ -284,18 +287,18 @@ export default function AboutSection() {
                                     <h2 className="text-[clamp(3rem,8vw,8rem)] font-black leading-[0.9] tracking-[-0.03em] mb-12">
                                         CAR
                                         <br />
-                                        <span className="text-[#CEF441]">EER</span>
+                                        <span className="text-lime">EER</span>
                                     </h2>
                                     <div className="space-y-8 max-w-2xl">
                                         {careerData.map((career, i) => (
-                                            <div key={i} className={`border-l-2 ${career.active ? "border-[#CEF441]" : "border-border"} pl-6`}>
+                                            <div key={i} className={`border-l-2 ${career.active ? "border-lime" : "border-border"} pl-6`}>
                                                 <h3 className="text-2xl font-bold mb-1">{career.title}</h3>
-                                                <p className="text-[#CEF441] font-semibold mb-2">{career.company}</p>
+                                                <p className="text-lime font-semibold mb-2">{career.company}</p>
                                                 <p className="text-sm text-muted-foreground tracking-wider">{career.year}</p>
                                                 <p className="text-muted-foreground mt-3">{career.summary}</p>
                                                 <button
                                                     onClick={() => setFlippedCareer(i)}
-                                                    className="mt-3 text-xs font-semibold tracking-[0.2em] text-[#CEF441] hover:text-[#b8d93a] transition-colors cursor-pointer pointer-events-auto uppercase"
+                                                    className="mt-3 text-xs font-semibold tracking-[0.2em] text-lime hover:text-lime-dark transition-colors cursor-pointer pointer-events-auto uppercase"
                                                 >
                                                     VIEW DETAILS →
                                                 </button>
@@ -316,13 +319,13 @@ export default function AboutSection() {
                                             {careerData[flippedCareer].title.split(" ").map((word, wi) => (
                                                 <span key={wi}>
                                                     {wi === careerData[flippedCareer].title.split(" ").length - 1
-                                                        ? <span className="text-[#CEF441]">{word}</span>
+                                                        ? <span className="text-lime">{word}</span>
                                                         : word + " "
                                                     }
                                                 </span>
                                             ))}
                                         </h2>
-                                        <p className="text-[#CEF441] font-semibold text-lg mb-2">
+                                        <p className="text-lime font-semibold text-lg mb-2">
                                             {careerData[flippedCareer].company}
                                         </p>
                                         <p className="text-sm text-muted-foreground tracking-wider mb-8">
@@ -335,7 +338,7 @@ export default function AboutSection() {
                                             <ul className="space-y-3">
                                                 {careerData[flippedCareer].details.map((detail, j) => (
                                                     <li key={j} className="flex items-start gap-3 text-muted-foreground">
-                                                        <span className="text-[#CEF441] mt-1 text-sm">●</span>
+                                                        <span className="text-lime mt-1 text-sm">●</span>
                                                         <span className="text-base">{detail}</span>
                                                     </li>
                                                 ))}
@@ -343,7 +346,7 @@ export default function AboutSection() {
                                         </div>
                                         <button
                                             onClick={() => setFlippedCareer(null)}
-                                            className="mt-10 bg-[#CEF441] text-[#050505] font-bold py-3 px-8 rounded-xl cursor-pointer pointer-events-auto hover:bg-[#b8d93a] transition-colors text-sm tracking-wider uppercase"
+                                            className="mt-10 bg-lime text-[#050505] font-bold py-3 px-8 rounded-xl cursor-pointer pointer-events-auto hover:bg-lime-dark transition-colors text-sm tracking-wider uppercase"
                                         >
                                             ← GO BACK
                                         </button>

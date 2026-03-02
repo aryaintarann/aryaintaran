@@ -4,6 +4,7 @@ import { useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import Image from "next/image";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -107,9 +108,11 @@ export default function SkillsSection() {
                         key={skill.name}
                         className="tech-card bg-card border border-border rounded-2xl p-6 cursor-default flex flex-col items-center justify-center gap-4 text-center"
                     >
-                        <img
+                        <Image
                             src={skill.icon}
-                            alt={skill.name}
+                            alt={`${skill.name} logo`}
+                            width={48}
+                            height={48}
                             className="w-12 h-12"
                         />
                         <h3 className="text-lg font-bold tracking-wider">
