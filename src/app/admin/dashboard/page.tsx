@@ -1,17 +1,17 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import {
   Home, User, Code2, FolderKanban, Mail, LogOut, Save,
   Plus, Trash2, ChevronDown, ChevronUp, CheckCircle, XCircle, Loader2,
-  Upload, X, Image as ImageIcon
+  Upload, X, Image as ImageIcon, Inbox,
 } from "lucide-react";
 import type { SiteContent, EducationItem, CareerItem, SkillItem, ProjectItem, ProjectType } from "@/types/content";
 import { getSkillIcon, hasSkillIcon } from "@/lib/skillIcons";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
-type Tab = "hero" | "about" | "skills" | "projects" | "contact";
+type Tab = "hero" | "about" | "skills" | "projects" | "contact" | "inbox";
 type ToastType = "success" | "error";
 interface Toast { message: string; type: ToastType }
 
@@ -21,7 +21,6 @@ const PROJECT_TYPES: { value: ProjectType; label: string }[] = [
   { value: "work", label: "Work / Company" },
 ];
 
-// ─── Small UI helpers ─────────────────────────────────────────────────────────
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="space-y-1.5">
@@ -73,7 +72,6 @@ function RemoveBtn({ onClick }: { onClick: () => void }) {
   );
 }
 
-// ─── Section Editors ─────────────────────────────────────────────────────────
 function HeroEditor({ content, onChange }: { content: SiteContent["hero"]; onChange: (v: SiteContent["hero"]) => void }) {
   return (
     <div className="space-y-6">
@@ -120,7 +118,6 @@ function AboutEditor({ content, onChange }: { content: SiteContent["about"]; onC
         </Field>
       </SectionCard>
 
-      {/* Education */}
       <SectionCard>
         <SectionTitle>Pendidikan</SectionTitle>
         {content.education.map((edu, i) => (
@@ -154,7 +151,6 @@ function AboutEditor({ content, onChange }: { content: SiteContent["about"]; onC
         <AddBtn label="Tambah Pendidikan" onClick={addEdu} />
       </SectionCard>
 
-      {/* Career */}
       <SectionCard>
         <SectionTitle>Karir</SectionTitle>
         {content.career.map((car, i) => (
@@ -210,7 +206,6 @@ function SkillsEditor({ content, onChange }: { content: SkillItem[]; onChange: (
             <div key={i} className="flex items-center gap-3 bg-white/5 rounded-xl px-3 py-2.5 border border-white/8">
               <div className="w-8 h-8 shrink-0 flex items-center justify-center rounded bg-white/10 p-1">
                 {resolvedIcon ? (
-                  // eslint-disable-next-line @next/next/no-img-element
                   <img src={resolvedIcon} alt={skill.name} className="w-full h-full object-contain" />
                 ) : (
                   <span className="text-white/20 text-lg">?</span>
@@ -286,7 +281,7 @@ function ProjectsEditor({ content, onChange, token }: { content: ProjectItem[]; 
         });
         const data = await res.json();
         if (data.url) newUrls.push(data.url);
-      } catch { /* skip failed uploads */ }
+      } catch {  }
     }
     update(i, { images: [...(project.images || []), ...newUrls] });
     setUploading(null);
@@ -314,7 +309,6 @@ function ProjectsEditor({ content, onChange, token }: { content: ProjectItem[]; 
           </div>
           {open === i && (
             <div className="p-4 pt-0 space-y-3 border-t border-white/8">
-              {/* Row 1 */}
               <div className="grid grid-cols-2 gap-3">
                 <Field label="Nomor (contoh: 01)">
                   <TextInput value={project.index} onChange={(v) => update(i, { index: v })} />
@@ -332,7 +326,6 @@ function ProjectsEditor({ content, onChange, token }: { content: ProjectItem[]; 
                 </Field>
               </div>
 
-              {/* Row 2 */}
               <Field label="Judul Proyek">
                 <TextInput
                   value={project.title}
@@ -343,7 +336,6 @@ function ProjectsEditor({ content, onChange, token }: { content: ProjectItem[]; 
                 />
               </Field>
 
-              {/* Slug */}
               <Field label="Slug URL (otomatis dari judul)">
                 <TextInput
                   value={project.slug || ""}
@@ -352,7 +344,6 @@ function ProjectsEditor({ content, onChange, token }: { content: ProjectItem[]; 
                 />
               </Field>
 
-              {/* Descriptions */}
               <Field label="Deskripsi Singkat (ditampilkan di card)">
                 <TextArea value={project.description} onChange={(v) => update(i, { description: v })} rows={2} />
               </Field>
@@ -365,7 +356,6 @@ function ProjectsEditor({ content, onChange, token }: { content: ProjectItem[]; 
                 />
               </Field>
 
-              {/* Stack & Link */}
               <Field label="Tech Stack (pisahkan dengan koma)">
                 <TextInput value={project.stack.join(", ")} onChange={(v) => update(i, { stack: v.split(",").map((s) => s.trim()).filter(Boolean) })} placeholder="React, Next.js, TypeScript" />
               </Field>
@@ -376,16 +366,13 @@ function ProjectsEditor({ content, onChange, token }: { content: ProjectItem[]; 
                 <TextInput value={project.github || ""} onChange={(v) => update(i, { github: v })} placeholder="https://github.com/username/repo" />
               </Field>
 
-              {/* Image upload */}
               <div className="space-y-2">
                 <label className="text-xs font-semibold tracking-widest uppercase text-white/40">Foto Project</label>
 
-                {/* Existing images */}
                 {project.images && project.images.length > 0 && (
                   <div className="grid grid-cols-3 gap-2 mb-2">
                     {project.images.map((url, imgIdx) => (
                       <div key={imgIdx} className="relative group aspect-video rounded-lg overflow-hidden border border-white/10">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={url} alt={`Project image ${imgIdx + 1}`} className="w-full h-full object-cover" />
                         <button
                           onClick={() => removeImage(i, imgIdx)}
@@ -398,7 +385,6 @@ function ProjectsEditor({ content, onChange, token }: { content: ProjectItem[]; 
                   </div>
                 )}
 
-                {/* Upload button */}
                 <input
                   ref={(el) => { fileRefs.current[i] = el; }}
                   type="file"
@@ -448,13 +434,22 @@ function ContactEditor({ content, onChange }: { content: SiteContent["contact"];
   );
 }
 
-// ─── Main Dashboard ───────────────────────────────────────────────────────────
+const InboxViewer = dynamic(() => import("@/components/admin/InboxViewer"), {
+  ssr: false,
+  loading: () => (
+    <div className="flex items-center justify-center py-20">
+      <Loader2 size={24} className="text-lime animate-spin" />
+    </div>
+  ),
+});
+
 const NAV: { id: Tab; label: string; icon: React.ElementType }[] = [
   { id: "hero", label: "Hero", icon: Home },
   { id: "about", label: "About", icon: User },
   { id: "skills", label: "Skills", icon: Code2 },
   { id: "projects", label: "Projects", icon: FolderKanban },
   { id: "contact", label: "Contact", icon: Mail },
+  { id: "inbox", label: "Inbox", icon: Inbox },
 ];
 
 export default function AdminDashboard() {
@@ -464,6 +459,7 @@ export default function AdminDashboard() {
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<Toast | null>(null);
   const [token, setToken] = useState("");
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const showToast = useCallback((message: string, type: ToastType) => {
     setToast({ message, type });
@@ -513,7 +509,6 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-[#050505] flex">
-      {/* Sidebar */}
       <aside className="w-56 shrink-0 border-r border-white/8 flex flex-col py-6 px-4 sticky top-0 h-screen">
         <div className="mb-8 px-2">
           <h1 className="text-lg font-black tracking-[-0.02em] text-white">
@@ -535,6 +530,13 @@ export default function AdminDashboard() {
             >
               <Icon size={16} />
               {label}
+              {id === "inbox" && unreadCount > 0 ? (
+                <span className={`ml-auto text-[10px] font-black px-1.5 py-0.5 rounded-full ${
+                  activeTab === "inbox" ? "bg-[#050505]/30 text-[#050505]" : "bg-lime text-[#050505]"
+                }`}>
+                  {unreadCount}
+                </span>
+              ) : null}
             </button>
           ))}
         </nav>
@@ -557,53 +559,51 @@ export default function AdminDashboard() {
         </div>
       </aside>
 
-      {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Top Bar */}
         <header className="sticky top-0 z-10 bg-[#050505]/80 backdrop-blur border-b border-white/8 flex items-center justify-between px-8 py-4">
           <div>
             <h2 className="text-base font-bold tracking-wide text-white capitalize">{activeTab}</h2>
-            <p className="text-xs text-white/30">Edit konten section ini</p>
+            <p className="text-xs text-white/30">
+              {activeTab === "inbox" ? "Pesan masuk dari contact form" : "Edit konten section ini"}
+            </p>
           </div>
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="flex items-center gap-2 bg-lime text-[#050505] font-bold px-5 py-2.5 rounded-xl text-sm tracking-wider uppercase hover:bg-lime-dark disabled:opacity-50 transition-all"
-          >
-            {saving ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
-            {saving ? "Menyimpan..." : "Simpan"}
-          </button>
+          {activeTab !== "inbox" ? (
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="flex items-center gap-2 bg-lime text-[#050505] font-bold px-5 py-2.5 rounded-xl text-sm tracking-wider uppercase hover:bg-lime-dark disabled:opacity-50 transition-all"
+            >
+              {saving ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
+              {saving ? "Menyimpan..." : "Simpan"}
+            </button>
+          ) : null}
         </header>
 
-        {/* Content Area */}
         <main className="flex-1 overflow-y-auto px-8 py-8 max-w-3xl">
-          {activeTab === "hero" && (
+          {activeTab === "hero" ? (
             <HeroEditor content={content.hero} onChange={(v) => setContent({ ...content, hero: v })} />
-          )}
-          {activeTab === "about" && (
+          ) : activeTab === "about" ? (
             <AboutEditor content={content.about} onChange={(v) => setContent({ ...content, about: v })} />
-          )}
-          {activeTab === "skills" && (
+          ) : activeTab === "skills" ? (
             <SkillsEditor content={content.skills} onChange={(v) => setContent({ ...content, skills: v })} />
-          )}
-          {activeTab === "projects" && (
+          ) : activeTab === "projects" ? (
             <ProjectsEditor content={content.projects} onChange={(v) => setContent({ ...content, projects: v })} token={token} />
-          )}
-          {activeTab === "contact" && (
+          ) : activeTab === "contact" ? (
             <ContactEditor content={content.contact} onChange={(v) => setContent({ ...content, contact: v })} />
-          )}
+          ) : activeTab === "inbox" ? (
+            <InboxViewer token={token} onUnreadChange={setUnreadCount} />
+          ) : null}
         </main>
       </div>
 
-      {/* Toast */}
-      {toast && (
+      {toast ? (
         <div className={`fixed bottom-6 right-6 flex items-center gap-3 px-5 py-3.5 rounded-2xl text-sm font-semibold shadow-2xl transition-all z-50 ${
           toast.type === "success" ? "bg-lime text-[#050505]" : "bg-red-500 text-white"
         }`}>
           {toast.type === "success" ? <CheckCircle size={16} /> : <XCircle size={16} />}
           {toast.message}
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

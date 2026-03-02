@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Send, Mail, MapPin, Phone } from "lucide-react";
+import { Send, Mail, MapPin, Phone, CheckCircle, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,11 +21,30 @@ export default function ContactSection() {
         email: "",
         message: "",
     });
+    const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const mailto = `mailto:${email}?subject=Portfolio Contact from ${formData.name}&body=${formData.message}`;
-        window.open(mailto);
+        if (status === "sending") return;
+        setStatus("sending");
+        try {
+            const res = await fetch("/api/messages", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData),
+            });
+            if (res.ok) {
+                setStatus("sent");
+                setFormData({ name: "", email: "", message: "" });
+                setTimeout(() => setStatus("idle"), 5000);
+            } else {
+                setStatus("error");
+                setTimeout(() => setStatus("idle"), 4000);
+            }
+        } catch {
+            setStatus("error");
+            setTimeout(() => setStatus("idle"), 4000);
+        }
     };
 
     useGSAP(() => {
@@ -203,9 +222,16 @@ export default function ContactSection() {
                     </div>
                     <Button
                         type="submit"
-                        className="w-full bg-lime text-[#050505] hover:bg-lime-dark h-12 rounded-xl font-bold tracking-wider uppercase"
+                        disabled={status === "sending" || status === "sent"}
+                        className="w-full bg-lime text-[#050505] hover:bg-lime-dark h-12 rounded-xl font-bold tracking-wider uppercase disabled:opacity-70"
                     >
-                        Send Message <Send size={16} className="ml-2" />
+                        {status === "sending"
+                          ? <><Loader2 size={16} className="ml-2 animate-spin" /> Sending...</>
+                          : status === "sent"
+                          ? <><CheckCircle size={16} className="ml-2" /> Message Sent!</>
+                          : status === "error"
+                          ? <><AlertCircle size={16} className="ml-2" /> Failed. Try Again</>
+                          : <>Send Message <Send size={16} className="ml-2" /></>}
                     </Button>
                 </form>
             </div>

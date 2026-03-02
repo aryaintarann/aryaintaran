@@ -3,7 +3,7 @@
 export default function TopBar() {
     return (
         <header className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-8 py-4">
-            <div className="w-10 h-10 bg-[#CEF441] rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-lime rounded-lg flex items-center justify-center">
                 <span className="text-[#050505] font-black text-sm tracking-tight">
                     AI
                 </span>
