@@ -5,69 +5,15 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import Image from "next/image";
+import { useContent } from "@/context/ContentContext";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const educationData = [
-    {
-        title: "Bachelor of Computer Science",
-        school: "University Name",
-        year: "2020 — 2024",
-        summary: "Focused on software engineering, data structures, algorithms, and web development technologies.",
-        details: [
-            "GPA: 3.8 / 4.0",
-            "Relevant coursework: Web Development, Database Systems, Cloud Computing",
-            "Active member of coding club and hackathon participant",
-            "Final project: Full-stack e-commerce platform",
-        ],
-        active: true,
-    },
-    {
-        title: "High School",
-        school: "School Name",
-        year: "2017 — 2020",
-        summary: "Science major with strong foundation in mathematics and computer fundamentals.",
-        details: [
-            "Science major specialization",
-            "Strong foundation in mathematics and logic",
-            "Introduction to programming and computer science",
-            "Participated in science olympiad competitions",
-        ],
-        active: false,
-    },
-];
-
-const careerData = [
-    {
-        title: "Full Stack Developer",
-        company: "Company Name",
-        year: "2024 — Present",
-        summary: "Building and maintaining web applications using React, Next.js, Node.js, and cloud technologies.",
-        details: [
-            "Developed and deployed full-stack web applications",
-            "Implemented RESTful APIs and database integrations",
-            "Collaborated with cross-functional teams using Agile methodology",
-            "Optimized application performance and user experience",
-        ],
-        active: true,
-    },
-    {
-        title: "IT Support Specialist",
-        company: "Company Name",
-        year: "2022 — 2024",
-        summary: "Provided technical support, managed infrastructure, and developed internal tools for workflow automation.",
-        details: [
-            "Managed and maintained company IT infrastructure",
-            "Provided technical support for 50+ employees",
-            "Developed internal automation tools using Python and JavaScript",
-            "Implemented backup and disaster recovery procedures",
-        ],
-        active: false,
-    },
-];
-
 export default function AboutSection() {
     const sectionRef = useRef<HTMLElement>(null);
+    const content = useContent();
+    const educationData = content.about.education;
+    const careerData = content.about.career;
     const [flippedEdu, setFlippedEdu] = useState<number | null>(null);
     const [flippedCareer, setFlippedCareer] = useState<number | null>(null);
 
@@ -148,13 +94,10 @@ export default function AboutSection() {
                                         <span className="text-lime">ME</span>
                                     </h2>
                                     <p className="text-xl leading-relaxed text-muted-foreground mb-6 max-w-xl">
-                                        A passionate Full Stack Developer with expertise in building modern web
-                                        applications. I thrive on crafting intuitive user experiences and
-                                        scalable backend systems.
+                                        {content.about.bio1}
                                     </p>
                                     <p className="text-xl leading-relaxed text-muted-foreground max-w-xl">
-                                        I believe in clean code, continuous learning, and the power of
-                                        technology to solve real-world problems.
+                                        {content.about.bio2}
                                     </p>
                                 </div>
                                 <div className="shrink-0 about-portrait-container">
@@ -193,28 +136,43 @@ export default function AboutSection() {
                                 className="absolute inset-0 w-full h-full flex flex-col justify-center px-8"
                                 style={{ backfaceVisibility: "hidden" }}
                             >
-                                <div className="max-w-4xl mx-auto">
-                                    <span className="section-num mb-8 block">02 / EDUCATION</span>
-                                    <h2 className="text-[clamp(3rem,8vw,8rem)] font-black leading-[0.9] tracking-[-0.03em] mb-12">
+                                <div className="max-w-4xl mx-auto w-full">
+                                    <span className="section-num mb-6 block">02 / EDUCATION</span>
+                                    <h2 className="text-[clamp(2.5rem,6vw,7rem)] font-black leading-[0.9] tracking-[-0.03em] mb-8">
                                         EDU
                                         <br />
                                         <span className="text-lime">CATION</span>
                                     </h2>
-                                    <div className="space-y-8 max-w-2xl">
-                                        {educationData.map((edu, i) => (
-                                            <div key={i} className={`border-l-2 ${edu.active ? "border-lime" : "border-border"} pl-6`}>
-                                                <h3 className="text-2xl font-bold mb-1">{edu.title}</h3>
-                                                <p className="text-lime font-semibold mb-2">{edu.school}</p>
-                                                <p className="text-sm text-muted-foreground tracking-wider">{edu.year}</p>
-                                                <p className="text-muted-foreground mt-3">{edu.summary}</p>
-                                                <button
-                                                    onClick={() => setFlippedEdu(i)}
-                                                    className="mt-3 text-xs font-semibold tracking-[0.2em] text-lime hover:text-lime-dark transition-colors cursor-pointer pointer-events-auto uppercase"
-                                                >
-                                                    VIEW DETAILS →
-                                                </button>
-                                            </div>
-                                        ))}
+                                    <div
+                                        className="max-w-2xl overflow-y-auto pr-2"
+                                        style={{
+                                            maxHeight: "calc(100vh - 320px)",
+                                            scrollbarWidth: "thin",
+                                            scrollbarColor: "rgba(206,244,65,0.3) transparent",
+                                        }}
+                                    >
+                                        <div className={educationData.length > 3 ? "space-y-4" : "space-y-7"}>
+                                            {educationData.map((edu, i) => (
+                                                <div key={i} className={`border-l-2 ${edu.active ? "border-lime" : "border-border"} pl-5`}>
+                                                    <div className="flex items-start justify-between gap-4">
+                                                        <div className="flex-1 min-w-0">
+                                                            <h3 className="text-xl font-bold mb-0.5 leading-tight">{edu.title}</h3>
+                                                            <p className="text-lime font-semibold text-sm mb-1">{edu.school}</p>
+                                                            <p className="text-xs text-muted-foreground tracking-wider">{edu.year}</p>
+                                                            {educationData.length <= 2 && (
+                                                                <p className="text-muted-foreground mt-2 text-sm">{edu.summary}</p>
+                                                            )}
+                                                        </div>
+                                                        <button
+                                                            onClick={() => setFlippedEdu(i)}
+                                                            className="shrink-0 mt-1 text-[10px] font-bold tracking-[0.2em] text-lime hover:text-lime-dark transition-colors cursor-pointer pointer-events-auto uppercase whitespace-nowrap"
+                                                        >
+                                                            DETAILS →
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -282,28 +240,43 @@ export default function AboutSection() {
                                 className="absolute inset-0 w-full h-full flex flex-col justify-center px-8"
                                 style={{ backfaceVisibility: "hidden" }}
                             >
-                                <div className="max-w-4xl mx-auto">
-                                    <span className="section-num mb-8 block">03 / CAREER</span>
-                                    <h2 className="text-[clamp(3rem,8vw,8rem)] font-black leading-[0.9] tracking-[-0.03em] mb-12">
+                                <div className="max-w-4xl mx-auto w-full">
+                                    <span className="section-num mb-6 block">03 / CAREER</span>
+                                    <h2 className="text-[clamp(2.5rem,6vw,7rem)] font-black leading-[0.9] tracking-[-0.03em] mb-8">
                                         CAR
                                         <br />
                                         <span className="text-lime">EER</span>
                                     </h2>
-                                    <div className="space-y-8 max-w-2xl">
-                                        {careerData.map((career, i) => (
-                                            <div key={i} className={`border-l-2 ${career.active ? "border-lime" : "border-border"} pl-6`}>
-                                                <h3 className="text-2xl font-bold mb-1">{career.title}</h3>
-                                                <p className="text-lime font-semibold mb-2">{career.company}</p>
-                                                <p className="text-sm text-muted-foreground tracking-wider">{career.year}</p>
-                                                <p className="text-muted-foreground mt-3">{career.summary}</p>
-                                                <button
-                                                    onClick={() => setFlippedCareer(i)}
-                                                    className="mt-3 text-xs font-semibold tracking-[0.2em] text-lime hover:text-lime-dark transition-colors cursor-pointer pointer-events-auto uppercase"
-                                                >
-                                                    VIEW DETAILS →
-                                                </button>
-                                            </div>
-                                        ))}
+                                    <div
+                                        className="max-w-2xl overflow-y-auto pr-2"
+                                        style={{
+                                            maxHeight: "calc(100vh - 320px)",
+                                            scrollbarWidth: "thin",
+                                            scrollbarColor: "rgba(206,244,65,0.3) transparent",
+                                        }}
+                                    >
+                                        <div className={careerData.length > 3 ? "space-y-4" : "space-y-7"}>
+                                            {careerData.map((career, i) => (
+                                                <div key={i} className={`border-l-2 ${career.active ? "border-lime" : "border-border"} pl-5`}>
+                                                    <div className="flex items-start justify-between gap-4">
+                                                        <div className="flex-1 min-w-0">
+                                                            <h3 className="text-xl font-bold mb-0.5 leading-tight">{career.title}</h3>
+                                                            <p className="text-lime font-semibold text-sm mb-1">{career.company}</p>
+                                                            <p className="text-xs text-muted-foreground tracking-wider">{career.year}</p>
+                                                            {careerData.length <= 2 && (
+                                                                <p className="text-muted-foreground mt-2 text-sm">{career.summary}</p>
+                                                            )}
+                                                        </div>
+                                                        <button
+                                                            onClick={() => setFlippedCareer(i)}
+                                                            className="shrink-0 mt-1 text-[10px] font-bold tracking-[0.2em] text-lime hover:text-lime-dark transition-colors cursor-pointer pointer-events-auto uppercase whitespace-nowrap"
+                                                        >
+                                                            DETAILS →
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
                             </div>

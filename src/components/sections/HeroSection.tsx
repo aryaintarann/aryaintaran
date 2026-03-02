@@ -5,11 +5,14 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import Image from "next/image";
+import { useContent } from "@/context/ContentContext";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function HeroSection() {
     const sectionRef = useRef<HTMLElement>(null);
+    const content = useContent();
+    const nameParts = content.hero.name.split(" ");
 
     useGSAP(() => {
         gsap.utils.toArray<HTMLElement>(".hero-orb").forEach((orb, i) => {
@@ -62,12 +65,6 @@ export default function HeroSection() {
             });
         });
 
-        gsap.fromTo(
-            ".hero-bg-text",
-            { opacity: 0, scale: 0.7, y: 40 },
-            { opacity: 0.08, scale: 1, y: 0, duration: 1.5, ease: "power4.out", delay: 1.6 }
-        );
-
         const nameLines = gsap.utils.toArray<HTMLElement>(".hero-name-line");
         nameLines.forEach((line, i) => {
             gsap.fromTo(
@@ -83,15 +80,15 @@ export default function HeroSection() {
                     opacity: 1,
                     rotationX: 0,
                     skewX: 0,
-                    duration: 1.0,
-                    delay: 0.4 + i * 0.15,
+                    duration: 2.2,
+                    delay: 0.5 + i * 0.35,
                     ease: "power4.out",
                 }
             );
         });
 
-        gsap.to(".hero-name", {
-            y: -8,
+        gsap.to(".hero-name-float", {
+            y: -12,
             duration: 3,
             repeat: -1,
             yoyo: true,
@@ -208,18 +205,10 @@ export default function HeroSection() {
                             key={i}
                             className="text-[clamp(3rem,10vw,11rem)] font-black tracking-[-0.05em] leading-none mx-8"
                         >
-                            Web Developer &nbsp;|&nbsp; IT Support &nbsp;|&nbsp; Data Entry &nbsp;&nbsp;•&nbsp;&nbsp;
+                            {content.hero.tagline} &nbsp;&nbsp;•&nbsp;&nbsp;
                         </span>
                     ))}
                 </div>
-            </div>
-
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
-                <h1 className="hero-bg-text text-center leading-none">
-                    ARYA
-                    <br />
-                    INTARAN
-                </h1>
             </div>
 
             <div className="absolute inset-0 flex items-end justify-center pointer-events-none z-20 hero-portrait-container">
@@ -242,11 +231,17 @@ export default function HeroSection() {
             </div>
 
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <h2 className="hero-name text-[clamp(5rem,15vw,16rem)] font-black leading-[0.85] tracking-[-0.03em] text-center text-foreground z-10 overflow-hidden">
-                    <span className="hero-name-line inline-block">ARYA</span>
-                    <br />
-                    <span className="hero-name-line inline-block">INTARAN</span>
-                </h2>
+                <div className="hero-name-float">
+                    <h2 className="hero-name text-[clamp(5rem,15vw,16rem)] font-black leading-[0.85] tracking-[-0.03em] text-center text-foreground z-10 overflow-hidden">
+                        <span className="hero-name-line inline-block">{nameParts[0]}</span>
+                        {nameParts.length > 1 && (
+                            <>
+                                <br />
+                                <span className="hero-name-line inline-block">{nameParts.slice(1).join(" ")}</span>
+                            </>
+                        )}
+                    </h2>
+                </div>
             </div>
 
             <div
@@ -268,7 +263,7 @@ export default function HeroSection() {
             ].map((p, i) => (
                 <div
                     key={i}
-                    className="hero-particle absolute rounded-full bg-[#CEF441] pointer-events-none"
+                    className="hero-particle absolute rounded-full bg-lime pointer-events-none"
                     style={{
                         width: `${p.w}px`,
                         height: `${p.h}px`,
@@ -284,7 +279,7 @@ export default function HeroSection() {
                 <span aria-hidden="true" className="text-[10px] font-semibold tracking-[0.3em] uppercase text-muted-foreground">
                     SCROLL
                 </span>
-                <div aria-hidden="true" className="scroll-line w-px h-8 bg-gradient-to-b from-[#CEF441] to-transparent" />
+                <div aria-hidden="true" className="scroll-line w-px h-8 bg-linear-to-b from-lime to-transparent" />
             </div>
         </section>
     );

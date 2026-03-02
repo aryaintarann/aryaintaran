@@ -2,41 +2,19 @@
 
 import { useRef } from "react";
 import { ArrowUpRight } from "lucide-react";
+import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 
-gsap.registerPlugin(ScrollTrigger);
+import { useContent } from "@/context/ContentContext";
 
-const projects = [
-    {
-        index: "01",
-        title: "E-Commerce Platform",
-        description:
-            "A full-stack e-commerce solution with real-time inventory management, secure payment processing, and an intuitive admin dashboard.",
-        stack: ["Next.js", "TypeScript", "PostgreSQL", "Stripe", "Tailwind CSS"],
-        link: "#",
-    },
-    {
-        index: "02",
-        title: "Task Management App",
-        description:
-            "Collaborative project management tool with real-time updates, Kanban boards, and team analytics for improved productivity.",
-        stack: ["React", "Node.js", "Socket.io", "MongoDB", "Express"],
-        link: "#",
-    },
-    {
-        index: "03",
-        title: "AI Content Generator",
-        description:
-            "Intelligent content creation platform leveraging AI APIs for generating, editing, and optimizing written content at scale.",
-        stack: ["Next.js", "OpenAI API", "Prisma", "PostgreSQL", "Vercel"],
-        link: "#",
-    },
-];
+gsap.registerPlugin(ScrollTrigger);
 
 export default function ProjectsSection() {
     const sectionRef = useRef<HTMLElement>(null);
+    const content = useContent();
+    const projects = content.projects;
 
     useGSAP(() => {
         const projectsTrack = document.querySelector(".projects-horizontal-track") as HTMLElement;
@@ -45,11 +23,10 @@ export default function ProjectsSection() {
         const projectPanels = gsap.utils.toArray<HTMLElement>(".projects-panel");
         const projectsTotalScroll = (projectPanels.length - 1) * window.innerWidth;
 
-        gsap.to(projectsTrack, {
+        const tween = gsap.to(projectsTrack, {
             x: -projectsTotalScroll,
             ease: "none",
             scrollTrigger: {
-                id: "projectsTrack",
                 trigger: ".projects-pin-wrapper",
                 pin: true,
                 scrub: 1,
@@ -58,22 +35,48 @@ export default function ProjectsSection() {
             },
         });
 
+        // Panel entry fade-up animations (same pattern as AboutSection)
+        projectPanels.forEach((panel, i) => {
+            if (i === 0) return;
+            const inner = panel.children[0];
+            if (inner) {
+                gsap.fromTo(
+                    inner,
+                    { opacity: 0, y: 30 },
+                    {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.5,
+                        scrollTrigger: {
+                            trigger: panel,
+                            containerAnimation: tween,
+                            start: "left 80%",
+                            toggleActions: "play none none none",
+                        },
+                    }
+                );
+            }
+        });
+
+        // bg-number parallax — containerAnimation must receive the tween, not a ScrollTrigger id
         gsap.utils.toArray<HTMLElement>(".project-bg-number").forEach((num) => {
             gsap.to(num, {
                 y: "25%",
                 ease: "none",
                 scrollTrigger: {
-                    trigger: num.closest('.projects-panel'),
+                    trigger: num.closest(".projects-panel"),
                     start: "left right",
                     end: "right left",
-                    horizontal: true,
                     scrub: 1,
-                    containerAnimation: gsap.getById("projectsTrack") || undefined,
+                    containerAnimation: tween,
                 },
             });
         });
+
         ScrollTrigger.refresh();
     }, { scope: sectionRef, dependencies: [] });
+
+    const displayedProjects = projects.slice(0, 3);
 
     return (
         <section
@@ -83,19 +86,40 @@ export default function ProjectsSection() {
         >
             <div className="projects-pin-wrapper">
                 <div className="projects-horizontal-track flex">
-                    {projects.map((project) => (
+
+                    {/* Panel 1 — Intro */}
+                    <div className="projects-panel w-screen h-screen shrink-0 flex flex-col justify-center px-8">
+                        <div className="max-w-5xl mx-auto w-full">
+                            <span className="section-num mb-8 block">04 / PROJECTS</span>
+                            <h2 className="text-[clamp(3.5rem,10vw,11rem)] font-black leading-[0.9] tracking-[-0.03em] mb-8">
+                                MY
+                                <br />
+                                <span className="text-lime">PROJECT</span>
+                            </h2>
+                            <p className="text-xl leading-relaxed text-muted-foreground max-w-xl">
+                                A selection of work I&apos;ve built — scroll to explore each project.
+                            </p>
+                            <div className="mt-10 flex items-center gap-3 text-muted-foreground">
+                                <span className="text-sm tracking-widest uppercase">Scroll to explore</span>
+                                <span className="text-lime text-lg">→</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Panels 2–4 — Projects */}
+                    {displayedProjects.map((project, i) => (
                         <div
                             key={project.index}
-                            className="projects-panel w-screen h-screen flex-shrink-0 flex flex-col justify-center px-8"
+                            className="projects-panel w-screen h-screen shrink-0 flex flex-col justify-center px-8"
                         >
                             <div className="max-w-5xl mx-auto w-full">
                                 <span className="section-num mb-6 block">
-                                    05 / PROJECT {project.index}
+                                    04 / PROJECT {String(i + 1).padStart(2, "0")}
                                 </span>
 
                                 <div className="flex items-start gap-8">
-                                    <span className="project-bg-number text-[clamp(6rem,15vw,14rem)] font-black text-[#CEF441]/20 leading-none select-none">
-                                        {project.index}
+                                    <span className="project-bg-number text-[clamp(6rem,15vw,14rem)] font-black text-lime/20 leading-none select-none">
+                                        {String(i + 1).padStart(2, "0")}
                                     </span>
 
                                     <div className="flex-1 pt-4">
@@ -119,7 +143,7 @@ export default function ProjectsSection() {
 
                                         <a
                                             href={project.link}
-                                            className="inline-flex items-center gap-2 bg-[#CEF441] text-[#050505] font-bold py-3 px-8 rounded-xl hover:bg-[#b8d93a] transition-colors text-sm tracking-wider uppercase"
+                                            className="inline-flex items-center gap-2 bg-lime text-[#050505] font-bold py-3 px-8 rounded-xl hover:bg-lime-dark transition-colors text-sm tracking-wider uppercase"
                                         >
                                             View Project <ArrowUpRight size={16} />
                                         </a>
@@ -129,23 +153,24 @@ export default function ProjectsSection() {
                         </div>
                     ))}
 
-                    <div className="projects-panel w-screen h-screen flex-shrink-0 flex flex-col items-center justify-center px-8">
+                    {/* Panel 5 — See All */}
+                    <div className="projects-panel w-screen h-screen shrink-0 flex flex-col items-center justify-center px-8">
                         <div className="text-center">
-                            <span className="section-num mb-8 block">05 / ALL PROJECTS</span>
+                            <span className="section-num mb-8 block">04 / SEE ALL</span>
                             <h2 className="text-[clamp(3rem,8vw,8rem)] font-black leading-[0.9] tracking-[-0.03em] mb-6">
-                                VIEW
+                                SEE
                                 <br />
-                                <span className="text-[#CEF441]">MORE</span>
+                                <span className="text-lime">ALL</span>
                             </h2>
                             <p className="text-xl text-muted-foreground mb-10 max-w-lg mx-auto">
                                 Explore the full collection of projects and case studies.
                             </p>
-                            <a
-                                href="#"
-                                className="inline-flex items-center gap-2 bg-[#CEF441] text-[#050505] font-bold py-4 px-10 rounded-xl hover:bg-[#b8d93a] transition-colors text-sm tracking-wider uppercase"
+                            <Link
+                                href="/projects"
+                                className="inline-flex items-center gap-2 bg-lime text-[#050505] font-bold py-4 px-10 rounded-xl hover:bg-lime-dark transition-colors text-sm tracking-wider uppercase"
                             >
                                 View All Projects <ArrowUpRight size={18} />
-                            </a>
+                            </Link>
                         </div>
                     </div>
                 </div>
