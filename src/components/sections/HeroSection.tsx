@@ -195,7 +195,7 @@ export default function HeroSection() {
                 }}
             />
 
-            <div className="absolute inset-0 flex items-center pointer-events-none select-none overflow-hidden">
+            <div className="absolute inset-0 flex items-center pointer-events-none select-none overflow-hidden" aria-hidden="true">
                 <div
                     className="flex whitespace-nowrap animate-marquee"
                     style={{ color: "var(--foreground)", opacity: 0.03 }}
@@ -214,10 +214,11 @@ export default function HeroSection() {
             <div className="absolute inset-0 flex items-end justify-center pointer-events-none z-20 hero-portrait-container">
                 <div className="relative w-[clamp(280px,35vw,550px)] h-[75vh]">
                     <Image
-                        src="/hero-portrait.png"
+                        src="/hero-portrait.webp"
                         alt="Portrait of Arya Intaran"
                         fill
                         priority
+                        fetchPriority="high"
                         sizes="(max-width: 768px) 100vw, 50vw"
                         className="object-cover object-top grayscale"
                     />
@@ -276,7 +277,7 @@ export default function HeroSection() {
 
             <div className="scroll-indicator absolute bottom-24 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 opacity-0">
                 <span className="sr-only">Scroll down to see more</span>
-                <span aria-hidden="true" className="text-[10px] font-semibold tracking-[0.3em] uppercase text-muted-foreground">
+                <span aria-hidden="true" className="text-xs font-semibold tracking-[0.3em] uppercase text-muted-foreground">
                     SCROLL
                 </span>
                 <div aria-hidden="true" className="scroll-line w-px h-8 bg-linear-to-b from-lime to-transparent" />

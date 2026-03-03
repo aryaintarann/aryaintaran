@@ -1,10 +1,11 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Send, Mail, MapPin, Phone, CheckCircle, Loader2, AlertCircle } from "lucide-react";
+import { Send, Mail, MapPin, Phone, CheckCircle, Loader2, AlertCircle, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -12,37 +13,46 @@ import { useContent } from "@/context/ContentContext";
 
 gsap.registerPlugin(ScrollTrigger);
 
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "";
+
 export default function ContactSection() {
     const sectionRef = useRef<HTMLElement>(null);
+    const turnstileRef = useRef<TurnstileInstance>(null);
     const content = useContent();
     const { email, location, phone, social } = content.contact;
     const [formData, setFormData] = useState({
         name: "",
         email: "",
         message: "",
+        website: "", // honeypot — bots fill this, humans don't
     });
+    const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
     const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (status === "sending") return;
+        if (status === "sending" || !turnstileToken) return;
         setStatus("sending");
         try {
             const res = await fetch("/api/messages", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData),
+                body: JSON.stringify({ ...formData, turnstileToken }),
             });
             if (res.ok) {
                 setStatus("sent");
-                setFormData({ name: "", email: "", message: "" });
+                setFormData({ name: "", email: "", message: "", website: "" });
+                setTurnstileToken(null);
+                turnstileRef.current?.reset();
                 setTimeout(() => setStatus("idle"), 5000);
             } else {
                 setStatus("error");
+                turnstileRef.current?.reset();
                 setTimeout(() => setStatus("idle"), 4000);
             }
         } catch {
             setStatus("error");
+            turnstileRef.current?.reset();
             setTimeout(() => setStatus("idle"), 4000);
         }
     };
@@ -112,7 +122,7 @@ export default function ContactSection() {
             <h2 className="display-text mb-16 contact-title">
                 LET&apos;S
                 <br />
-                <span className="text-lime">WORK</span>
+                <span className="text-lime">BUILD</span>
                 <br />
                 TOGETHER
             </h2>
@@ -121,7 +131,7 @@ export default function ContactSection() {
                 <div className="contact-info">
                     <h3 className="text-2xl font-bold mb-6">Send a Message</h3>
                     <p className="text-muted-foreground leading-relaxed mb-8">
-                        Got a project in mind? I&apos;d love to hear about it. Let&apos;s
+                        Got an idea or opportunity you&apos;d like to discuss? I&apos;d love to hear about it. Let&apos;s
                         build something amazing together.
                     </p>
 
@@ -176,7 +186,30 @@ export default function ContactSection() {
                     </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6 contact-form">
+                <form onSubmit={handleSubmit} className="space-y-6 contact-form" data-captcha="turnstile">
+                    {/* Honeypot — visually hidden, bots fill it, humans don't. Not aria-hidden so it doesn't trap focus. */}
+                    <div
+                        style={{
+                            position: "absolute",
+                            left: "-9999px",
+                            width: "1px",
+                            height: "1px",
+                            overflow: "hidden",
+                            opacity: 0,
+                            pointerEvents: "none",
+                        }}
+                    >
+                        <label htmlFor="website-field">Leave this empty</label>
+                        <input
+                            id="website-field"
+                            type="text"
+                            name="website"
+                            value={formData.website}
+                            onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                            tabIndex={-1}
+                            autoComplete="off"
+                        />
+                    </div>
                     <div>
                         <label htmlFor="name-input" className="text-sm font-semibold tracking-wider uppercase text-muted-foreground mb-2 block">
                             Name
@@ -216,13 +249,43 @@ export default function ContactSection() {
                             onChange={(e) =>
                                 setFormData({ ...formData, message: e.target.value })
                             }
-                            placeholder="Tell me about your project..."
+                            placeholder="Tell me about your idea or goal..."
                             className="bg-card border-border min-h-35 rounded-xl resize-none"
                         />
                     </div>
+                    {/* Static Turnstile container — always present for CAPTCHA detection */}
+                    <div
+                        className="cf-turnstile"
+                        data-sitekey={TURNSTILE_SITE_KEY}
+                        data-captcha="turnstile"
+                        style={{ minHeight: "65px" }}
+                    >
+                        <Turnstile
+                            ref={turnstileRef}
+                            siteKey={TURNSTILE_SITE_KEY}
+                            onSuccess={setTurnstileToken}
+                            onError={() => setTurnstileToken(null)}
+                            onExpire={() => setTurnstileToken(null)}
+                            options={{ theme: "auto", size: "normal" }}
+                        />
+                    </div>
+                    {/* SSR-visible Turnstile marker for crawlers and bots */}
+                    <noscript>
+                        <div
+                            className="cf-turnstile"
+                            data-sitekey={TURNSTILE_SITE_KEY}
+                        />
+                    </noscript>
+                    {/* Hint shown while Turnstile hasn't verified yet */}
+                    {!turnstileToken && status === "idle" && (
+                        <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                            <ShieldCheck size={13} className="text-lime shrink-0" />
+                            Complete the security check above to enable the send button.
+                        </p>
+                    )}
                     <Button
                         type="submit"
-                        disabled={status === "sending" || status === "sent"}
+                        disabled={!turnstileToken || status === "sending" || status === "sent"}
                         className="w-full bg-lime text-[#050505] hover:bg-lime-dark h-12 rounded-xl font-bold tracking-wider uppercase disabled:opacity-70"
                     >
                         {status === "sending"

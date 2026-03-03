@@ -41,13 +41,14 @@ export default function ProjectsPage() {
             <header className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-8 py-4 bg-background/80 backdrop-blur-md border-b border-border">
                 <Link
                     href="/"
+                    aria-label="Back to home"
                     className="flex items-center gap-2 text-sm font-semibold tracking-wider uppercase text-muted-foreground hover:text-foreground transition-colors group"
                 >
                     <ArrowLeft
                         size={16}
                         className="group-hover:-translate-x-1 transition-transform"
                     />
-                    Back
+                    Back to Home
                 </Link>
 
                 <div className="w-9 h-9 bg-lime rounded-lg flex items-center justify-center">
@@ -72,6 +73,35 @@ export default function ProjectsPage() {
                             A complete collection of projects I&apos;ve designed and built —
                             from side experiments to production systems.
                         </p>
+                        <div className="mt-10 max-w-2xl space-y-4">
+                            <p className="text-muted-foreground leading-relaxed">
+                                Each piece of work listed here represents a real engineering challenge solved
+                                with deliberate technology choices. I focus on writing maintainable,
+                                well-tested code and building interfaces that are fast, accessible, and
+                                genuinely useful to the people who use them. Good software is invisible to
+                                end users — they just know everything works the way it should.
+                            </p>
+                            <p className="text-muted-foreground leading-relaxed">
+                                My experience spans web applications, API design, cloud infrastructure,
+                                and data-driven tooling. Whether building solo or as part of a team,
+                                I bring the same level of care to architecture, developer experience, and
+                                end-user outcomes alike. Clear communication and consistent documentation
+                                are as important to me as clean code.
+                            </p>
+                            <p className="text-muted-foreground leading-relaxed">
+                                I work primarily with TypeScript, React, and Node.js on the application layer,
+                                PostgreSQL and MongoDB on the data layer, and Vercel or AWS for deployment.
+                                Each technology choice is driven by the requirements of the problem, not by
+                                familiarity alone. I enjoy learning new tools when they are clearly the right
+                                fit, and I value simplicity over complexity wherever possible.
+                            </p>
+                            <p className="text-muted-foreground leading-relaxed">
+                                Open source contributions, code reviews, and pair programming have shaped my
+                                approach to engineering as much as solo work has. I believe the best software
+                                comes from teams where knowledge is shared freely and everyone feels safe to
+                                ask questions and suggest improvements.
+                            </p>
+                        </div>
                     </div>
 
                     {/* Project grid */}
@@ -118,9 +148,12 @@ export default function ProjectsPage() {
                                 {/* CTA */}
                                 <Link
                                     href={`/projects/${project.slug}`}
+                                    aria-label={`View project: ${project.title}`}
                                     className="inline-flex items-center gap-2 self-start bg-lime text-[#050505] font-bold py-3 px-7 rounded-xl hover:bg-lime-dark transition-colors text-sm tracking-wider uppercase"
                                 >
-                                    View Project <ArrowUpRight size={15} />
+                                    View Project
+                                    <span className="sr-only">: {project.title}</span>
+                                    <ArrowUpRight size={15} />
                                 </Link>
                             </article>
                         ))}
@@ -150,9 +183,14 @@ export default function ProjectsPage() {
             </div>
 
             <footer className="py-8 px-8 text-center border-t border-border">
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground mb-3">
                     © {new Date().getFullYear()} Arya Intaran.
                 </p>
+                <nav aria-label="Footer navigation" className="flex flex-wrap justify-center gap-4 text-sm">
+                    <a href="/about" className="text-muted-foreground underline underline-offset-2 hover:text-foreground transition-colors">About</a>
+                    <a href="/contact" className="text-muted-foreground underline underline-offset-2 hover:text-foreground transition-colors">Contact</a>
+                    <a href="/privacy-policy" className="text-muted-foreground underline underline-offset-2 hover:text-foreground transition-colors">Privacy Policy</a>
+                </nav>
             </footer>
         </main>
     );

@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { isValidAdminToken, sanitizePathSegment, safeExtFromMime } from "@/lib/apiSecurity";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
 const BUCKET = "project-images";
+// Strict safelist for storage paths — only allow paths within the bucket
+const SAFE_PATH_REGEX = /^[a-zA-Z0-9\-_]+\/[a-zA-Z0-9\-_.]+$/;
 
 export async function POST(req: NextRequest) {
-  // Auth check
-  const token = req.headers.get("x-admin-token");
-  if (token !== process.env.ADMIN_TOKEN) {
+  if (!isValidAdminToken(req.headers.get("x-admin-token"))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -17,7 +18,13 @@ export async function POST(req: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
 
-  const formData = await req.formData();
+  let formData: FormData;
+  try {
+    formData = await req.formData();
+  } catch {
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  }
+
   const file = formData.get("file") as File | null;
 
   if (!file) {
@@ -30,8 +37,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "File too large (max 10MB)" }, { status: 400 });
   }
 
-  const slug = formData.get("slug") as string || "project";
-  const ext = file.name.split(".").pop() ?? "jpg";
+  // Derive extension from MIME type (whitelist) — NEVER from file.name to prevent bypass
+  const ext = safeExtFromMime(file.type);
+  if (!ext) {
+    return NextResponse.json({ error: "File type not allowed" }, { status: 400 });
+  }
+
+  // Sanitize slug to prevent path traversal
+  const rawSlug = formData.get("slug") as string | null;
+  const slug = sanitizePathSegment(rawSlug ?? "project") || "project";
+
   const timestamp = Date.now();
   const path = `${slug}/${timestamp}.${ext}`;
 
@@ -46,7 +61,8 @@ export async function POST(req: NextRequest) {
     });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("[upload/POST] Supabase error:", error.message);
+    return NextResponse.json({ error: "Upload failed" }, { status: 500 });
   }
 
   const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
@@ -55,8 +71,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const token = req.headers.get("x-admin-token");
-  if (token !== process.env.ADMIN_TOKEN) {
+  if (!isValidAdminToken(req.headers.get("x-admin-token"))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -65,11 +80,23 @@ export async function DELETE(req: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
 
-  const { path } = await req.json();
-  if (!path) return NextResponse.json({ error: "No path" }, { status: 400 });
+  let body: unknown;
+  try { body = await req.json(); } catch {
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  }
+
+  const { path } = body as Record<string, unknown>;
+
+  // Validate path — must be a safe relative storage path (no traversal)
+  if (typeof path !== "string" || !path || !SAFE_PATH_REGEX.test(path)) {
+    return NextResponse.json({ error: "Invalid path" }, { status: 400 });
+  }
 
   const { error } = await supabase.storage.from(BUCKET).remove([path]);
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error("[upload/DELETE] Supabase error:", error.message);
+    return NextResponse.json({ error: "Failed to delete file" }, { status: 500 });
+  }
 
   return NextResponse.json({ success: true });
 }

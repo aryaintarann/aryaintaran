@@ -90,14 +90,14 @@ export default function ProjectsSection() {
                     {/* Panel 1 — Intro */}
                     <div className="projects-panel w-screen h-screen shrink-0 flex flex-col justify-center px-8">
                         <div className="max-w-5xl mx-auto w-full">
-                            <span className="section-num mb-8 block">04 / PROJECTS</span>
+                            <span className="section-num mb-8 block">04 / PORTFOLIO</span>
                             <h2 className="text-[clamp(3.5rem,10vw,11rem)] font-black leading-[0.9] tracking-[-0.03em] mb-8">
                                 MY
                                 <br />
-                                <span className="text-lime">PROJECT</span>
+                                <span className="text-lime">BUILDS</span>
                             </h2>
                             <p className="text-xl leading-relaxed text-muted-foreground max-w-xl">
-                                A selection of work I&apos;ve built — scroll to explore each project.
+                                A selection of what I&apos;ve built — scroll to explore each case study.
                             </p>
                             <div className="mt-10 flex items-center gap-3 text-muted-foreground">
                                 <span className="text-sm tracking-widest uppercase">Scroll to explore</span>
@@ -114,7 +114,7 @@ export default function ProjectsSection() {
                         >
                             <div className="max-w-5xl mx-auto w-full">
                                 <span className="section-num mb-6 block">
-                                    04 / PROJECT {String(i + 1).padStart(2, "0")}
+                                    04 / BUILD {String(i + 1).padStart(2, "0")}
                                 </span>
 
                                 <div className="flex items-start gap-8">
@@ -145,7 +145,7 @@ export default function ProjectsSection() {
                                             href={project.link}
                                             className="inline-flex items-center gap-2 bg-lime text-[#050505] font-bold py-3 px-8 rounded-xl hover:bg-lime-dark transition-colors text-sm tracking-wider uppercase"
                                         >
-                                            View Project <ArrowUpRight size={16} />
+                                            View Details <ArrowUpRight size={16} />
                                         </a>
                                     </div>
                                 </div>
@@ -163,13 +163,13 @@ export default function ProjectsSection() {
                                 <span className="text-lime">ALL</span>
                             </h2>
                             <p className="text-xl text-muted-foreground mb-10 max-w-lg mx-auto">
-                                Explore the full collection of projects and case studies.
+                                Explore the full collection of case studies and engineering highlights.
                             </p>
                             <Link
                                 href="/projects"
                                 className="inline-flex items-center gap-2 bg-lime text-[#050505] font-bold py-4 px-10 rounded-xl hover:bg-lime-dark transition-colors text-sm tracking-wider uppercase"
                             >
-                                View All Projects <ArrowUpRight size={18} />
+                                View Portfolio <ArrowUpRight size={18} />
                             </Link>
                         </div>
                     </div>

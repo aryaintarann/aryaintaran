@@ -103,11 +103,13 @@ export default function AboutSection() {
                                 <div className="shrink-0 about-portrait-container">
                                     <div className="relative w-72 h-96 rounded-2xl overflow-hidden border-2 border-border">
                                         <Image
-                                            src="/hero-portrait.png"
+                                            src="/hero-portrait.webp"
                                             alt="Portrait of Arya Intaran"
-                                            fill
+                                            width={288}
+                                            height={384}
+                                            priority
                                             sizes="(max-width: 768px) 100vw, 288px"
-                                            className="object-cover object-top grayscale"
+                                            className="object-cover object-top grayscale w-full h-full"
                                         />
                                         <div
                                             className="absolute bottom-0 left-0 right-0 h-1/4"

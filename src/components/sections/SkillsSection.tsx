@@ -56,7 +56,7 @@ export default function SkillsSection() {
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                {skills.map((skill) => (
+                {skills.map((skill, index) => (
                     <div
                         key={skill.name}
                         className="tech-card bg-card border border-border rounded-2xl p-6 cursor-default flex flex-col items-center justify-center gap-4 text-center"
@@ -70,6 +70,7 @@ export default function SkillsSection() {
                                     width={48}
                                     height={48}
                                     className="w-12 h-12"
+                                    priority={index === 0}
                                 />
                             ) : (
                                 <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center text-xl font-black text-muted-foreground">

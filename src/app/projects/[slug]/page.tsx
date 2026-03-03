@@ -277,9 +277,14 @@ export default function ProjectDetailPage() {
       </div>
 
       <footer className="py-8 px-8 text-center border-t border-border">
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground mb-3">
           © {new Date().getFullYear()} Arya Intaran.
         </p>
+        <nav aria-label="Footer navigation" className="flex flex-wrap justify-center gap-4 text-sm">
+          <a href="/about" className="text-muted-foreground underline underline-offset-2 hover:text-foreground transition-colors">About</a>
+          <a href="/contact" className="text-muted-foreground underline underline-offset-2 hover:text-foreground transition-colors">Contact</a>
+          <a href="/privacy-policy" className="text-muted-foreground underline underline-offset-2 hover:text-foreground transition-colors">Privacy Policy</a>
+        </nav>
       </footer>
     </main>
   );
