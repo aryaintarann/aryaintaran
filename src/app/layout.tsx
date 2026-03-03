@@ -18,6 +18,20 @@ export const metadata: Metadata = {
     default: "Arya Intaran | Full Stack Developer Portfolio",
     template: "%s | Arya Intaran",
   },
+  icons: {
+    icon: [
+      {
+        media: "(prefers-color-scheme: light)",
+        url: "/logo-light.png",
+        href: "/logo-light.png",
+      },
+      {
+        media: "(prefers-color-scheme: dark)",
+        url: "/logo.png",
+        href: "/logo.png",
+      },
+    ],
+  },
   description:
     "Full Stack Developer specializing in React, Next.js, Node.js, and modern web technologies. Building scalable, high-performance web applications.",
   keywords: [
