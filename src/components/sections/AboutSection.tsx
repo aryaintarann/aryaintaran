@@ -93,12 +93,10 @@ export default function AboutSection() {
                                         <br />
                                         <span className="text-lime">ME</span>
                                     </h2>
-                                    <p className="text-xl leading-relaxed text-muted-foreground mb-6 max-w-xl">
-                                        {content.about.bio1}
-                                    </p>
-                                    <p className="text-xl leading-relaxed text-muted-foreground max-w-xl">
-                                        {content.about.bio2}
-                                    </p>
+                                    <div
+                                        className="text-xl leading-relaxed text-muted-foreground mb-6 max-w-xl prose prose-invert prose-p:mb-4 last:prose-p:mb-0"
+                                        dangerouslySetInnerHTML={{ __html: content.about.bio }}
+                                    />
                                 </div>
                                 <div className="shrink-0 about-portrait-container">
                                     <div className="relative w-72 h-96 rounded-2xl overflow-hidden border-2 border-border">

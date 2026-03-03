@@ -4,85 +4,74 @@
     "tagline": "Full Stack Engineer | IT Support | Data Entry"
   },
   "about": {
-    "bio1": "A passionate software engineer with expertise in building modern web applications from concept to deployment. I thrive on crafting intuitive user experiences and scalable backend systems that perform reliably under real-world conditions, handling everything from initial architecture decisions through to production monitoring and iteration.",
-    "bio2": "I believe in clean code, continuous learning, and the power of technology to solve real-world problems. From frontend interfaces to backend APIs and database architecture, I enjoy operating across every layer of the application — turning complex requirements into elegant, maintainable solutions that genuinely help people.",
+    "bio": "<p>Hello, I'm Arya, a Computer Science graduate. My core expertise spans Web Development, IT Support, and Data Entry. Character-wise, I am highly detail-oriented, adaptive, and solution-driven. This blend of technical problem-solving and data accuracy allows me to work efficiently and support seamless company operations</p>",
     "education": [
       {
         "title": "Bachelor of Computer Science",
-        "school": "University Name",
-        "year": "2020 — 2024",
-        "summary": "Focused on software engineering, data structures, algorithms, and web development technologies.",
+        "school": "ITB STIKOM Bali",
+        "year": "2022 - 2026",
+        "summary": "",
         "details": [
-          "GPA: 3.8 / 4.0",
-          "Relevant coursework: Web Development, Database Systems, Cloud Computing",
-          "Active member of coding club and hackathon participant",
-          "Final project: Full-stack e-commerce platform"
+          "Head of Talent and Interest Division of the Information Technology Association | 2022/2023",
+          "Vice Chairman of the Committee – National Seminar of the Information Technology Association | 2022",
+          "Head of Committee – Gathering of the Informatics Engineering & Computer Systems Association | 2022",
+          "Person in Charge (PIC) – Information Technology Association Gathering | 2024",
+          "Person in Charge (PIC) – National Seminar of the Information Technology Association | 2024",
+          "Vice Chairman of the Information Technology Association | 2023/2024",
+          "Person in Charge (PIC) – Information Technology Association Social Service | 2024",
+          "Student Entrepreneurship Development Program (P2MW) Participant | 2024",
+          "1st Place in the 2024 Global Innovation and Entrepreneurship Competition, Entrepreneurship Category",
+          "First Favorite in the 8th Annual Entrepreneurship Awards 2024, Ongoing Business Category."
         ],
         "active": true
       },
       {
         "title": "High School",
-        "school": "School Name",
-        "year": "2017 — 2020",
-        "summary": "Science major with strong foundation in mathematics and computer fundamentals.",
+        "school": "SMAN 1 Denpasar",
+        "year": "2016 - 2019",
+        "summary": "",
         "details": [
-          "Science major specialization",
-          "Strong foundation in mathematics and logic",
-          "Introduction to programming and computer science",
-          "Participated in science olympiad competitions"
+          "Science major specialization"
         ],
         "active": false
       }
     ],
     "career": [
       {
-        "title": "Full Stack Developer",
-        "company": "Company Name",
-        "year": "2024 — Present",
-        "summary": "Building and maintaining web applications using React, Next.js, Node.js, and cloud technologies.",
+        "title": "Website Developer",
+        "company": "Freelance",
+        "year": "2025 — Present",
+        "summary": "",
         "details": [
-          "Developed and deployed full-stack web applications",
-          "Implemented RESTful APIs and database integrations",
-          "Collaborated with cross-functional teams using Agile methodology",
-          "Optimized application performance and user experience"
+          "VarsaWeb: Building a modern web agency platform using Next.js. Developing a custom admin panel for content, portfolio, and client service management with secure authentication.",
+          "Legian Medical Clinic: Developing a comprehensive clinic management system based on Laravel with MVC architecture. Implementing electronic medical record features, doctor data management, and dynamic Indonesian-English multi-language support.",
+          "Motrac: Designing a Laravel-based financial recording application. Developing features for automatic reporting to PDF format and budget data visualization to assist user financial analysis.",
+          "Portfolio Website: Developing a professional portfolio website using Next.js and TypeScript. Designing a responsive interface with CSS Modules and interactive animations to enhance user experience."
         ],
         "active": true
       },
       {
-        "title": "IT Support Specialist",
-        "company": "Company Name",
-        "year": "2022 — 2024",
-        "summary": "Provided technical support, managed infrastructure, and developed internal tools for workflow automation.",
+        "title": "Data Entry",
+        "company": "ITB STIKOM Bali",
+        "year": "Oct 2024 - Apr 2025",
+        "summary": "",
         "details": [
-          "Managed and maintained company IT infrastructure",
-          "Provided technical support for 50+ employees",
-          "Developed internal automation tools using Python and JavaScript",
-          "Implemented backup and disaster recovery procedures"
+          "Managing and maintaining assets for government offices and schools in South Kuta (Partnership between ITB STIKOM Bali and Badung Regency Government).",
+          "Conducting asset inventory and routinely monitoring the physical condition of assets.",
+          "Preparing reports on asset usage and maintenance."
         ],
         "active": false
       },
       {
-        "title": "123",
-        "company": "Test",
-        "year": "kapan aja",
+        "title": "Data Entry",
+        "company": "Pilar Persada Solusi",
+        "year": "Jun 2020 - Feb 2021",
         "summary": "",
-        "details": [],
-        "active": false
-      },
-      {
-        "title": "test",
-        "company": "",
-        "year": "",
-        "summary": "",
-        "details": [],
-        "active": false
-      },
-      {
-        "title": "test lagi",
-        "company": "",
-        "year": "",
-        "summary": "",
-        "details": [],
+        "details": [
+          "Managing and labeling assets for Hotel Kempinski Bali in a one-year contract project.",
+          "Monitoring and recording hotel assets to ensure efficiency and compliance with company policies.",
+          "Conducting regular identification, documentation, and updating of asset data."
+        ],
         "active": false
       }
     ]
@@ -109,16 +98,16 @@
       "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postgresql/postgresql-original.svg"
     },
     {
-      "name": "AWS",
-      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-original-wordmark.svg"
+      "name": "MySQL",
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mysql/mysql-original.svg"
     },
     {
-      "name": "Docker",
-      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/docker/docker-original.svg"
+      "name": "Supabase",
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/supabase/supabase-original.svg"
     },
     {
-      "name": "Python",
-      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg"
+      "name": "PHP",
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/php/php-original.svg"
     },
     {
       "name": "Tailwind CSS",
@@ -129,16 +118,24 @@
       "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/git/git-original.svg"
     },
     {
-      "name": "MongoDB",
-      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mongodb/mongodb-original.svg"
+      "name": "Laravel",
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/laravel/laravel-original.svg"
     },
     {
-      "name": "Figma",
-      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/figma/figma-original.svg"
+      "name": "Github",
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg"
     },
     {
-      "name": "Supabase",
-      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/supabase/supabase-original.svg"
+      "name": "HTML",
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original.svg"
+    },
+    {
+      "name": "CSS",
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg"
+    },
+    {
+      "name": "Ubuntu",
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/ubuntu/ubuntu-original.svg"
     }
   ],
   "projects": [

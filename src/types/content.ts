@@ -49,8 +49,7 @@ export interface SiteContent {
     tagline: string;
   };
   about: {
-    bio1: string;
-    bio2: string;
+    bio: string;
     education: EducationItem[];
     career: CareerItem[];
   };

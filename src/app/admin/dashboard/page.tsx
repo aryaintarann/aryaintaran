@@ -88,6 +88,8 @@ function HeroEditor({ content, onChange }: { content: SiteContent["hero"]; onCha
   );
 }
 
+import DefaultEditor from 'react-simple-wysiwyg';
+
 function AboutEditor({ content, onChange }: { content: SiteContent["about"]; onChange: (v: SiteContent["about"]) => void }) {
   const [openEdu, setOpenEdu] = useState<number | null>(null);
   const [openCareer, setOpenCareer] = useState<number | null>(null);
@@ -109,13 +111,13 @@ function AboutEditor({ content, onChange }: { content: SiteContent["about"]; onC
   return (
     <div className="space-y-6">
       <SectionCard>
-        <SectionTitle>Biografi</SectionTitle>
-        <Field label="Paragraf 1">
-          <TextArea value={content.bio1} onChange={(v) => onChange({ ...content, bio1: v })} rows={3} />
-        </Field>
-        <Field label="Paragraf 2">
-          <TextArea value={content.bio2} onChange={(v) => onChange({ ...content, bio2: v })} rows={3} />
-        </Field>
+        <SectionTitle>Biografi (Rich Text)</SectionTitle>
+        <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden [&_.rsw-toolbar]:bg-transparent [&_.rsw-toolbar]:border-b [&_.rsw-toolbar]:border-white/10 [&_.rsw-editor]:min-h-[200px] [&_.rsw-editor]:text-white [&_.rsw-editor]:p-4 [&_button]:text-white/70 hover:[&_button]:bg-white/10 [&_.rsw-btn[data-active='true']]:bg-white/20">
+          <DefaultEditor
+            value={content.bio || ""}
+            onChange={(e) => onChange({ ...content, bio: e.target.value })}
+          />
+        </div>
       </SectionCard>
 
       <SectionCard>
@@ -138,7 +140,7 @@ function AboutEditor({ content, onChange }: { content: SiteContent["about"]; onC
                 <Field label="Tahun (contoh: 2020 — 2024)"><TextInput value={edu.year} onChange={(v) => updateEdu(i, { year: v })} /></Field>
                 <Field label="Ringkasan"><TextArea value={edu.summary} onChange={(v) => updateEdu(i, { summary: v })} rows={2} /></Field>
                 <Field label="Detail (satu baris = satu poin)">
-                  <TextArea value={edu.details.join("\n")} onChange={(v) => updateEdu(i, { details: v.split("\n").filter(Boolean) })} rows={4} />
+                  <TextArea value={edu.details.join("\n")} onChange={(v) => updateEdu(i, { details: v.split("\n") })} rows={4} />
                 </Field>
                 <label className="flex items-center gap-2 text-sm text-white/60 cursor-pointer">
                   <input type="checkbox" checked={edu.active} onChange={(e) => updateEdu(i, { active: e.target.checked })} className="accent-lime" />
@@ -171,7 +173,7 @@ function AboutEditor({ content, onChange }: { content: SiteContent["about"]; onC
                 <Field label="Tahun (contoh: 2024 — Present)"><TextInput value={car.year} onChange={(v) => updateCareer(i, { year: v })} /></Field>
                 <Field label="Ringkasan"><TextArea value={car.summary} onChange={(v) => updateCareer(i, { summary: v })} rows={2} /></Field>
                 <Field label="Detail (satu baris = satu poin)">
-                  <TextArea value={car.details.join("\n")} onChange={(v) => updateCareer(i, { details: v.split("\n").filter(Boolean) })} rows={4} />
+                  <TextArea value={car.details.join("\n")} onChange={(v) => updateCareer(i, { details: v.split("\n") })} rows={4} />
                 </Field>
                 <label className="flex items-center gap-2 text-sm text-white/60 cursor-pointer">
                   <input type="checkbox" checked={car.active} onChange={(e) => updateCareer(i, { active: e.target.checked })} className="accent-lime" />
@@ -281,7 +283,7 @@ function ProjectsEditor({ content, onChange, token }: { content: ProjectItem[]; 
         });
         const data = await res.json();
         if (data.url) newUrls.push(data.url);
-      } catch {  }
+      } catch { }
     }
     update(i, { images: [...(project.images || []), ...newUrls] });
     setUploading(null);
@@ -522,18 +524,16 @@ export default function AdminDashboard() {
             <button
               key={id}
               onClick={() => setActiveTab(id)}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-                activeTab === id
-                  ? "bg-lime text-[#050505]"
-                  : "text-white/50 hover:text-white hover:bg-white/5"
-              }`}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all ${activeTab === id
+                ? "bg-lime text-[#050505]"
+                : "text-white/50 hover:text-white hover:bg-white/5"
+                }`}
             >
               <Icon size={16} />
               {label}
               {id === "inbox" && unreadCount > 0 ? (
-                <span className={`ml-auto text-[10px] font-black px-1.5 py-0.5 rounded-full ${
-                  activeTab === "inbox" ? "bg-[#050505]/30 text-[#050505]" : "bg-lime text-[#050505]"
-                }`}>
+                <span className={`ml-auto text-[10px] font-black px-1.5 py-0.5 rounded-full ${activeTab === "inbox" ? "bg-[#050505]/30 text-[#050505]" : "bg-lime text-[#050505]"
+                  }`}>
                   {unreadCount}
                 </span>
               ) : null}
@@ -597,9 +597,8 @@ export default function AdminDashboard() {
       </div>
 
       {toast ? (
-        <div className={`fixed bottom-6 right-6 flex items-center gap-3 px-5 py-3.5 rounded-2xl text-sm font-semibold shadow-2xl transition-all z-50 ${
-          toast.type === "success" ? "bg-lime text-[#050505]" : "bg-red-500 text-white"
-        }`}>
+        <div className={`fixed bottom-6 right-6 flex items-center gap-3 px-5 py-3.5 rounded-2xl text-sm font-semibold shadow-2xl transition-all z-50 ${toast.type === "success" ? "bg-lime text-[#050505]" : "bg-red-500 text-white"
+          }`}>
           {toast.type === "success" ? <CheckCircle size={16} /> : <XCircle size={16} />}
           {toast.message}
         </div>

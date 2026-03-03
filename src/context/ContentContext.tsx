@@ -12,8 +12,7 @@ import type { SiteContent } from "@/types/content";
 const defaultContent: SiteContent = {
   hero: { name: "ARYA INTARAN", tagline: "Full Stack Engineer | IT Support | Data Entry" },
   about: {
-    bio1: "A passionate software engineer with expertise in building modern web applications from concept to deployment. I thrive on crafting intuitive user experiences and scalable backend systems that perform reliably under real-world conditions, handling everything from initial architecture decisions through to production monitoring and iteration.",
-    bio2: "I believe in clean code, continuous learning, and the power of technology to solve real-world problems. From frontend interfaces to backend APIs and database architecture, I enjoy operating across every layer of the application — turning complex requirements into elegant, maintainable solutions that genuinely help people.",
+    bio: "<p>A passionate software engineer with expertise in building modern web applications from concept to deployment. I thrive on crafting intuitive user experiences and scalable backend systems that perform reliably under real-world conditions, handling everything from initial architecture decisions through to production monitoring and iteration.</p><br/><p>I believe in clean code, continuous learning, and the power of technology to solve real-world problems. From frontend interfaces to backend APIs and database architecture, I enjoy operating across every layer of the application — turning complex requirements into elegant, maintainable solutions that genuinely help people.</p>",
     education: [],
     career: [],
   },
@@ -84,7 +83,7 @@ export function ContentProvider({ children }: { children: ReactNode }) {
     fetch("/api/content")
       .then((r) => r.json())
       .then((data) => setContent(data))
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   return (
