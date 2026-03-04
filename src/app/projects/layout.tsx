@@ -5,14 +5,14 @@ export const metadata: Metadata = {
   description:
     "A complete collection of projects by Arya Intaran — web apps, tools, and systems built with React, Next.js, and TypeScript.",
   alternates: {
-    canonical: "https://aryaintaran.com/projects",
+    canonical: "https://aryaintaran.dev/projects",
   },
   openGraph: {
     title: "All Projects | Arya Intaran",
     description:
       "Browse the complete collection of projects built by Arya Intaran — web applications, tools, and systems.",
     type: "website",
-    url: "https://aryaintaran.com/projects",
+    url: "https://aryaintaran.dev/projects",
     images: [
       {
         url: "/opengraph-image",

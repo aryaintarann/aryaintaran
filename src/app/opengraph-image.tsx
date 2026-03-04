@@ -90,7 +90,7 @@ export default function Image() {
             display: "flex",
           }}
         >
-          aryaintaran.com
+          aryaintaran.dev
         </div>
       </div>
     ),

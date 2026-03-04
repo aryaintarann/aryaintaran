@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getContent } from "@/lib/content";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://aryaintaran.com";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://aryaintaran.dev";
 
 export async function generateMetadata({
   params,

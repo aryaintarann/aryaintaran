@@ -5,16 +5,16 @@ import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { getContent } from "@/lib/content";
 
 export const metadata: Metadata = {
-  title: "About | Arya Intaran",
+  title: "About",
   description:
     "Learn about Arya Intaran — Full Stack Developer, IT Support, and Data Entry Specialist based in Indonesia. Background, education, career, and skills.",
-  alternates: { canonical: "https://aryaintaran.com/about" },
+  alternates: { canonical: "https://aryaintaran.dev/about" },
   openGraph: {
     title: "About Arya Intaran",
     description:
       "Full Stack Developer, IT Support, and Data Entry Specialist based in Indonesia.",
     type: "website",
-    url: "https://aryaintaran.com/about",
+    url: "https://aryaintaran.dev/about",
     images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Arya Intaran" }],
   },
 };

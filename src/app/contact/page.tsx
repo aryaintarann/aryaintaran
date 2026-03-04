@@ -7,13 +7,13 @@ export const metadata: Metadata = {
   title: "Contact | Arya Intaran",
   description:
     "Get in touch with Arya Intaran — Full Stack Developer based in Indonesia. Available for freelance projects, full-time roles, and collaborations.",
-  alternates: { canonical: "https://aryaintaran.com/contact" },
+  alternates: { canonical: "https://aryaintaran.dev/contact" },
   openGraph: {
     title: "Contact Arya Intaran",
     description:
       "Available for freelance projects, full-time roles, and collaborations. Based in Indonesia.",
     type: "website",
-    url: "https://aryaintaran.com/contact",
+    url: "https://aryaintaran.dev/contact",
     images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Contact Arya Intaran" }],
   },
 };

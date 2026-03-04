@@ -4,7 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { ContentProvider } from "@/context/ContentContext";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://aryaintaran.com";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://aryaintaran.dev";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space",

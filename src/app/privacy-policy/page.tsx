@@ -5,14 +5,14 @@ import { ArrowLeft } from "lucide-react";
 export const metadata: Metadata = {
   title: "Privacy Policy | Arya Intaran",
   description:
-    "Privacy policy for aryaintaran.com — how we handle contact form data and what information is collected when you visit this portfolio.",
-  alternates: { canonical: "https://aryaintaran.com/privacy-policy" },
+    "Privacy policy for aryaintaran.dev — how we handle contact form data and what information is collected when you visit this portfolio.",
+  alternates: { canonical: "https://aryaintaran.dev/privacy-policy" },
   openGraph: {
     title: "Privacy Policy | Arya Intaran",
     description:
-      "Privacy policy for aryaintaran.com — how contact form data is handled and what information is collected.",
+      "Privacy policy for aryaintaran.dev — how contact form data is handled and what information is collected.",
     type: "website",
-    url: "https://aryaintaran.com/privacy-policy",
+    url: "https://aryaintaran.dev/privacy-policy",
     images: [
       {
         url: "/opengraph-image",
@@ -52,7 +52,7 @@ export default function PrivacyPolicyPage() {
           <section className="mb-10">
             <h2 className="text-xl font-bold mb-3">Overview</h2>
             <p className="text-muted-foreground leading-relaxed">
-              This privacy policy explains how <strong className="text-foreground">aryaintaran.com</strong> (this portfolio website)
+              This privacy policy explains how <strong className="text-foreground">aryaintaran.dev</strong> (this portfolio website)
               handles any data you provide. I take your privacy seriously and collect only what
               is necessary for the messaging form to function.
             </p>
