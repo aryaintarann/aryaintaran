@@ -83,30 +83,29 @@ export default function AboutSection() {
         >
             <div className="about-pin-wrapper">
                 <div className="about-horizontal-track flex">
-                    <div className="about-panel w-screen h-screen shrink-0 flex flex-col justify-center px-8">
-                        <div className="max-w-5xl mx-auto w-full">
-                            <span className="section-num mb-8 block">01 / ABOUT ME</span>
-                            <div className="flex items-center gap-16">
-                                <div className="flex-1">
-                                    <h2 className="about-title text-[clamp(3rem,8vw,8rem)] font-black leading-[0.9] tracking-[-0.03em] mb-8">
+                    <div className="about-panel w-screen h-screen shrink-0 flex flex-col justify-center px-4 md:px-8">
+                        <div className="max-w-5xl mx-auto w-full mt-24 md:mt-0">
+                            <span className="section-num mb-4 md:mb-8 block">01 / ABOUT ME</span>
+                            <div className="flex flex-col-reverse md:flex-row items-center gap-8 md:gap-16">
+                                <div className="flex-1 w-full">
+                                    <h2 className="about-title text-[clamp(2.5rem,8vw,8rem)] font-black leading-[0.9] tracking-[-0.03em] mb-4 md:mb-8 text-center md:text-left">
                                         ABOUT
-                                        <br />
+                                        <br className="hidden md:block" />
                                         <span className="text-lime">ME</span>
                                     </h2>
                                     <div
-                                        className="text-xl leading-relaxed text-muted-foreground mb-6 max-w-xl prose prose-invert prose-p:mb-4 last:prose-p:mb-0"
+                                        className="text-base md:text-xl leading-relaxed text-muted-foreground mb-6 max-w-xl prose prose-invert prose-p:mb-4 last:prose-p:mb-0"
                                         dangerouslySetInnerHTML={{ __html: content.about.bio }}
                                     />
                                 </div>
                                 <div className="shrink-0 about-portrait-container">
-                                    <div className="relative w-72 h-96 rounded-2xl overflow-hidden border-2 border-border">
+                                    <div className="relative w-48 h-64 md:w-72 md:h-96 rounded-2xl overflow-hidden border-2 border-border mx-auto md:mx-0">
                                         <Image
                                             src="/hero-portrait.webp"
                                             alt="Portrait of Arya Intaran"
-                                            width={288}
-                                            height={384}
+                                            fill
                                             priority
-                                            sizes="(max-width: 768px) 100vw, 288px"
+                                            sizes="(max-width: 768px) 192px, 288px"
                                             className="object-cover object-top grayscale w-full h-full"
                                         />
                                         <div
@@ -133,7 +132,7 @@ export default function AboutSection() {
                             }}
                         >
                             <div
-                                className="absolute inset-0 w-full h-full flex flex-col justify-center px-8"
+                                className="absolute inset-0 w-full h-full flex flex-col justify-center px-4 md:px-8"
                                 style={{ backfaceVisibility: "hidden" }}
                             >
                                 <div className="max-w-4xl mx-auto w-full">
@@ -151,9 +150,9 @@ export default function AboutSection() {
                                             scrollbarColor: "rgba(206,244,65,0.3) transparent",
                                         }}
                                     >
-                                        <div className={educationData.length > 3 ? "space-y-4" : "space-y-7"}>
+                                        <ul className={educationData.length > 3 ? "space-y-4" : "space-y-7"}>
                                             {educationData.map((edu, i) => (
-                                                <div key={i} className={`border-l-2 ${edu.active ? "border-lime" : "border-border"} pl-5`}>
+                                                <li key={i} className={`border-l-2 ${edu.active ? "border-lime" : "border-border"} pl-5`}>
                                                     <div className="flex items-start justify-between gap-4">
                                                         <div className="flex-1 min-w-0">
                                                             <h3 className="text-xl font-bold mb-0.5 leading-tight">{edu.title}</h3>
@@ -170,15 +169,15 @@ export default function AboutSection() {
                                                             DETAILS →
                                                         </button>
                                                     </div>
-                                                </div>
+                                                </li>
                                             ))}
-                                        </div>
+                                        </ul>
                                     </div>
                                 </div>
                             </div>
 
                             <div
-                                className="absolute inset-0 w-full h-full flex flex-col justify-center px-8"
+                                className="absolute inset-0 w-full h-full flex flex-col justify-center px-4 md:px-8"
                                 style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
                             >
                                 {flippedEdu !== null && (
@@ -237,7 +236,7 @@ export default function AboutSection() {
                             }}
                         >
                             <div
-                                className="absolute inset-0 w-full h-full flex flex-col justify-center px-8"
+                                className="absolute inset-0 w-full h-full flex flex-col justify-center px-4 md:px-8"
                                 style={{ backfaceVisibility: "hidden" }}
                             >
                                 <div className="max-w-4xl mx-auto w-full">
@@ -255,9 +254,9 @@ export default function AboutSection() {
                                             scrollbarColor: "rgba(206,244,65,0.3) transparent",
                                         }}
                                     >
-                                        <div className={careerData.length > 3 ? "space-y-4" : "space-y-7"}>
+                                        <ul className={careerData.length > 3 ? "space-y-4" : "space-y-7"}>
                                             {careerData.map((career, i) => (
-                                                <div key={i} className={`border-l-2 ${career.active ? "border-lime" : "border-border"} pl-5`}>
+                                                <li key={i} className={`border-l-2 ${career.active ? "border-lime" : "border-border"} pl-5`}>
                                                     <div className="flex items-start justify-between gap-4">
                                                         <div className="flex-1 min-w-0">
                                                             <h3 className="text-xl font-bold mb-0.5 leading-tight">{career.title}</h3>
@@ -274,15 +273,15 @@ export default function AboutSection() {
                                                             DETAILS →
                                                         </button>
                                                     </div>
-                                                </div>
+                                                </li>
                                             ))}
-                                        </div>
+                                        </ul>
                                     </div>
                                 </div>
                             </div>
 
                             <div
-                                className="absolute inset-0 w-full h-full flex flex-col justify-center px-8"
+                                className="absolute inset-0 w-full h-full flex flex-col justify-center px-4 md:px-8"
                                 style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
                             >
                                 {flippedCareer !== null && (

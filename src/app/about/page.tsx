@@ -21,14 +21,14 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   const content = getContent();
-  const { bio1, bio2, education, career } = content.about;
+  const { bio, education, career } = content.about;
   const activeEducation = education.filter((e) => e.active);
   const activeCareer = career.filter((c) => c.active);
 
   return (
     <main className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-8 py-4 bg-background/80 backdrop-blur-md border-b border-border">
+      <header className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 md:px-8 py-4 bg-background/80 backdrop-blur-md border-b border-border">
         <Link
           href="/"
           aria-label="Back to home"
@@ -42,7 +42,7 @@ export default function AboutPage() {
         </div>
       </header>
 
-      <div className="pt-28 pb-24 px-8">
+      <div className="pt-28 pb-24 px-4 md:px-8">
         <div className="max-w-4xl mx-auto">
 
           {/* Heading */}
@@ -58,8 +58,10 @@ export default function AboutPage() {
           {/* Bio + Portrait */}
           <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-12 mb-20 items-start">
             <div>
-              <p className="text-xl leading-relaxed text-muted-foreground mb-6">{bio1}</p>
-              <p className="text-xl leading-relaxed text-muted-foreground mb-6">{bio2}</p>
+              <div
+                className="text-xl leading-relaxed text-muted-foreground mb-6 prose prose-invert prose-p:mb-4 last:prose-p:mb-0"
+                dangerouslySetInnerHTML={{ __html: bio }}
+              />
               <p className="text-lg leading-relaxed text-muted-foreground mb-6">
                 Based in Indonesia, I specialize in building full-stack web applications using
                 React, Next.js, TypeScript, and Node.js. I also provide IT support and
@@ -184,7 +186,7 @@ export default function AboutPage() {
         </div>
       </div>
 
-      <footer className="py-8 px-8 text-center border-t border-border">
+      <footer className="py-8 px-4 md:px-8 text-center border-t border-border">
         <p className="text-sm text-muted-foreground">
           © {new Date().getFullYear()} Arya Intaran.{" "}
           <a href="/privacy-policy" className="underline underline-offset-2 hover:text-foreground transition-colors">

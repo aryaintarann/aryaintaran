@@ -153,7 +153,7 @@ export default function HeroSection() {
         <section
             id="home"
             ref={sectionRef}
-            className="relative min-h-screen flex items-center justify-center overflow-hidden px-8"
+            className="relative min-h-screen flex items-center justify-center overflow-hidden px-4 md:px-8"
         >
             <div
                 className="hero-orb absolute rounded-full pointer-events-none blur-[120px]"

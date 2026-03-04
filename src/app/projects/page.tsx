@@ -38,7 +38,7 @@ export default function ProjectsPage() {
     return (
         <main className="min-h-screen bg-background text-foreground">
             {/* Top bar */}
-            <header className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-8 py-4 bg-background/80 backdrop-blur-md border-b border-border">
+            <header className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 md:px-8 py-4 bg-background/80 backdrop-blur-md border-b border-border">
                 <Link
                     href="/"
                     aria-label="Back to home"
@@ -58,7 +58,7 @@ export default function ProjectsPage() {
                 </div>
             </header>
 
-            <div ref={headingRef} className="pt-28 pb-24 px-8">
+            <div ref={headingRef} className="pt-28 pb-24 px-4 md:px-8">
                 <div className="max-w-6xl mx-auto">
 
                     {/* Page heading */}
@@ -182,7 +182,7 @@ export default function ProjectsPage() {
                 </div>
             </div>
 
-            <footer className="py-8 px-8 text-center border-t border-border">
+            <footer className="py-8 px-4 md:px-8 text-center border-t border-border">
                 <p className="text-sm text-muted-foreground mb-3">
                     © {new Date().getFullYear()} Arya Intaran.
                 </p>

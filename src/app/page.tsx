@@ -43,7 +43,7 @@ export default function Home() {
       <ContactSection />
       <Navbar />
 
-      <footer className="py-8 px-8 text-center border-t border-border">
+      <footer className="py-8 px-4 md:px-8 text-center border-t border-border">
         <p className="text-sm text-muted-foreground mb-3">
           © {new Date().getFullYear()} Arya Intaran.
         </p>

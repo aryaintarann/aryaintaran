@@ -16,35 +16,32 @@ export default function SkillsSection() {
     const skills = content.skills;
 
     useGSAP(() => {
-        gsap.utils.toArray<HTMLElement>(".tech-card").forEach((card, i) => {
-            gsap.fromTo(
-                card,
-                { opacity: 0, y: 60, rotateX: 10 },
-                {
+        gsap.set(".tech-card", { opacity: 0, y: 60, rotateX: 10 });
+
+        ScrollTrigger.batch(".tech-card", {
+            start: "top 92%",
+            onEnter: (batch) => {
+                gsap.to(batch, {
                     opacity: 1,
                     y: 0,
                     rotateX: 0,
                     duration: 0.7,
-                    delay: i * 0.06,
+                    stagger: 0.06,
                     ease: "power3.out",
-                    scrollTrigger: {
-                        trigger: card,
-                        start: "top 92%",
-                        toggleActions: "play none none none",
-                    },
-                }
-            );
+                    overwrite: true
+                });
+            }
         });
         ScrollTrigger.refresh();
-    }, { scope: sectionRef, dependencies: [] });
+    }, { scope: sectionRef, dependencies: [skills] });
 
     return (
         <section
             id="skills"
             ref={sectionRef}
-            className="min-h-screen flex flex-col justify-center px-8 py-24 max-w-7xl mx-auto"
+            className="min-h-screen flex flex-col justify-center px-4 md:px-8 py-24 max-w-7xl mx-auto"
         >
-            <div className="text-center mb-16">
+            <header className="text-center mb-16">
                 <span className="section-num block mb-4">04 / SKILLS</span>
                 <h2 className="text-[clamp(3rem,8vw,8rem)] font-black leading-[0.9] tracking-[-0.03em]">
                     TECH{" "}
@@ -53,11 +50,11 @@ export default function SkillsSection() {
                 <p className="text-muted-foreground mt-4 max-w-lg mx-auto">
                     The right technology will provide scalability, security, and speed.
                 </p>
-            </div>
+            </header>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                 {skills.map((skill, index) => (
-                    <div
+                    <li
                         key={skill.name}
                         className="tech-card bg-card border border-border rounded-2xl p-6 cursor-default flex flex-col items-center justify-center gap-4 text-center"
                     >
@@ -81,9 +78,9 @@ export default function SkillsSection() {
                         <h3 className="text-lg font-bold tracking-wider">
                             {skill.name}
                         </h3>
-                    </div>
+                    </li>
                 ))}
-            </div>
+            </ul>
         </section>
     );
 }

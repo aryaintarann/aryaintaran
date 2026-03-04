@@ -58,7 +58,7 @@ export default function Navbar() {
     };
 
     return (
-        <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 glass rounded-full px-4 py-3 flex items-center gap-1">
+        <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 glass rounded-full px-2 md:px-4 py-3 flex items-center gap-1">
             {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = activeSection === item.id;
@@ -69,7 +69,7 @@ export default function Navbar() {
                         onMouseEnter={() => setHoveredItem(item.id)}
                         onMouseLeave={() => setHoveredItem(null)}
                         aria-label={`Navigate to ${item.label}`}
-                        className={`relative flex items-center gap-2 px-3 py-2.5 rounded-full transition-all duration-300 cursor-pointer ${isActive
+                        className={`relative flex items-center justify-center min-w-[44px] min-h-[44px] gap-2 px-3 py-2.5 rounded-full transition-all duration-300 cursor-pointer ${isActive
                             ? "bg-lime text-[#050505]"
                             : "text-foreground/70 hover:text-foreground"
                             }`}
@@ -89,7 +89,7 @@ export default function Navbar() {
             <button
                 onClick={toggleTheme}
                 aria-label="Toggle theme"
-                className="flex items-center gap-2 px-3 py-2.5 rounded-full text-foreground/70 hover:text-foreground transition-all duration-300 cursor-pointer"
+                className="flex items-center justify-center min-w-[44px] min-h-[44px] gap-2 px-3 py-2.5 rounded-full text-foreground/70 hover:text-foreground transition-all duration-300 cursor-pointer"
             >
                 {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
             </button>

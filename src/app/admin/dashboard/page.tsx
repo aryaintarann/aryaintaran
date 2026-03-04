@@ -560,7 +560,7 @@ export default function AdminDashboard() {
       </aside>
 
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="sticky top-0 z-10 bg-[#050505]/80 backdrop-blur border-b border-white/8 flex items-center justify-between px-8 py-4">
+        <header className="sticky top-0 z-10 bg-[#050505]/80 backdrop-blur border-b border-white/8 flex items-center justify-between px-4 md:px-8 py-4">
           <div>
             <h2 className="text-base font-bold tracking-wide text-white capitalize">{activeTab}</h2>
             <p className="text-xs text-white/30">
@@ -579,7 +579,7 @@ export default function AdminDashboard() {
           ) : null}
         </header>
 
-        <main className="flex-1 overflow-y-auto px-8 py-8 max-w-3xl">
+        <main className="flex-1 overflow-y-auto px-4 md:px-8 py-8 max-w-3xl">
           {activeTab === "hero" ? (
             <HeroEditor content={content.hero} onChange={(v) => setContent({ ...content, hero: v })} />
           ) : activeTab === "about" ? (
