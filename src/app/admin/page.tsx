@@ -86,10 +86,6 @@ export default function AdminLoginPage() {
             {loading ? "Memverifikasi..." : "Masuk"}
           </button>
         </form>
-
-        <p className="text-center text-white/20 text-xs mt-8 tracking-wider">
-          DEFAULT: admin123
-        </p>
       </div>
     </div>
   );
