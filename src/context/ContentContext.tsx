@@ -9,6 +9,8 @@ import {
 } from "react";
 import type { SiteContent } from "@/types/content";
 
+export type ContentContextType = SiteContent & { isLoaded: boolean };
+
 const defaultContent: SiteContent = {
   hero: { name: "ARYA INTARAN", tagline: "Full Stack Engineer | IT Support | Data Entry" },
   about: {
@@ -74,16 +76,21 @@ const defaultContent: SiteContent = {
   },
 };
 
-const ContentContext = createContext<SiteContent>(defaultContent);
+const defaultContextValue: ContentContextType = {
+  ...defaultContent,
+  isLoaded: false,
+};
+
+const ContentContext = createContext<ContentContextType>(defaultContextValue);
 
 export function ContentProvider({ children }: { children: ReactNode }) {
-  const [content, setContent] = useState<SiteContent>(defaultContent);
+  const [content, setContent] = useState<ContentContextType>(defaultContextValue);
 
   useEffect(() => {
     fetch("/api/content")
       .then((r) => r.json())
-      .then((data) => setContent(data))
-      .catch(() => { });
+      .then((data) => setContent({ ...data, isLoaded: true }))
+      .catch(() => setContent((prev) => ({ ...prev, isLoaded: true })));
   }, []);
 
   return (

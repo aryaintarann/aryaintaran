@@ -45,7 +45,7 @@ export default function ProjectDetailPage() {
   }, { scope: containerRef, dependencies: [slug] });
 
   // Wait for content to hydrate before returning 404
-  if (!project && content.projects.length > 0) {
+  if (!project && content.isLoaded) {
     notFound();
   }
 
@@ -110,9 +110,6 @@ export default function ProjectDetailPage() {
               )}
             </h1>
 
-            <p className="text-xl text-muted-foreground max-w-2xl leading-relaxed">
-              {project.description}
-            </p>
           </div>
 
           {/* ── Image Gallery ── */}
@@ -137,9 +134,8 @@ export default function ProjectDetailPage() {
                     <button
                       key={i}
                       onClick={() => setActiveImage(i)}
-                      className={`relative shrink-0 w-24 h-16 rounded-xl overflow-hidden border-2 transition-all ${
-                        activeImage === i ? "border-lime" : "border-border hover:border-lime/50"
-                      }`}
+                      className={`relative shrink-0 w-24 h-16 rounded-xl overflow-hidden border-2 transition-all ${activeImage === i ? "border-lime" : "border-border hover:border-lime/50"
+                        }`}
                     >
                       <Image
                         src={img}
@@ -218,29 +214,29 @@ export default function ProjectDetailPage() {
               {/* CTAs — only rendered when links are present */}
               {((project.link && project.link.trim() !== "" && project.link.trim() !== "#") ||
                 (project.github && project.github.trim() !== "")) && (
-                <div className="space-y-3">
-                  {project.link && project.link.trim() !== "" && project.link.trim() !== "#" && (
-                    <a
-                      href={project.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 bg-lime text-[#050505] font-bold py-3.5 px-6 rounded-xl hover:bg-lime-dark transition-colors text-sm tracking-wider uppercase w-full"
-                    >
-                      Visit Live Site <ExternalLink size={14} />
-                    </a>
-                  )}
-                  {project.github && project.github.trim() !== "" && (
-                    <a
-                      href={project.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 border border-border bg-muted/40 hover:border-lime/40 hover:text-lime font-bold py-3.5 px-6 rounded-xl transition-colors text-sm tracking-wider uppercase w-full"
-                    >
-                      <Github size={14} /> View on GitHub
-                    </a>
-                  )}
-                </div>
-              )}
+                  <div className="space-y-3">
+                    {project.link && project.link.trim() !== "" && project.link.trim() !== "#" && (
+                      <a
+                        href={project.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-2 bg-lime text-[#050505] font-bold py-3.5 px-6 rounded-xl hover:bg-lime-dark transition-colors text-sm tracking-wider uppercase w-full"
+                      >
+                        Visit Live Site <ExternalLink size={14} />
+                      </a>
+                    )}
+                    {project.github && project.github.trim() !== "" && (
+                      <a
+                        href={project.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-2 border border-border bg-muted/40 hover:border-lime/40 hover:text-lime font-bold py-3.5 px-6 rounded-xl transition-colors text-sm tracking-wider uppercase w-full"
+                      >
+                        <Github size={14} /> View on GitHub
+                      </a>
+                    )}
+                  </div>
+                )}
             </div>
           </div>
 

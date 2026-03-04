@@ -137,12 +137,12 @@ export default function ProjectsSection() {
                                             ))}
                                         </ul>
 
-                                        <a
-                                            href={project.link}
+                                        <Link
+                                            href={`/projects/${project.slug}`}
                                             className="inline-flex items-center gap-2 bg-lime text-[#050505] font-bold py-3 px-8 rounded-xl hover:bg-lime-dark transition-colors text-sm tracking-wider uppercase"
                                         >
                                             View Details <ArrowUpRight size={16} />
-                                        </a>
+                                        </Link>
                                     </div>
                                 </div>
                             </div>

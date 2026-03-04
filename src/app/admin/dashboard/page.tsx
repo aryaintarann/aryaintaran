@@ -359,7 +359,10 @@ function ProjectsEditor({ content, onChange, token }: { content: ProjectItem[]; 
               </Field>
 
               <Field label="Tech Stack (pisahkan dengan koma)">
-                <TextInput value={project.stack.join(", ")} onChange={(v) => update(i, { stack: v.split(",").map((s) => s.trim()).filter(Boolean) })} placeholder="React, Next.js, TypeScript" />
+                <TextInput value={project.stack.join(", ")} onChange={(v) => {
+                  const arr = v.split(",");
+                  update(i, { stack: arr.map((s, idx) => idx === arr.length - 1 ? s.trimStart() : s.trim()) });
+                }} placeholder="React, Next.js, TypeScript" />
               </Field>
               <Field label="Link Proyek (live URL)">
                 <TextInput value={project.link} onChange={(v) => update(i, { link: v })} placeholder="https://..." />
