@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import { Suspense } from "react";
 import TopBar from "@/components/TopBar";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/sections/HeroSection";
-import AboutSection from "@/components/sections/AboutSection";
-import SkillsSection from "@/components/sections/SkillsSection";
-import ProjectsSection from "@/components/sections/ProjectsSection";
-import ContactSection from "@/components/sections/ContactSection";
 import ScrollToSection from "@/components/ScrollToSection";
+
+const AboutSection = dynamic(() => import("@/components/sections/AboutSection"), { loading: () => null });
+const SkillsSection = dynamic(() => import("@/components/sections/SkillsSection"), { loading: () => null });
+const ProjectsSection = dynamic(() => import("@/components/sections/ProjectsSection"), { loading: () => null });
+const ContactSection = dynamic(() => import("@/components/sections/ContactSection"), { loading: () => null });
 
 export const metadata: Metadata = {
   title: "Arya Intaran | Web Developer & IT Support Portfolio",
@@ -28,7 +30,6 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <main className="relative pb-24">
-      {/* Visually hidden H1 for SEO — visual heading is in HeroSection */}
       <h1 className="sr-only">
         Arya Intaran — Full Stack Developer, IT Support &amp; Data Entry Specialist
       </h1>

@@ -135,5 +135,3 @@ export function getSkillIcon(name: string): string {
 export function hasSkillIcon(name: string): boolean {
   return !!ICON_MAP[name.toLowerCase().trim()];
 }
-
-export { ICON_MAP };

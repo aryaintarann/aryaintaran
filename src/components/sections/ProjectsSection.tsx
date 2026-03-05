@@ -17,11 +17,12 @@ export default function ProjectsSection() {
     const projects = content.projects;
 
     useGSAP(() => {
+        const vw = window.innerWidth;
         const projectsTrack = document.querySelector(".projects-horizontal-track") as HTMLElement;
         if (!projectsTrack) return;
 
         const projectPanels = gsap.utils.toArray<HTMLElement>(".projects-panel");
-        const projectsTotalScroll = (projectPanels.length - 1) * window.innerWidth;
+        const projectsTotalScroll = (projectPanels.length - 1) * vw;
 
         const tween = gsap.to(projectsTrack, {
             x: -projectsTotalScroll,

@@ -15,6 +15,8 @@ export default function HeroSection() {
     const nameParts = content.hero.name.split(" ");
 
     useGSAP(() => {
+        const vh = window.innerHeight;
+
         gsap.utils.toArray<HTMLElement>(".hero-orb").forEach((orb, i) => {
             gsap.to(orb, {
                 x: () => gsap.utils.random(-80, 80),
@@ -45,17 +47,9 @@ export default function HeroSection() {
             ease: "none",
         });
 
-        gsap.to(".hero-deco-text", {
-            x: 60,
-            duration: 15,
-            repeat: -1,
-            yoyo: true,
-            ease: "sine.inOut",
-        });
-
         gsap.utils.toArray<HTMLElement>(".hero-particle").forEach((p, i) => {
             gsap.to(p, {
-                y: -window.innerHeight,
+                y: -vh,
                 x: gsap.utils.random(-100, 100),
                 opacity: 0,
                 duration: gsap.utils.random(6, 12),

@@ -18,11 +18,12 @@ export default function AboutSection() {
     const [flippedCareer, setFlippedCareer] = useState<number | null>(null);
 
     useGSAP(() => {
+        const vw = window.innerWidth;
         const track = document.querySelector(".about-horizontal-track") as HTMLElement;
         if (!track) return;
 
         const panels = gsap.utils.toArray<HTMLElement>(".about-panel");
-        const totalScroll = (panels.length - 1) * window.innerWidth;
+        const totalScroll = (panels.length - 1) * vw;
 
         const tween = gsap.to(track, {
             x: -totalScroll,

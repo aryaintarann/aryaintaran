@@ -136,7 +136,6 @@
   }
 }
 
-/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -150,7 +149,6 @@
   border-radius: 3px;
 }
 
-/* Glassmorphism */
 .glass {
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(20px);
@@ -163,39 +161,24 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Section number styling */
 .section-num {
   font-family: 'Space Grotesk', monospace;
   font-size: 0.75rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
+  color: #6b7a20;
+}
+
+.dark .section-num {
   color: var(--accent);
 }
 
-/* Hero background text */
-.hero-bg-text {
-  font-size: clamp(4rem, 15vw, 16rem);
-  font-weight: 900;
-  line-height: 0.85;
-  letter-spacing: -0.02em;
-  color: var(--foreground);
-  opacity: 0.08;
-  user-select: none;
-  pointer-events: none;
+.text-lime {
+  color: #4a5e00;
 }
 
-/* Capacity bar */
-.capacity-bar {
-  height: 2px;
-  background: var(--border);
-  position: relative;
-  overflow: hidden;
-}
-
-.capacity-bar-fill {
-  height: 100%;
-  background: var(--accent);
-  transition: width 1s ease;
+.dark .text-lime {
+  color: #CEF441;
 }
 
 /* Large display text */
@@ -206,7 +189,6 @@
   letter-spacing: -0.03em;
 }
 
-/* Tech card hover */
 .tech-card {
   transition: all 0.3s ease;
 }
@@ -217,7 +199,6 @@
   border-color: var(--accent);
 }
 
-/* Infinite marquee */
 @keyframes marquee {
   0% {
     transform: translateX(0);
