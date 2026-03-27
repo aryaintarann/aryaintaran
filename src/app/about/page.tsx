@@ -19,8 +19,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function AboutPage() {
-  const content = getContent();
+export default async function AboutPage() {
+  const content = await getContent();
   const { bio, education, career } = content.about;
   const activeEducation = education.filter((e) => e.active);
   const activeCareer = career.filter((c) => c.active);

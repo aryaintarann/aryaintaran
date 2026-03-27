@@ -1,14 +1,29 @@
-import fs from "fs";
-import path from "path";
+import { supabase } from "@/lib/supabase";
 import type { SiteContent } from "@/types/content";
 
-const contentPath = path.join(process.cwd(), "src/data/content.json");
+const TABLE = "site_content";
+const ROW_ID = 1;
 
-export function getContent(): SiteContent {
-  const raw = fs.readFileSync(contentPath, "utf-8");
-  return JSON.parse(raw) as SiteContent;
+export async function getContent(): Promise<SiteContent> {
+  const { data, error } = await supabase
+    .from(TABLE)
+    .select("data")
+    .eq("id", ROW_ID)
+    .single();
+
+  if (error || !data) {
+    throw new Error(`Failed to read content: ${error?.message ?? "No data"}`);
+  }
+
+  return data.data as SiteContent;
 }
 
-export function saveContent(data: SiteContent): void {
-  fs.writeFileSync(contentPath, JSON.stringify(data, null, 2), "utf-8");
+export async function saveContent(content: SiteContent): Promise<void> {
+  const { error } = await supabase
+    .from(TABLE)
+    .upsert({ id: ROW_ID, data: content }, { onConflict: "id" });
+
+  if (error) {
+    throw new Error(`Failed to save content: ${error.message}`);
+  }
 }

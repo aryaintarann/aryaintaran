@@ -18,7 +18,7 @@ function isValidContent(body: unknown): body is SiteContent {
 
 export async function GET() {
   try {
-    const content = getContent();
+    const content = await getContent();
     return NextResponse.json(content);
   } catch {
     return NextResponse.json({ error: "Failed to read content" }, { status: 500 });
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    saveContent(body);
+    await saveContent(body);
     return NextResponse.json({ success: true });
   } catch {
     return NextResponse.json({ error: "Failed to save content" }, { status: 500 });

@@ -18,8 +18,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ContactPage() {
-  const content = getContent();
+export default async function ContactPage() {
+  const content = await getContent();
   const { email, location, phone } = content.contact;
 
   return (

@@ -3,8 +3,8 @@ import { getContent } from "@/lib/content";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://aryaintaran.dev";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const content = getContent();
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const content = await getContent();
 
   const projectEntries: MetadataRoute.Sitemap = content.projects.map((p) => ({
     url: `${BASE_URL}/projects/${p.slug}`,
