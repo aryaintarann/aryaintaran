@@ -3,15 +3,34 @@ import { getContent } from "@/lib/content";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://aryaintaran.dev";
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const content = await getContent();
+// Static slugs used as fallback if Supabase is unavailable at build time
+const STATIC_PROJECT_SLUGS = [
+  "lmcwebsite",
+  "saviowebsite",
+  "varsaweb",
+  "aryaintaran",
+];
 
-  const projectEntries: MetadataRoute.Sitemap = content.projects.map((p) => ({
-    url: `${BASE_URL}/projects/${p.slug}`,
-    lastModified: new Date(),
-    changeFrequency: "monthly",
-    priority: 0.7,
-  }));
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  let projectEntries: MetadataRoute.Sitemap = [];
+
+  try {
+    const content = await getContent();
+    projectEntries = content.projects.map((p) => ({
+      url: `${BASE_URL}/projects/${p.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    }));
+  } catch {
+    // Fallback to static slugs if Supabase is unavailable (e.g., during build)
+    projectEntries = STATIC_PROJECT_SLUGS.map((slug) => ({
+      url: `${BASE_URL}/projects/${slug}`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    }));
+  }
 
   return [
     {
