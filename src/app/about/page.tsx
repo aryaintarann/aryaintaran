@@ -4,6 +4,8 @@ import Image from "next/image";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { getContent } from "@/lib/content";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: "About",
   description:

@@ -3,6 +3,8 @@ import Link from "next/link";
 import { ArrowLeft, Mail, MapPin, Phone } from "lucide-react";
 import { getContent } from "@/lib/content";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: "Contact | Arya Intaran",
   description:
