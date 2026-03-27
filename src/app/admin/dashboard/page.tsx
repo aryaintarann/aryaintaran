@@ -476,9 +476,12 @@ export default function AdminDashboard() {
     if (!t) { router.replace("/admin"); return; }
     setToken(t);
     fetch("/api/content")
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error("API error");
+        return r.json();
+      })
       .then(setContent)
-      .catch(() => showToast("Gagal memuat konten", "error"));
+      .catch(() => showToast("Gagal memuat konten. Pastikan tabel Supabase sudah dibuat.", "error"));
   }, [router, showToast]);
 
   const handleSave = async () => {
