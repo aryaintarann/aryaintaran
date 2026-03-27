@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { supabaseAdmin } from "@/lib/supabase";
 import { isValidAdminToken, checkRateLimit } from "@/lib/apiSecurity";
 
 // Field limits
@@ -7,13 +7,6 @@ const MAX_NAME = 100;
 const MAX_EMAIL = 254; // RFC 5321 maximum
 const MAX_MESSAGE = 5000;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-function getSupabase() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
-}
 
 // POST — public, submit contact form
 export async function POST(req: NextRequest) {
@@ -98,8 +91,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid email address" }, { status: 400 });
   }
 
-  const supabase = getSupabase();
-  const { error } = await supabase
+  const { error } = await supabaseAdmin
     .from("messages")
     .insert({ name: trimmedName, email: trimmedEmail, message: trimmedMessage });
 
@@ -118,8 +110,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const supabase = getSupabase();
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from("messages")
     .select("*")
     .order("created_at", { ascending: false });
@@ -148,8 +139,7 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: "Invalid parameters" }, { status: 400 });
   }
 
-  const supabase = getSupabase();
-  const { error } = await supabase
+  const { error } = await supabaseAdmin
     .from("messages")
     .update({ read })
     .eq("id", id);
@@ -178,8 +168,7 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ error: "Invalid parameters" }, { status: 400 });
   }
 
-  const supabase = getSupabase();
-  const { error } = await supabase
+  const { error } = await supabaseAdmin
     .from("messages")
     .delete()
     .eq("id", id);

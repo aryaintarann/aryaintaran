@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { supabase } from "@/lib/supabase";
+import { supabase, supabaseAdmin } from "@/lib/supabase";
 import type { SiteContent } from "@/types/content";
 
 const TABLE = "site_content";
@@ -50,9 +50,9 @@ export async function getContent(): Promise<SiteContent> {
  * meaning the Supabase table MUST exist in production.
  */
 export async function saveContent(content: SiteContent): Promise<void> {
-  // Try Supabase first
+  // Try Supabase first (service role — bypasses RLS for the upsert write)
   try {
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from(TABLE)
       .upsert({ id: ROW_ID, data: content }, { onConflict: "id" });
 

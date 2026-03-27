@@ -6,14 +6,14 @@ create table if not exists site_content (
   data jsonb   not null
 );
 
--- Disable RLS (only accessed from server-side via anon key + service role)
--- Allow anon reads and writes since we guard with ADMIN_TOKEN in our API
+-- Enable RLS
 alter table site_content enable row level security;
 
--- Allow public read (GET /api/content is public)
+-- Allow public read (GET /api/content is public).
+-- SELECT with USING(true) is intentionally public and excluded from lint checks.
 create policy "Allow public read" on site_content
   for select using (true);
 
--- Allow anon insert/update (protected at API layer by ADMIN_TOKEN)
-create policy "Allow anon upsert" on site_content
-  for all using (true) with check (true);
+-- Writes (INSERT/UPDATE via upsert) are performed exclusively by server-side
+-- API routes using the SUPABASE_SERVICE_ROLE_KEY, which bypasses RLS entirely.
+-- No permissive anon write policy is needed or added here.
