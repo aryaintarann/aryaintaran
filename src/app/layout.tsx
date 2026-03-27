@@ -3,6 +3,7 @@ import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { ContentProvider } from "@/context/ContentContext";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://aryaintaran.dev";
 
@@ -112,6 +113,7 @@ export default function RootLayout({
         <ThemeProvider>
           <ContentProvider>{children}</ContentProvider>
         </ThemeProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
