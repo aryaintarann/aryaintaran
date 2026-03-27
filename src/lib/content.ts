@@ -43,19 +43,32 @@ export async function getContent(): Promise<SiteContent> {
 }
 
 /**
- * Save site content to Supabase.
- * Uses upsert so the first save also acts as the initial seed.
- * Throws if Supabase is not accessible (table must exist first).
+ * Save site content.
+ * Strategy: Supabase first (upsert) → fallback to local content.json.
+ * Fallback allows the local admin to work before the Supabase table is created.
+ * On Vercel the filesystem is read-only, so the fallback will also fail there —
+ * meaning the Supabase table MUST exist in production.
  */
 export async function saveContent(content: SiteContent): Promise<void> {
-  const { error } = await supabase
-    .from(TABLE)
-    .upsert({ id: ROW_ID, data: content }, { onConflict: "id" });
+  // Try Supabase first
+  try {
+    const { error } = await supabase
+      .from(TABLE)
+      .upsert({ id: ROW_ID, data: content }, { onConflict: "id" });
 
-  if (error) {
+    if (!error) return; // success
+    console.warn("[content] Supabase save failed, falling back to local JSON:", error.message);
+  } catch (err) {
+    console.warn("[content] Supabase exception on save, falling back to local JSON:", err);
+  }
+
+  // Fallback: write to local content.json (works locally, fails on Vercel read-only FS)
+  try {
+    fs.writeFileSync(contentPath, JSON.stringify(content, null, 2), "utf-8");
+  } catch {
     throw new Error(
-      `Failed to save to Supabase: ${error.message}. ` +
-      `Make sure table 'site_content' exists. Run the SQL in supabase/migrations/create_site_content.sql`
+      "Gagal menyimpan: Supabase tidak tersedia dan filesystem juga tidak bisa ditulis. " +
+      "Jalankan SQL di supabase/migrations/create_site_content.sql terlebih dahulu."
     );
   }
 }
