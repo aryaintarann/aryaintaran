@@ -9,11 +9,13 @@ import {
     Mail,
     Sun,
     Moon,
+    Newspaper,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { usePathname, useRouter } from "next/navigation";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -22,15 +24,20 @@ const navItems = [
     { id: "about", icon: User, label: "About" },
     { id: "skills", icon: Code2, label: "Skills" },
     { id: "projects", icon: FolderKanban, label: "Projects" },
+    { id: "news", icon: Newspaper, label: "News" },
     { id: "contact", icon: Mail, label: "Contact" },
 ];
 
 export default function Navbar() {
     const { theme, toggleTheme } = useTheme();
+    const pathname = usePathname();
+    const router = useRouter();
     const [activeSection, setActiveSection] = useState("home");
     const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
     useGSAP(() => {
+        if (pathname !== "/") return;
+
         const sections = gsap.utils.toArray<HTMLElement>("section[id]");
 
         sections.forEach((section) => {
@@ -47,13 +54,25 @@ export default function Navbar() {
         });
 
         ScrollTrigger.refresh();
-    }, { dependencies: [] });
+        return () => {
+             ScrollTrigger.getAll().forEach(st => st.kill());
+        };
+    }, { dependencies: [pathname] });
 
-    const scrollToSection = (id: string) => {
-        setActiveSection(id);
-        const el = document.getElementById(id);
-        if (el) {
-            el.scrollIntoView({ behavior: "smooth" });
+    const handleNavigation = (id: string) => {
+        if (id === "news") {
+            router.push("/news");
+            return;
+        }
+
+        if (pathname === "/") {
+            setActiveSection(id);
+            const el = document.getElementById(id);
+            if (el) {
+                el.scrollIntoView({ behavior: "smooth" });
+            }
+        } else {
+            router.push(id === "home" ? "/" : `/#${id}`);
         }
     };
 
@@ -61,11 +80,12 @@ export default function Navbar() {
         <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 glass rounded-full px-2 md:px-4 py-3 flex items-center gap-1">
             {navItems.map((item) => {
                 const Icon = item.icon;
-                const isActive = activeSection === item.id;
+                const isActive = (pathname === "/" && activeSection === item.id) || (pathname.startsWith("/news") && item.id === "news");
+                
                 return (
                     <button
                         key={item.id}
-                        onClick={() => scrollToSection(item.id)}
+                        onClick={() => handleNavigation(item.id)}
                         onMouseEnter={() => setHoveredItem(item.id)}
                         onMouseLeave={() => setHoveredItem(null)}
                         aria-label={`Navigate to ${item.label}`}
