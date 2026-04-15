@@ -9,6 +9,7 @@ import ScrollToSection from "@/components/ScrollToSection";
 const AboutSection = dynamic(() => import("@/components/sections/AboutSection"), { loading: () => null });
 const SkillsSection = dynamic(() => import("@/components/sections/SkillsSection"), { loading: () => null });
 const ProjectsSection = dynamic(() => import("@/components/sections/ProjectsSection"), { loading: () => null });
+const NewsSection = dynamic(() => import("@/components/sections/NewsSection"), { loading: () => null });
 const ContactSection = dynamic(() => import("@/components/sections/ContactSection"), { loading: () => null });
 
 export const metadata: Metadata = {
@@ -41,6 +42,7 @@ export default function Home() {
       <AboutSection />
       <SkillsSection />
       <ProjectsSection />
+      <NewsSection />
       <ContactSection />
       <Navbar />
 
