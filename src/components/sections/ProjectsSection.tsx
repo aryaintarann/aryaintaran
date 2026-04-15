@@ -88,7 +88,7 @@ export default function ProjectsSection() {
 
                     <div className="projects-panel w-screen h-screen shrink-0 flex flex-col justify-center px-4 md:px-8">
                         <div className="max-w-5xl mx-auto w-full">
-                            <span className="section-num mb-8 block">04 / PORTFOLIO</span>
+                            <span className="section-num mb-8 block">03 / PORTFOLIO</span>
                             <h2 className="text-[clamp(3.5rem,10vw,11rem)] font-black leading-[0.9] tracking-[-0.03em] mb-8">
                                 MY
                                 <br />
@@ -111,7 +111,7 @@ export default function ProjectsSection() {
                         >
                             <div className="max-w-5xl mx-auto w-full">
                                 <span className="section-num mb-6 block">
-                                    04 / BUILD {String(i + 1).padStart(2, "0")}
+                                    03 / BUILD {String(i + 1).padStart(2, "0")}
                                 </span>
 
                                 <div className="flex flex-col md:flex-row items-start gap-4 md:gap-8 relative">

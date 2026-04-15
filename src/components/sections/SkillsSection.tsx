@@ -42,7 +42,7 @@ export default function SkillsSection() {
             className="min-h-screen flex flex-col justify-center px-4 md:px-8 py-24 max-w-7xl mx-auto"
         >
             <header className="text-center mb-16">
-                <span className="section-num block mb-4">04 / SKILLS</span>
+                <span className="section-num block mb-4">02 / SKILLS</span>
                 <h2 className="text-[clamp(3rem,8vw,8rem)] font-black leading-[0.9] tracking-[-0.03em]">
                     TECH{" "}
                     <span className="text-lime italic">STACK</span>

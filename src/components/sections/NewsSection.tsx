@@ -17,7 +17,7 @@ export default async function NewsSection() {
       <div className="mb-16 md:flex md:items-end md:justify-between">
         <div>
           <div className="flex items-center gap-4 mb-4">
-            <span className="section-num">05</span>
+            <span className="section-num">04 / TECH NEWS</span>
             <div className="h-[1px] bg-border flex-grow max-w-[100px]"></div>
           </div>
           <h2 className="display-text mb-6">
@@ -43,9 +43,9 @@ export default async function NewsSection() {
             <div className="h-full glass border border-border rounded-2xl overflow-hidden tech-card flex flex-col relative bg-card">
               {article.cover_image && (
                 <div className="w-full h-56 overflow-hidden relative">
-                  <img 
-                    src={article.cover_image} 
-                    alt={article.title} 
+                  <img
+                    src={article.cover_image}
+                    alt={article.title}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
@@ -62,7 +62,7 @@ export default async function NewsSection() {
                   {article.description || "Click to read the full article and uncover the details of this trending tech story."}
                 </p>
                 <div className="flex items-center text-foreground font-medium text-sm group-hover:translate-x-2 transition-transform">
-                  Read Story 
+                  Read Story
                   <svg className="w-4 h-4 ml-2 text-lime" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                   </svg>
@@ -71,7 +71,7 @@ export default async function NewsSection() {
             </div>
           </Link>
         ))}
-        
+
         {(!articles || articles.length === 0) && (
           <div className="col-span-full py-20 text-center glass border border-border border-dashed rounded-2xl">
             <p className="text-muted-foreground text-lg">No articles generated yet. They will appear here soon.</p>

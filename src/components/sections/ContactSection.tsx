@@ -117,7 +117,7 @@ export default function ContactSection() {
         >
             <header className="mb-16">
                 <div className="mb-8">
-                    <span className="section-num block mb-4">07 / GET CONNECTED</span>
+                    <span className="section-num block mb-4">05 / GET CONNECTED</span>
                 </div>
 
                 <h2 className="display-text contact-title">
