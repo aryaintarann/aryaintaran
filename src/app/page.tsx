@@ -1,16 +1,11 @@
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
 import { Suspense } from "react";
 import TopBar from "@/components/TopBar";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/sections/HeroSection";
 import ScrollToSection from "@/components/ScrollToSection";
-
-const AboutSection = dynamic(() => import("@/components/sections/AboutSection"), { loading: () => null });
-const SkillsSection = dynamic(() => import("@/components/sections/SkillsSection"), { loading: () => null });
-const ProjectsSection = dynamic(() => import("@/components/sections/ProjectsSection"), { loading: () => null });
-const NewsSection = dynamic(() => import("@/components/sections/NewsSection"), { loading: () => null });
-const ContactSection = dynamic(() => import("@/components/sections/ContactSection"), { loading: () => null });
+import ClientSections from "@/components/ClientSections";
+import NewsSection from "@/components/sections/NewsSection";
 
 export const metadata: Metadata = {
   title: "Arya Intaran | Web Developer & IT Support Portfolio",
@@ -39,11 +34,8 @@ export default function Home() {
       </Suspense>
       <TopBar />
       <HeroSection />
-      <AboutSection />
-      <SkillsSection />
-      <ProjectsSection />
+      <ClientSections />
       <NewsSection />
-      <ContactSection />
       <Navbar />
 
       <footer className="py-8 px-4 md:px-8 text-center border-t border-border">
