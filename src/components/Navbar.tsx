@@ -116,7 +116,7 @@ export default function Navbar() {
 
             {/* ── Mobile Pill Hamburger ── */}
             <div
-                className="md:hidden glass rounded-full"
+                className="md:hidden flex glass rounded-full"
                 style={{
                     position: "fixed",
                     bottom: "24px",
@@ -126,7 +126,6 @@ export default function Navbar() {
                     pointerEvents: pastHero ? "auto" : "none",
                     transition: "opacity 0.5s ease, transform 0.5s ease",
                     zIndex: 50,
-                    display: "flex",
                     alignItems: "center",
                     gap: "12px",
                     padding: "10px 16px",
