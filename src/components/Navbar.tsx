@@ -60,11 +60,6 @@ export default function Navbar() {
     }, { dependencies: [pathname] });
 
     const handleNavigation = (id: string) => {
-        if (id === "news") {
-            router.push("/news");
-            return;
-        }
-
         if (pathname === "/") {
             setActiveSection(id);
             const el = document.getElementById(id);
