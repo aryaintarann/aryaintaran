@@ -206,7 +206,7 @@ export default function HeroSection() {
             </div>
 
             <div className="absolute inset-0 flex items-end justify-center pointer-events-none z-20 hero-portrait-container">
-                <div className="relative w-[clamp(280px,35vw,550px)] h-[75vh]">
+                <div className="relative w-full md:w-[clamp(280px,35vw,550px)] h-[80vh] md:h-[75vh]">
                     <Image
                         src="/hero-portrait.webp"
                         alt="Portrait of Arya Intaran"
@@ -225,9 +225,9 @@ export default function HeroSection() {
                 </div>
             </div>
 
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="absolute inset-0 flex items-start md:items-center justify-center pointer-events-none pt-[8vh] md:pt-0">
                 <div className="hero-name-float">
-                    <h2 className="hero-name text-[clamp(5rem,15vw,16rem)] font-black leading-[0.85] tracking-[-0.03em] text-center text-foreground z-10 overflow-hidden">
+                    <h2 className="hero-name text-[clamp(4.5rem,20vw,16rem)] md:text-[clamp(5rem,15vw,16rem)] font-black leading-[0.85] tracking-[-0.03em] text-center text-foreground z-10 overflow-hidden">
                         <span className="hero-name-line inline-block">{nameParts[0]}</span>
                         {nameParts.length > 1 && (
                             <>
