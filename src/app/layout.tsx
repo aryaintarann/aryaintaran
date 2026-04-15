@@ -91,6 +91,41 @@ const jsonLd = {
       description: "Portfolio website of Arya Intaran, Full Stack Developer.",
       author: { "@id": `${BASE_URL}/#person` },
     },
+    {
+      "@type": "ItemList",
+      "@id": `${BASE_URL}/#sitelinks`,
+      "name": "Navigate Arya Intaran Portfolio",
+      "itemListElement": [
+        {
+          "@type": "SiteNavigationElement",
+          "position": 1,
+          "name": "Tech News",
+          "url": `${BASE_URL}/news`,
+          "description": "Stay updated with the latest in technology, AI, and web development."
+        },
+        {
+          "@type": "SiteNavigationElement",
+          "position": 2,
+          "name": "Projects Showcase",
+          "url": `${BASE_URL}/projects`,
+          "description": "Explore my portfolio of web development projects."
+        },
+        {
+          "@type": "SiteNavigationElement",
+          "position": 3,
+          "name": "About Me",
+          "url": `${BASE_URL}/#about`,
+          "description": "Learn more about my background, skills, and experience."
+        },
+        {
+          "@type": "SiteNavigationElement",
+          "position": 4,
+          "name": "Contact",
+          "url": `${BASE_URL}/#contact`,
+          "description": "Get in touch for freelance work and collaborations."
+        }
+      ]
+    },
   ],
 };
 
@@ -106,7 +141,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
         />
       </head>
       <body className={`${spaceGrotesk.variable} font-(family-name:--font-space) antialiased`}>
