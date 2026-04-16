@@ -108,14 +108,27 @@ export default function NewsSectionClient({ articles }: NewsSectionClientProps) 
         {articles?.map((article) => (
           <Link href={`/news/${article.slug}`} key={article.id} className="news-card group cursor-pointer">
             <div className="h-full glass border border-border rounded-2xl overflow-hidden tech-card flex flex-col relative bg-card">
-              {article.cover_image && (
-                <div className="w-full h-56 overflow-hidden relative">
+              {article.cover_image ? (
+                <div className="w-full h-56 overflow-hidden relative bg-muted">
                   <img
                     src={article.cover_image}
                     alt={article.title}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      const target = e.currentTarget as HTMLImageElement;
+                      target.style.display = "none";
+                      const parent = target.parentElement;
+                      if (parent) {
+                        parent.style.background = "linear-gradient(135deg, rgba(206,244,65,0.15), rgba(206,244,65,0.05))";
+                      }
+                    }}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
+                </div>
+              ) : (
+                <div className="w-full h-56 bg-gradient-to-br from-lime/10 to-lime/5 flex items-center justify-center">
+                  <span className="text-lime/30 text-4xl font-black select-none">NEWS</span>
                 </div>
               )}
               <div className="p-8 flex flex-col flex-grow">

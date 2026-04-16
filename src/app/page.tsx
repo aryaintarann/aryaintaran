@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/sections/HeroSection";
 import ScrollToSection from "@/components/ScrollToSection";
 import ClientSections from "@/components/ClientSections";
+import ClientContactSection from "@/components/ClientContactSection";
 import NewsSection from "@/components/sections/NewsSection";
 
 export const metadata: Metadata = {
@@ -36,6 +37,7 @@ export default function Home() {
       <HeroSection />
       <ClientSections />
       <NewsSection />
+      <ClientContactSection />
       <Navbar />
 
       <footer className="py-8 px-4 md:px-8 text-center border-t border-border">

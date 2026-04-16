@@ -43,7 +43,7 @@ const nextConfig: NextConfig = {
               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://static.cloudflareinsights.com",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
-              "img-src 'self' data: blob: https://dljamsxpzglukntosgxe.supabase.co https://cdn.jsdelivr.net",
+              "img-src 'self' data: blob: https: https://dljamsxpzglukntosgxe.supabase.co https://cdn.jsdelivr.net",
               "connect-src 'self' https://dljamsxpzglukntosgxe.supabase.co https://challenges.cloudflare.com https://cloudflareinsights.com",
               "media-src 'self'",
               "frame-src 'self' https://challenges.cloudflare.com",
