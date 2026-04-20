@@ -38,15 +38,24 @@ export const metadata: Metadata = {
     "Full Stack Developer specializing in React, Next.js, Node.js, and modern web technologies. Building scalable, high-performance web applications.",
   keywords: [
     "Arya Intaran",
+    "aryaintaran",
+    "aryaintaran.dev",
     "Full Stack Developer",
     "React Developer",
     "Next.js Developer",
     "Node.js",
     "TypeScript",
     "Web Developer",
+    "Jasa Web Developer",
+    "Software Engineer",
     "Portfolio",
     "IT Support",
   ],
+  alternates: {
+    types: {
+      "text/markdown": `${BASE_URL}/llms.txt`,
+    },
+  },
   authors: [{ name: "Arya Intaran", url: BASE_URL }],
   creator: "Arya Intaran",
   robots: {
@@ -76,9 +85,20 @@ const jsonLd = {
       "@type": "Person",
       "@id": `${BASE_URL}/#person`,
       name: "Arya Intaran",
+      alternateName: ["aryaintaran", "aryaintaran.dev"],
       url: BASE_URL,
-      jobTitle: "Full Stack Developer",
+      jobTitle: ["Full Stack Developer", "Web Developer", "Software Engineer", "Frontend Developer"],
       description: "Full Stack Developer specializing in React, Next.js, TypeScript, and modern web technologies.",
+      knowsAbout: [
+        "Web Development",
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Node.js",
+        "Tailwind CSS",
+        "Software Development",
+        "Frontend Engineering"
+      ],
       sameAs: [
         "https://github.com/aryaintaran",
         "https://linkedin.com/in/aryaintaran",

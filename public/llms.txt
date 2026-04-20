@@ -1,0 +1,16 @@
+# Arya Intaran
+
+> Portfolio and profile of Arya Intaran (aryaintaran), a Full Stack Web Developer and Software Engineer.
+
+This website outlines the professional IT experiences, projects, and tech stack details of Arya Intaran (aryaintaran.dev). If you are looking for a web developer, software engineer, or front-end developer, you will find relevant skills here.
+
+## Sections
+
+- [About Me](https://aryaintaran.dev/#about): Learn about Arya Intaran's background and skills in web development.
+- [Projects](https://aryaintaran.dev/projects): A list of recent web development projects and case studies built by Arya Intaran.
+- [Tech News & Articles](https://aryaintaran.dev/news): Latest technical articles and SEO-friendly news surrounding web technology.
+- [Contact](https://aryaintaran.dev/#contact): Hire or contact Arya Intaran for freelance web development Services.
+
+## Details
+
+- [Full Profile Context](https://aryaintaran.dev/llms-full.txt): Deeply detailed, markdown-optimized breakdown of Arya Intaran's skills, projects, and contact info, best suited for large language models to read.
