@@ -116,13 +116,13 @@ export default function ProjectDetailPage() {
           {hasImages && (
             <div className="detail-body mb-16">
               {/* Main image */}
-              <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-border bg-muted mb-4">
+              <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-border bg-muted mb-4 flex items-center justify-center">
                 <Image
                   src={project.images[activeImage]}
                   alt={`${project.title} screenshot ${activeImage + 1}`}
                   fill
                   sizes="(max-width: 768px) 100vw, 1024px"
-                  className="object-cover"
+                  className="object-contain"
                   priority
                 />
               </div>
