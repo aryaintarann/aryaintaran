@@ -1,10 +1,8 @@
 "use client";
 
-import dynamic from "next/dynamic";
-
-const AboutSection = dynamic(() => import("@/components/sections/AboutSection"), { ssr: false, loading: () => null });
-const SkillsSection = dynamic(() => import("@/components/sections/SkillsSection"), { ssr: false, loading: () => null });
-const ProjectsSection = dynamic(() => import("@/components/sections/ProjectsSection"), { ssr: false, loading: () => null });
+import AboutSection from "@/components/sections/AboutSection";
+import SkillsSection from "@/components/sections/SkillsSection";
+import ProjectsSection from "@/components/sections/ProjectsSection";
 
 export default function ClientSections() {
   return (
