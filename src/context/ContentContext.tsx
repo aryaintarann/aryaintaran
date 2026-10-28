@@ -103,7 +103,11 @@ export function ContentProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     fetch("/api/content")
-      .then((r) => r.json())
+      .then((r) => {
+        // A failed read returns an error body; applying it would wipe hero/about/etc. and crash the sections.
+        if (!r.ok) throw new Error(`content ${r.status}`);
+        return r.json();
+      })
       .then((data) => setContent({ ...data, isLoaded: true }))
       .catch(() => setContent((prev) => ({ ...prev, isLoaded: true })));
   }, []);

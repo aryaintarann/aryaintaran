@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withPayload } from "@payloadcms/next/withPayload";
 
 // Dev tooling (React refresh) needs eval; the production bundle does not.
 const isDev = process.env.NODE_ENV !== "production";
@@ -70,4 +71,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withPayload(nextConfig);

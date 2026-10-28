@@ -1,84 +1,93 @@
-import fs from "fs";
-import path from "path";
-import { supabase, supabaseAdmin } from "@/lib/supabase";
+import { unstable_cache } from "next/cache";
+import { getPayload } from "payload";
+import config from "@payload-config";
+import { convertLexicalToHTML } from "@payloadcms/richtext-lexical/html";
+import { CONTENT_TAG } from "@/hooks/revalidateContent";
 import { cleanBio } from "@/lib/sanitize";
+import type { Media } from "@/payload-types";
 import type { SiteContent } from "@/types/content";
 
-const TABLE = "site_content";
-const ROW_ID = 1;
-const contentPath = path.join(process.cwd(), "src/data/content.json");
+const mediaUrl = (m: number | Media) => (typeof m === "object" && m.url ? m.url : "");
 
-/** Read the bundled JSON file (always available — committed to git). */
-function readLocalContent(): SiteContent {
-  const raw = fs.readFileSync(contentPath, "utf-8");
-  return JSON.parse(raw) as SiteContent;
-}
-
-/**
- * Get site content.
- * Strategy: Supabase first → fallback to local content.json.
- * Fallback is triggered when:
- *   - Table does not exist yet (PGRST116 / 42P01)
- *   - Row is empty (no data seeded yet)
- *   - Supabase credentials are missing / network error
- */
+/** Reads Payload and reshapes it into SiteContent, so every section component keeps its existing props. */
 async function loadContent(): Promise<SiteContent> {
-  try {
-    const { data, error } = await supabase
-      .from(TABLE)
-      .select("data")
-      .eq("id", ROW_ID)
-      .single();
+  const payload = await getPayload({ config });
+  const [hero, about, contact, projects, skills] = await Promise.all([
+    payload.findGlobal({ slug: "hero" }),
+    payload.findGlobal({ slug: "about" }),
+    payload.findGlobal({ slug: "contact" }),
+    payload.find({ collection: "projects", sort: "_order", pagination: false, depth: 1 }),
+    payload.find({ collection: "skills", sort: "_order", pagination: false }),
+  ]);
 
-    // error.code PGRST116 = no rows found; other errors = table missing, etc.
-    if (error || !data) {
-      console.warn("[content] Supabase unavailable or empty, using local JSON fallback.");
-      return readLocalContent();
-    }
+  const details = (d?: { text: string }[] | null) => (d ?? []).map((x) => x.text);
 
-    return data.data as SiteContent;
-  } catch (err) {
-    console.warn("[content] Supabase exception, using local JSON fallback:", err);
-    return readLocalContent();
-  }
+  // An empty Payload returns blank globals rather than failing; surface it instead of rendering an empty site.
+  if (!hero.name) throw new Error("Payload content is empty. Run `npm run migrate:content`.");
+
+  return {
+    hero: { name: hero.name, tagline: hero.tagline },
+    about: {
+      bio: convertLexicalToHTML({ data: about.bio }),
+      education: (about.education ?? []).map((e) => ({
+        title: e.title,
+        school: e.school,
+        year: e.year,
+        summary: e.summary ?? "",
+        details: details(e.details),
+        active: !!e.active,
+      })),
+      career: (about.career ?? []).map((c) => ({
+        title: c.title,
+        company: c.company,
+        year: c.year,
+        summary: c.summary ?? "",
+        details: details(c.details),
+        active: !!c.active,
+      })),
+    },
+    skills: skills.docs.map((s) => ({ name: s.name, icon: s.icon ?? "" })),
+    projects: projects.docs.map((p, i) => ({
+      index: String(i + 1).padStart(2, "0"),
+      title: p.title,
+      slug: p.slug,
+      description: p.description,
+      longDescription: p.longDescription,
+      type: p.type,
+      images: (p.images ?? []).map(mediaUrl).filter(Boolean),
+      stack: (p.stack ?? []).map((s) => s.name),
+      link: p.link,
+      ...(p.github ? { github: p.github } : {}),
+    })),
+    contact: {
+      email: contact.email,
+      location: contact.location,
+      phone: contact.phone,
+      social: {
+        instagram: contact.social?.instagram ?? "",
+        tiktok: contact.social?.tiktok ?? "",
+        github: contact.social?.github ?? "",
+        linkedin: contact.social?.linkedin ?? "",
+      },
+    },
+  };
 }
 
-const withCleanBio = (c: SiteContent): SiteContent => ({ ...c, about: { ...c.about, bio: cleanBio(c.about.bio) } });
-
-/** Site content with the HTML bio sanitized, so rows saved before sanitizing existed are safe to render too. */
-export async function getContent(): Promise<SiteContent> {
-  return withCleanBio(await loadContent());
-}
+const readContent = async (): Promise<SiteContent> => {
+  const c = await loadContent();
+  return { ...c, about: { ...c.about, bio: cleanBio(c.about.bio) } };
+};
 
 /**
- * Save site content.
- * Strategy: Supabase first (upsert) → fallback to local content.json.
- * Fallback allows the local admin to work before the Supabase table is created.
- * On Vercel the filesystem is read-only, so the fallback will also fail there —
- * meaning the Supabase table MUST exist in production.
+ * Site content with the HTML bio sanitized. Tag-cached; Payload hooks bust it on every save.
+ * Uncached in dev: the disk cache survives restarts, and scripts that write the database
+ * (migrate:content) run outside Next and cannot expire it.
  */
-export async function saveContent(raw: SiteContent): Promise<void> {
-  const content = withCleanBio(raw);
-
-  // Try Supabase first (service role — bypasses RLS for the upsert write)
-  try {
-    const { error } = await supabaseAdmin
-      .from(TABLE)
-      .upsert({ id: ROW_ID, data: content }, { onConflict: "id" });
-
-    if (!error) return; // success
-    console.warn("[content] Supabase save failed, falling back to local JSON:", error.message);
-  } catch (err) {
-    console.warn("[content] Supabase exception on save, falling back to local JSON:", err);
-  }
-
-  // Fallback: write to local content.json (works locally, fails on Vercel read-only FS)
-  try {
-    fs.writeFileSync(contentPath, JSON.stringify(content, null, 2), "utf-8");
-  } catch {
-    throw new Error(
-      "Gagal menyimpan: Supabase tidak tersedia dan filesystem juga tidak bisa ditulis. " +
-      "Jalankan SQL di supabase/migrations/create_site_content.sql terlebih dahulu."
-    );
-  }
-}
+export const getContent =
+  process.env.NODE_ENV === "development"
+    ? readContent
+    : unstable_cache(readContent, ["site-content"], {
+        // revalidate is a safety net in case a hook-triggered revalidateTag is ever missed
+        tags: [CONTENT_TAG],
+        revalidate: 3600,
+      });

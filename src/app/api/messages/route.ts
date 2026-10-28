@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase";
+import { getPayload } from "payload";
+import config from "@payload-config";
 import { checkRateLimit } from "@/lib/apiSecurity";
-import { isAdminRequest } from "@/lib/adminSession";
 
 // Field limits
 const MAX_NAME = 100;
@@ -92,91 +92,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid email address" }, { status: 400 });
   }
 
-  const { error } = await supabaseAdmin
-    .from("messages")
-    .insert({ name: trimmedName, email: trimmedEmail, message: trimmedMessage });
-
-  if (error) {
+  try {
+    const payload = await getPayload({ config });
+    // overrideAccess: the collection refuses public creates; this route has already vetted the caller.
+    await payload.create({
+      collection: "contact-messages",
+      data: { name: trimmedName, email: trimmedEmail, message: trimmedMessage },
+      overrideAccess: true,
+    });
+  } catch (err) {
     // Never expose internal DB error details
-    console.error("[messages/POST] Supabase error:", error.message);
+    console.error("[messages/POST] Payload error:", err);
     return NextResponse.json({ error: "Failed to send message. Please try again." }, { status: 500 });
-  }
-
-  return NextResponse.json({ success: true });
-}
-
-// GET — admin only, fetch all messages
-export async function GET(req: NextRequest) {
-  if (!isAdminRequest(req)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const { data, error } = await supabaseAdmin
-    .from("messages")
-    .select("*")
-    .order("created_at", { ascending: false });
-
-  if (error) {
-    console.error("[messages/GET] Supabase error:", error.message);
-    return NextResponse.json({ error: "Failed to fetch messages" }, { status: 500 });
-  }
-
-  return NextResponse.json(data);
-}
-
-// PATCH — admin only, mark as read/unread
-export async function PATCH(req: NextRequest) {
-  if (!isAdminRequest(req)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  let body: unknown;
-  try { body = await req.json(); } catch {
-    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
-  }
-
-  const { id, read } = body as Record<string, unknown>;
-  if (typeof id !== "string" || !id || typeof read !== "boolean") {
-    return NextResponse.json({ error: "Invalid parameters" }, { status: 400 });
-  }
-
-  const { error } = await supabaseAdmin
-    .from("messages")
-    .update({ read })
-    .eq("id", id);
-
-  if (error) {
-    console.error("[messages/PATCH] Supabase error:", error.message);
-    return NextResponse.json({ error: "Failed to update message" }, { status: 500 });
-  }
-
-  return NextResponse.json({ success: true });
-}
-
-// DELETE — admin only
-export async function DELETE(req: NextRequest) {
-  if (!isAdminRequest(req)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  let body: unknown;
-  try { body = await req.json(); } catch {
-    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
-  }
-
-  const { id } = body as Record<string, unknown>;
-  if (typeof id !== "string" || !id) {
-    return NextResponse.json({ error: "Invalid parameters" }, { status: 400 });
-  }
-
-  const { error } = await supabaseAdmin
-    .from("messages")
-    .delete()
-    .eq("id", id);
-
-  if (error) {
-    console.error("[messages/DELETE] Supabase error:", error.message);
-    return NextResponse.json({ error: "Failed to delete message" }, { status: 500 });
   }
 
   return NextResponse.json({ success: true });
