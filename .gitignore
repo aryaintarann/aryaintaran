@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+!.env.example
+
+# Payload local media (production uses Supabase Storage) and migration backups
+/media
+/.migration-backup
