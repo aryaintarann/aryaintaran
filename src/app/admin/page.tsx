@@ -21,11 +21,11 @@ export default function AdminLoginPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password }),
       });
-      const data = await res.json();
-      if (!res.ok) {
+      if (res.status === 429) {
+        setError("Terlalu banyak percobaan. Coba lagi nanti.");
+      } else if (!res.ok) {
         setError("Password salah. Coba lagi.");
       } else {
-        localStorage.setItem("admin_token", data.token);
         router.push("/admin/dashboard");
       }
     } catch {

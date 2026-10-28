@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { supabase, supabaseAdmin } from "@/lib/supabase";
+import { cleanBio } from "@/lib/sanitize";
 import type { SiteContent } from "@/types/content";
 
 const TABLE = "site_content";
@@ -21,7 +22,7 @@ function readLocalContent(): SiteContent {
  *   - Row is empty (no data seeded yet)
  *   - Supabase credentials are missing / network error
  */
-export async function getContent(): Promise<SiteContent> {
+async function loadContent(): Promise<SiteContent> {
   try {
     const { data, error } = await supabase
       .from(TABLE)
@@ -42,6 +43,13 @@ export async function getContent(): Promise<SiteContent> {
   }
 }
 
+const withCleanBio = (c: SiteContent): SiteContent => ({ ...c, about: { ...c.about, bio: cleanBio(c.about.bio) } });
+
+/** Site content with the HTML bio sanitized, so rows saved before sanitizing existed are safe to render too. */
+export async function getContent(): Promise<SiteContent> {
+  return withCleanBio(await loadContent());
+}
+
 /**
  * Save site content.
  * Strategy: Supabase first (upsert) → fallback to local content.json.
@@ -49,7 +57,9 @@ export async function getContent(): Promise<SiteContent> {
  * On Vercel the filesystem is read-only, so the fallback will also fail there —
  * meaning the Supabase table MUST exist in production.
  */
-export async function saveContent(content: SiteContent): Promise<void> {
+export async function saveContent(raw: SiteContent): Promise<void> {
+  const content = withCleanBio(raw);
+
   // Try Supabase first (service role — bypasses RLS for the upsert write)
   try {
     const { error } = await supabaseAdmin

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
-import { isValidAdminToken, checkRateLimit } from "@/lib/apiSecurity";
+import { checkRateLimit } from "@/lib/apiSecurity";
+import { isAdminRequest } from "@/lib/adminSession";
 
 // Field limits
 const MAX_NAME = 100;
@@ -15,7 +16,7 @@ export async function POST(req: NextRequest) {
     ?? req.headers.get("x-real-ip")
     ?? "unknown";
 
-  const rateLimit = checkRateLimit(`contact:${ip}`, 3, 10 * 60 * 1000);
+  const rateLimit = await checkRateLimit(`contact:${ip}`, 3, 10 * 60 * 1000);
   if (!rateLimit.allowed) {
     return NextResponse.json(
       { error: "Too many submissions. Please wait before trying again." },
@@ -106,7 +107,7 @@ export async function POST(req: NextRequest) {
 
 // GET — admin only, fetch all messages
 export async function GET(req: NextRequest) {
-  if (!isValidAdminToken(req.headers.get("x-admin-token"))) {
+  if (!isAdminRequest(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -125,7 +126,7 @@ export async function GET(req: NextRequest) {
 
 // PATCH — admin only, mark as read/unread
 export async function PATCH(req: NextRequest) {
-  if (!isValidAdminToken(req.headers.get("x-admin-token"))) {
+  if (!isAdminRequest(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -154,7 +155,7 @@ export async function PATCH(req: NextRequest) {
 
 // DELETE — admin only
 export async function DELETE(req: NextRequest) {
-  if (!isValidAdminToken(req.headers.get("x-admin-token"))) {
+  if (!isAdminRequest(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

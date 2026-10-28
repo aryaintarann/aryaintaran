@@ -15,10 +15,8 @@ export interface Message {
 }
 
 export default function InboxViewer({
-  token,
   onUnreadChange,
 }: {
-  token: string;
   onUnreadChange: (n: number) => void;
 }) {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -27,21 +25,21 @@ export default function InboxViewer({
 
   const fetchMessages = useCallback(async () => {
     setLoading(true);
-    const res = await fetch("/api/messages", { headers: { "x-admin-token": token } });
+    const res = await fetch("/api/messages");
     if (res.ok) {
       const data: Message[] = await res.json();
       setMessages(data);
       onUnreadChange(data.filter((m) => !m.read).length);
     }
     setLoading(false);
-  }, [token, onUnreadChange]);
+  }, [onUnreadChange]);
 
   useEffect(() => { fetchMessages(); }, [fetchMessages]);
 
   const toggleRead = async (msg: Message) => {
     await fetch("/api/messages", {
       method: "PATCH",
-      headers: { "Content-Type": "application/json", "x-admin-token": token },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id: msg.id, read: !msg.read }),
     });
     setMessages((prev) => {
@@ -54,7 +52,7 @@ export default function InboxViewer({
   const deleteMessage = async (id: string) => {
     await fetch("/api/messages", {
       method: "DELETE",
-      headers: { "Content-Type": "application/json", "x-admin-token": token },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id }),
     });
     if (expanded === id) setExpanded(null);
@@ -71,7 +69,7 @@ export default function InboxViewer({
     if (isOpening && !msg.read) {
       await fetch("/api/messages", {
         method: "PATCH",
-        headers: { "Content-Type": "application/json", "x-admin-token": token },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: msg.id, read: true }),
       });
       setMessages((prev) => {

@@ -1,7 +1,10 @@
 import type { MetadataRoute } from "next";
 import { getContent } from "@/lib/content";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://aryaintaran.dev";
+// Without this the sitemap is prerendered at build and new projects stay missing until the next deploy.
+export const revalidate = 3600;
+
+const BASE_URL =process.env.NEXT_PUBLIC_SITE_URL ?? "https://aryaintaran.dev";
 
 // Static slugs used as fallback if Supabase is unavailable at build time
 const STATIC_PROJECT_SLUGS = [

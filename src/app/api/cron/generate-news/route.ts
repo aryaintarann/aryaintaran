@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { isValidCronAuth } from '@/lib/apiSecurity';
 import { XMLParser } from 'fast-xml-parser';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { createClient } from '@supabase/supabase-js';
@@ -66,7 +67,12 @@ function extractCoverImage(item: any): string | null {
 }
 
 // ─── Route Handler ───────────────────────────────────────────────────────────
-export async function GET() {
+export async function GET(req: NextRequest) {
+  // Each call publishes an AI-generated article and spends Gemini quota — only Vercel Cron may trigger it.
+  if (!isValidCronAuth(req.headers.get('authorization'))) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     // 1. Try each RSS feed until we get a new unprocessed article
     let targetItem: any = null;
@@ -203,6 +209,6 @@ Write the full article now:`;
       }, { status: error.status });
     }
 
-    return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

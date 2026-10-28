@@ -1,12 +1,18 @@
 import { timingSafeEqual } from "crypto";
+import { supabaseAdmin } from "@/lib/supabase";
+
+/** Vercel Cron sends `Authorization: Bearer <CRON_SECRET>`; fails closed when CRON_SECRET is unset. */
+export function isValidCronAuth(authHeader: string | null | undefined): boolean {
+  const secret = process.env.CRON_SECRET;
+  return safeEqual(authHeader, secret ? `Bearer ${secret}` : undefined);
+}
 
 /**
- * Timing-safe token comparison.
+ * Timing-safe string comparison.
  * Prevents timing attacks where attacker can measure response time
- * to guess characters of the secret token one by one.
+ * to guess characters of the secret one by one.
  */
-export function isValidAdminToken(provided: string | null | undefined): boolean {
-  const expected = process.env.ADMIN_TOKEN;
+function safeEqual(provided: string | null | undefined, expected: string | undefined): boolean {
   if (!provided || !expected) return false;
   try {
     const a = Buffer.from(provided);
@@ -23,12 +29,39 @@ export function isValidAdminToken(provided: string | null | undefined): boolean 
   }
 }
 
+interface RateLimitResult {
+  allowed: boolean;
+  remaining: number;
+  resetAt: number;
+}
+
 /**
- * Simple in-memory rate limiter.
- * Resets after windowMs. Good enough for a personal portfolio admin.
- * Note: resets on server restart (Vercel cold starts = not persistent,
- * but still blocks bursts within a single function invocation window).
+ * Rate limiter shared across all serverless instances through the `check_rate_limit`
+ * Postgres function (supabase/migrations/create_rate_limits.sql).
+ * shortcut: falls back to a per-instance in-memory counter while that migration is not applied
+ * or Supabase is unreachable; upgrade by running the migration.
  */
+export async function checkRateLimit(
+  key: string,
+  maxAttempts = 10,
+  windowMs = 15 * 60 * 1000 // 15 minutes
+): Promise<RateLimitResult> {
+  try {
+    const { data, error } = await supabaseAdmin.rpc("check_rate_limit", {
+      p_key: key,
+      p_max: maxAttempts,
+      p_window_seconds: Math.ceil(windowMs / 1000),
+    });
+    const row = Array.isArray(data) ? data[0] : null;
+    if (!error && row) {
+      return { allowed: row.allowed, remaining: row.remaining, resetAt: new Date(row.reset_at).getTime() };
+    }
+  } catch {
+    // fall through to the in-memory limiter
+  }
+  return checkMemoryRateLimit(key, maxAttempts, windowMs);
+}
+
 interface RateLimitEntry {
   count: number;
   resetAt: number;
@@ -36,11 +69,7 @@ interface RateLimitEntry {
 
 const store = new Map<string, RateLimitEntry>();
 
-export function checkRateLimit(
-  key: string,
-  maxAttempts = 10,
-  windowMs = 15 * 60 * 1000 // 15 minutes
-): { allowed: boolean; remaining: number; resetAt: number } {
+function checkMemoryRateLimit(key: string, maxAttempts: number, windowMs: number): RateLimitResult {
   const now = Date.now();
   const entry = store.get(key);
 

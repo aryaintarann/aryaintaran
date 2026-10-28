@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { isValidAdminToken, sanitizePathSegment, safeExtFromMime } from "@/lib/apiSecurity";
+import { sanitizePathSegment, safeExtFromMime } from "@/lib/apiSecurity";
+import { isAdminRequest } from "@/lib/adminSession";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
@@ -9,7 +10,7 @@ const BUCKET = "project-images";
 const SAFE_PATH_REGEX = /^[a-zA-Z0-9\-_]+\/[a-zA-Z0-9\-_.]+$/;
 
 export async function POST(req: NextRequest) {
-  if (!isValidAdminToken(req.headers.get("x-admin-token"))) {
+  if (!isAdminRequest(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -71,7 +72,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  if (!isValidAdminToken(req.headers.get("x-admin-token"))) {
+  if (!isAdminRequest(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

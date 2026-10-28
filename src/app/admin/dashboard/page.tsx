@@ -238,7 +238,7 @@ function SkillsEditor({ content, onChange }: { content: SkillItem[]; onChange: (
   );
 }
 
-function ProjectsEditor({ content, onChange, token }: { content: ProjectItem[]; onChange: (v: ProjectItem[]) => void; token: string }) {
+function ProjectsEditor({ content, onChange }: { content: ProjectItem[]; onChange: (v: ProjectItem[]) => void }) {
   const [open, setOpen] = useState<number | null>(null);
   const [uploading, setUploading] = useState<number | null>(null);
   const fileRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -276,11 +276,7 @@ function ProjectsEditor({ content, onChange, token }: { content: ProjectItem[]; 
       fd.append("file", file);
       fd.append("slug", slug);
       try {
-        const res = await fetch("/api/upload", {
-          method: "POST",
-          headers: { "x-admin-token": token },
-          body: fd,
-        });
+        const res = await fetch("/api/upload", { method: "POST", body: fd });
         const data = await res.json();
         if (data.url) newUrls.push(data.url);
       } catch { }
@@ -463,7 +459,6 @@ export default function AdminDashboard() {
   const [content, setContent] = useState<SiteContent | null>(null);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<Toast | null>(null);
-  const [token, setToken] = useState("");
   const [unreadCount, setUnreadCount] = useState(0);
 
   const showToast = useCallback((message: string, type: ToastType) => {
@@ -472,16 +467,20 @@ export default function AdminDashboard() {
   }, []);
 
   useEffect(() => {
-    const t = localStorage.getItem("admin_token") || "";
-    if (!t) { router.replace("/admin"); return; }
-    setToken(t);
-    fetch("/api/content")
+    // The HttpOnly session cookie can't be read from JS, so ask the server whether it is still valid.
+    fetch("/api/auth")
+      .then((r) => {
+        if (!r.ok) { router.replace("/admin"); throw new Error("unauthenticated"); }
+        return fetch("/api/content");
+      })
       .then((r) => {
         if (!r.ok) throw new Error("API error");
         return r.json();
       })
       .then(setContent)
-      .catch(() => showToast("Gagal memuat konten. Pastikan tabel Supabase sudah dibuat.", "error"));
+      .catch((e: Error) => {
+        if (e.message !== "unauthenticated") showToast("Gagal memuat konten. Pastikan tabel Supabase sudah dibuat.", "error");
+      });
   }, [router, showToast]);
 
   const handleSave = async () => {
@@ -490,11 +489,12 @@ export default function AdminDashboard() {
     try {
       const res = await fetch("/api/content", {
         method: "POST",
-        headers: { "Content-Type": "application/json", "x-admin-token": token },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(content),
       });
       if (res.ok) { showToast("Konten berhasil disimpan!", "success"); }
-      else { showToast("Gagal menyimpan. Cek token.", "error"); }
+      else if (res.status === 401) { showToast("Sesi berakhir. Silakan login ulang.", "error"); router.replace("/admin"); }
+      else { showToast("Gagal menyimpan.", "error"); }
     } catch {
       showToast("Terjadi kesalahan jaringan.", "error");
     } finally {
@@ -502,8 +502,8 @@ export default function AdminDashboard() {
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem("admin_token");
+  const logout = async () => {
+    await fetch("/api/auth", { method: "DELETE" }).catch(() => {});
     router.replace("/admin");
   };
 
@@ -593,11 +593,11 @@ export default function AdminDashboard() {
           ) : activeTab === "skills" ? (
             <SkillsEditor content={content.skills} onChange={(v) => setContent({ ...content, skills: v })} />
           ) : activeTab === "projects" ? (
-            <ProjectsEditor content={content.projects} onChange={(v) => setContent({ ...content, projects: v })} token={token} />
+            <ProjectsEditor content={content.projects} onChange={(v) => setContent({ ...content, projects: v })} />
           ) : activeTab === "contact" ? (
             <ContactEditor content={content.contact} onChange={(v) => setContent({ ...content, contact: v })} />
           ) : activeTab === "inbox" ? (
-            <InboxViewer token={token} onUnreadChange={setUnreadCount} />
+            <InboxViewer onUnreadChange={setUnreadCount} />
           ) : null}
         </main>
       </div>

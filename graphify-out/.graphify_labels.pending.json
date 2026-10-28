@@ -1,0 +1,16 @@
+{
+  "3": "devDependencies",
+  "4": "dependencies",
+  "5": "class-variance-authority",
+  "9": "@google/generative-ai",
+  "10": "app/layout.tsx",
+  "12": "ContactSection.tsx",
+  "15": "overrides",
+  "19": "eslint.config.mjs",
+  "20": "scripts",
+  "21": "react-dom@19.2.3",
+  "22": "admin/layout.tsx",
+  "23": "projects/layout.tsx",
+  "24": "react-markdown",
+  "25": "@vercel/speed-insights"
+}

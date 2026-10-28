@@ -1,5 +1,8 @@
 import type { NextConfig } from "next";
 
+// Dev tooling (React refresh) needs eval; the production bundle does not.
+const isDev = process.env.NODE_ENV !== "production";
+
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
@@ -26,8 +29,8 @@ const nextConfig: NextConfig = {
           { key: "X-Frame-Options", value: "DENY" },
           // Prevent MIME sniffing
           { key: "X-Content-Type-Options", value: "nosniff" },
-          // Legacy XSS filter
-          { key: "X-XSS-Protection", value: "1; mode=block" },
+          // Legacy XSS auditor is exploitable and ignored by modern browsers — explicitly off (OWASP)
+          { key: "X-XSS-Protection", value: "0" },
           // Limit referrer info sent to third parties
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           // Disable browser features not used by this site
@@ -39,8 +42,9 @@ const nextConfig: NextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              // Next.js requires unsafe-inline + unsafe-eval; GSAP uses inline styles
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://static.cloudflareinsights.com",
+              // shortcut: 'unsafe-inline' stays because Next's inline hydration scripts need a per-request
+              // nonce, which forces every page dynamic; upgrade if static rendering stops mattering.
+              `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://challenges.cloudflare.com https://static.cloudflareinsights.com`,
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: blob: https: https://dljamsxpzglukntosgxe.supabase.co https://cdn.jsdelivr.net",
