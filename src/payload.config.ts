@@ -51,13 +51,18 @@ export default buildConfig({
     push: false,
   }),
   // A REST call whose Origin isn't listed loses its auth cookie, so /api/media/access says "no create" and the bulk-upload Save button never renders.
-  csrf: [
-    SITE_URL,
-    ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
-    ...(process.env.NODE_ENV === "production"
-      ? []
-      : ["http://localhost:3000", "http://localhost:3001", "http://127.0.0.1:3000"]),
-  ],
+  // Dev: empty list = no origin check (any host/port you open the admin on works). Production keeps the strict list.
+  csrf:
+    process.env.NODE_ENV === "production"
+      ? [
+          SITE_URL,
+          SITE_URL.replace("://www.", "://"),
+          SITE_URL.replace("://", "://www."),
+          ...[process.env.VERCEL_PROJECT_PRODUCTION_URL, process.env.VERCEL_URL, process.env.VERCEL_BRANCH_URL]
+            .filter(Boolean)
+            .map((host) => `https://${host}`),
+        ]
+      : [],
   // shortcut: server-side upload, so Vercel's 4.5MB request cap applies; upgrade to clientUploads if images outgrow it.
   upload: { limits: { fileSize: 4_500_000 } },
   sharp,
