@@ -50,7 +50,14 @@ export default buildConfig({
     migrationDir: path.resolve(dirname, "migrations"),
     push: false,
   }),
-  csrf: [SITE_URL, ...(process.env.NODE_ENV === "production" ? [] : ["http://localhost:3000"])],
+  // A REST call whose Origin isn't listed loses its auth cookie, so /api/media/access says "no create" and the bulk-upload Save button never renders.
+  csrf: [
+    SITE_URL,
+    ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
+    ...(process.env.NODE_ENV === "production"
+      ? []
+      : ["http://localhost:3000", "http://localhost:3001", "http://127.0.0.1:3000"]),
+  ],
   // shortcut: server-side upload, so Vercel's 4.5MB request cap applies; upgrade to clientUploads if images outgrow it.
   upload: { limits: { fileSize: 4_500_000 } },
   sharp,
