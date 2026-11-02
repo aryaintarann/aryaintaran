@@ -46,8 +46,8 @@ export default buildConfig({
   // push: false — dev must never alter a shared database on its own; schema changes go through `npm run db:migrate`.
   db: postgresAdapter({
     // Supabase's session pooler allows only 15 clients in total; every serverless instance holds its own pool,
-    // so a small max keeps instances from exhausting it (EMAXCONNSESSION). Also point DATABASE_URL at port 6543 (transaction mode) on Vercel.
-    pool: { connectionString: process.env.DATABASE_URL, max: process.env.NODE_ENV === "production" ? 3 : 10 },
+    // so a small max (1 per build worker) keeps instances from exhausting it (EMAXCONNSESSION). Also point DATABASE_URL at port 6543 (transaction mode) on Vercel.
+    pool: { connectionString: process.env.DATABASE_URL, max: process.env.NEXT_PHASE === "phase-production-build" ? 1 : process.env.NODE_ENV === "production" ? 3 : 10 },
     schemaName: "payload",
     migrationDir: path.resolve(dirname, "migrations"),
     push: false,
