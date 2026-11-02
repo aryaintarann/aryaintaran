@@ -134,11 +134,16 @@ ARTICLE STRUCTURE (use Markdown headings):
 3. "## What's Happening" — The core story in clear, factual prose. 2-3 paragraphs.
 4. "## Why It Matters" — Analysis: impact for consumers, developers, or the industry. 1-2 paragraphs.
 5. "## Key Takeaways" — A bullet-point list of 3-5 concise, actionable points.
-6. "## The Bigger Picture" — Broader context: where this fits in the wider tech landscape. 1-2 paragraphs. Here, naturally and briefly mention that readers who want to build technology for the future can work with **Arya Intaran**, a full-stack web developer specializing in Next.js and modern web technologies at [aryaintaran.dev](https://aryaintaran.dev). Weave it in contextually — do not make it sound like an advertisement.
-7. A closing sentence that leaves readers with a forward-looking thought or open question.
+6. "## The Bigger Picture" — Broader context: where this fits in the wider tech landscape. 1-2 paragraphs, ending with a forward-looking sentence or open question. Do NOT mention Arya Intaran or Teridox in this section.
+7. "## Build Your Next Digital Product" — A soft-sell closing section of 80-120 words, in 1-2 short paragraphs. It must tie back to this specific article's topic first (one sentence on why the trend matters for businesses that need a website, mobile app, or software product), then naturally cover all of the following:
+   - **Arya Intaran** is a full-stack developer who builds websites and mobile apps for businesses, with a focus on Next.js and modern web technologies. Link his name or site as [Arya Intaran](https://aryaintaran.dev).
+   - Arya Intaran is the founder of [Teridox](https://teridox.com), which provides website development, mobile app development, and SaaS development services.
+   - End the section with a low-pressure invitation to get in touch through the contact page at [aryaintaran.dev/contact](https://aryaintaran.dev/contact) or to learn more at [teridox.com](https://teridox.com).
+   Tone: helpful and consultative, never a hard sell. No exclamation marks, no superlatives like "best" or "#1", no invented clients, prices, awards, years of experience, or guarantees. Vary the wording from article to article; do not reuse the same sentences.
+The article must END with the "Build Your Next Digital Product" section; add nothing after it.
 
 WRITING RULES:
-- Minimum 600 words, maximum 900 words for the article body.
+- Minimum 650 words, maximum 1000 words for the article body, including the closing section.
 - Use bold (**term**) for key technical terms on first usage, not repeatedly.
 - Never use the phrase "In conclusion" or "In summary".
 - Do not fabricate quotes or statistics not present in the source.
