@@ -24,6 +24,9 @@ export const metadata: Metadata = {
   },
 };
 
+// NewsSection reads Supabase directly (not via the content cache tag), so without this the home page keeps the news from build time.
+export const revalidate = 300;
+
 export default function Home() {
   return (
     <main className="relative pb-24">
